@@ -9,27 +9,32 @@ void main() {
   runApp(const MyApp());
 }
 
+class SplashScreen extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset("assets/images/main_logo.jpg"),
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation(postechRed),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // @override
-  // void initiate(){
-  //   debugPrint('initiate');
-  // }
-  //
-  // @override
-  // void didChangeDependencies(){ //데이터에 의존한다면 반영되고 출력
-  //   debugPrint('didChangeDependencies');
-  // }
-  // @override
-  // void didUpdateWidget(){ //위젯을 갱신해야한다면 호출
-  //   debugPrint('didUpdateWidget');
-  // }
-  // @override
-  // void update(){ //위젯을 실제로 업데이트함
-  //   debugPrint('update');
-  // }
-  //이외에도 deactivate, dispose, mounted==true / mounted==false
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +42,30 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Nanum',
       ),
-      home: userState == "logout"? const WelcomePage() : const ControlPage(),
+      home: FutureBuilder(
+        future: Future.delayed(const Duration(seconds: 3), () => "Intro Completed."),
+          builder: (context, snapshot) {
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 1000),
+              child: SplashConditionWidget(snapshot)
+          );
+        },
+      )
     );
   }
 }
+
+Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot) {
+  if(snapshot.hasError) {
+    return const Text("Error!!");
+  } else if(snapshot.hasData) {
+    return userState == "logout"? const WelcomePage() : const ControlPage();
+  } else {
+    return SplashScreen();
+  }
+}
+
+
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
