@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.18.1
+  currency_text_input_formatter: ^2.1.10
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -67,6 +69,13 @@ flutter:
     - assets/images/main_logo.jpg
     - assets/images/user.png
     - assets/images/bot.png
+    - assets/images/refri_sample.png
+    - assets/images/seller_sample.png
+    - assets/images/book.png
+    - assets/images/fashion.png
+    - assets/images/living_room.png
+    - assets/images/monitor.png
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:

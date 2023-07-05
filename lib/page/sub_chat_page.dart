@@ -12,7 +12,7 @@ class SubChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: postechRed),
+      //appBar: AppBar(backgroundColor: postechRed),
       backgroundColor: Colors.white,
       body: Column(
       ),

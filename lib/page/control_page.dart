@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supo_market/page/category_page.dart';
+import 'package:supo_market/page/sub_add_goods_page.dart';
 import '../entity/chat_room_entity.dart';
 import '../entity/goods_entity.dart';
 import '../entity/user_entity.dart';
@@ -29,11 +31,11 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   void initState() {
     super.initState();
     debugPrint("control_initiate");
-    controller = TabController(length: 4, vsync: this);
+    controller = TabController(length: 5, vsync: this);
     personalUser =  User(userName: "이지현", userState: "login", imagePath: "assets/images/user.png", userSchoolNum: "20210207");
     otherUser =  User(userName: "정태형", userState: "login", imagePath: "assets/images/user.png", userSchoolNum: "20210000");
-    goodsList.add(Goods(sellingTitle: "냉장고 싸게 팝니다", goodsName: "냉장고", goodsQuality: "상", sellerName: "이지현", imagePath_1: "assets/images/main_logo.jpg", sellingPrice: 10000, uploadDate: "10일전"));
-    goodsList.add(Goods(sellingTitle: "컴퓨터구조 교재 가져가세요", goodsName: "책", goodsQuality: "하", sellerName: "김도형", imagePath_1: "assets/images/main_logo.jpg", sellingPrice: 20000));
+    goodsList.add(Goods(sellingTitle: "냉장고 싸게 팝니다", goodsType: "냉장고", goodsQuality: "상", sellerName: "이지현", imagePath_1: "assets/images/refri_sample.png", sellingPrice: 10000, uploadDate: "10일전", sellerImage: "assets/images/seller_sample.png", isLiked : false, isQuickSell: false));
+    goodsList.add(Goods(sellingTitle: "컴퓨터구조 교재 가져가세요", goodsType: "책", goodsQuality: "하", sellerName: "김도형", imagePath_1: "assets/images/main_logo.jpg", sellingPrice: 20000, sellerImage : "assets/images/user.png", isLiked : true, goodsDetail: "한 번밖에 안썼어요", isQuickSell: true));
     chatRoomList.add(ChatRoom(traderName: "채팅봇", traderImage: "assets/images/bot.png", goodsName: "", lastChattingDay: "방금 전", lastChattingSentence: "안녕하세요, 슈포마켓에 오신 것을 환영합니다.", sellingTitle: '환영합니다'));
   }
 
@@ -56,18 +58,28 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-          title: const Text("슈포마켓", style: TextStyle(fontWeight: FontWeight.w300)),backgroundColor: postechRed),
+          elevation: 0.0,
+          centerTitle: false,
+          title: const Text("슈포마켓",
+              textAlign: TextAlign.left,
+              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black)
+          ),
+        //backgroundColor: Colors.yellow[300]),
+          backgroundColor: Colors.white),
       floatingActionButton: FloatingActionButton(
         backgroundColor: postechRed,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => SubAddGoodsPage(list: goodsList)));
+        },
         child: const Icon(Icons.add),
       ),
       body: TabBarView(
         controller: controller,
-        children: <Widget>[HomePage(list: goodsList), ChattingPage(list: chatRoomList), FavoritePage(), MyPage(user: personalUser)],
+        children: <Widget>[HomePage(list: goodsList), CategoryPage(), ChattingPage(list: chatRoomList), FavoritePage(list: goodsList), MyPage(user: personalUser)],
       ),
       bottomNavigationBar: TabBar(tabs: const <Tab>[
         Tab(icon: Icon(Icons.home_filled, color: Color(0xffac145a)), child : Text("홈")),
+        Tab(icon: Icon(Icons.list, color: Color(0xffac145a)), child : Text("분류")),
         Tab(icon: Icon(Icons.chat_bubble, color: Color(0xffac145a)), child : Text("채팅")),
         Tab(icon: Icon(Icons.favorite, color: Color(0xffac145a)), child : Text("찜")),
         Tab(icon: Icon(Icons.info, color: Color(0xffac145a)), child : Text("내 정보"))],
