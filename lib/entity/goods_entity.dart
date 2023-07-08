@@ -11,6 +11,7 @@ class Goods{
   String? imagePath_3;
   String? goodsNum;
   String? uploadDate;
+  DateTime? uploadDateForCompare;
   bool? isLiked;
   bool isQuickSell;
 
@@ -28,7 +29,8 @@ class Goods{
         this.imagePath_2,
         this.imagePath_3,
         this.goodsNum,
-        this.uploadDate,}
+        required this.uploadDate,
+        required this.uploadDateForCompare,}
       );
 
 }

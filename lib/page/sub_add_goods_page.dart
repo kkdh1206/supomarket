@@ -1,12 +1,13 @@
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import '../entity/goods_entity.dart';
 import 'package:flutter/cupertino.dart';
 
 Color postechRed = Color(0xffac145a);
-Goods newGoods = Goods(sellingTitle: "", goodsType: "", goodsQuality: "", sellerName: "", imagePath_1: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false,isQuickSell: false);
 String temp = "";
+Map<String, int> myData = Map();
 
 class SubAddGoodsPage extends StatefulWidget {
 
@@ -25,29 +26,33 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
   List<Goods>? list;
   FixedExtentScrollController? firstController;
   FixedExtentScrollController? secondController;
+  Goods newGoods = Goods(sellingTitle: "", goodsType: "", goodsQuality: "", sellerName: "", imagePath_1: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false,isQuickSell: false, uploadDateForCompare: DateTime.now());
 
   @override
   void initState(){
     super.initState();
+    newGoods.goodsType = "";
+    newGoods.goodsQuality = "";
+    newGoods.sellingPrice = 0;
+
     debugPrint("addGoodsPage initiate, 현재 list 3번은 ${list?[2].goodsQuality} 퀄리티이다.");
     newGoods.imagePath_1 = "assets/images/main_logo.jpg";
     newGoods.sellerImage = "assets/images/user.png";
     firstController = FixedExtentScrollController(initialItem: 0);
     secondController = FixedExtentScrollController(initialItem: 0);
     list = widget.list;
+
   }
 
   @override
   void dispose(){
     super.dispose();
-    debugPrint(list?[2].goodsQuality);
-    newGoods.goodsType = "";
-    newGoods.goodsQuality = "";
-    newGoods.sellingPrice = 0;
+    debugPrint("add page dispose");
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar : AppBar(
@@ -55,14 +60,16 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
         elevation: 0,
         toolbarHeight: 60,
         leading: Padding(padding: const EdgeInsets.only(top:10, left: 10),
-            child: IconButton (onPressed: () {Navigator.pop(context);}, icon: const Icon(Icons.clear, color: Colors.black45), iconSize: 30)
+            child: IconButton (onPressed: () {Navigator.pop(context, ReturnData(goods: newGoods, returnType: "exit"));}, icon: const Icon(Icons.clear, color: Colors.black45), iconSize: 30)
         ),
         actions: <Widget>[TextButton(
           onPressed: (){
-            setState(() {
-              widget.list?.add(newGoods);
-              Navigator.of(context).pop(1);
-            });
+              setState(() {
+                //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
+                newGoods.uploadDate = "방금 전";
+                newGoods.uploadDateForCompare = DateTime.now();
+              });
+              Navigator.pop(context, ReturnData(goods: newGoods, returnType: "add"));
           },
           style: OutlinedButton.styleFrom(backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
@@ -287,4 +294,14 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
       ),
     );
   }
+}
+
+class ReturnData {
+  Goods goods;
+  String returnType;
+
+  ReturnData(
+      {required this.goods,
+        required this.returnType});
+
 }
