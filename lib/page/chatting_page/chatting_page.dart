@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:supo_market/page/sub_chat_page.dart';
-import '../entity/chat_room_entity.dart';
+import 'package:supo_market/page/chatting_page/sub_chat_page.dart';
+import '../../entity/chat_room_entity.dart';
 
 Color postechRed = Color(0xffac145a);
 

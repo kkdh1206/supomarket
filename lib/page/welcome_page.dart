@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:supo_market/page/sub_home_page.dart';
+import 'package:supo_market/page/home_page/sub_home_page.dart';
 import 'control_page.dart';
 import 'log_in_page.dart';
 

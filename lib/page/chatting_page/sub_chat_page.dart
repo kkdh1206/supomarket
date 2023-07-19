@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../entity/chat_room_entity.dart';
+import '../../entity/chat_room_entity.dart';
 
 Color postechRed = Color(0xffac145a);
 

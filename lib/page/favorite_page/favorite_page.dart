@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:supo_market/page/sub_home_page.dart';
-import '../entity/goods_entity.dart';
+import 'package:supo_market/page/home_page/sub_home_page.dart';
+import '../../entity/goods_entity.dart';
 
 Color postechRed = Color(0xffac145a);
 var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시

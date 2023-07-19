@@ -1,9 +1,12 @@
+import 'package:image_picker/image_picker.dart';
+
 class Goods{
   String? sellingTitle;
   String? goodsType;
   String? goodsQuality;
   String? sellerName;
   String? sellerImage;
+  String? sellerSchoolNum;
   int sellingPrice;
   String? goodsDetail;
   String? imagePath_1;
@@ -14,6 +17,7 @@ class Goods{
   DateTime? uploadDateForCompare;
   bool? isLiked;
   bool isQuickSell;
+  List<XFile> imageList;
 
   Goods( //생성자
       { required this.sellingTitle,
@@ -25,12 +29,14 @@ class Goods{
         required this.sellingPrice,
         required this.isLiked,
         required this.isQuickSell,
+        required this.sellerSchoolNum,
         this.goodsDetail,
         this.imagePath_2,
         this.imagePath_3,
         this.goodsNum,
         required this.uploadDate,
-        required this.uploadDateForCompare,}
+        required this.uploadDateForCompare,
+        required this.imageList,}
       );
 
 }

@@ -3,13 +3,15 @@ class User {
   String? userState;
   String? imagePath;
   String? userSchoolNum;
+  int? userGoodsNum;
 
   User
     ({
       required this.userName,
       required this.userState,
       required this.imagePath,
-      this.userSchoolNum
+      this.userSchoolNum,
+      required this.userGoodsNum,
     });
 
 }

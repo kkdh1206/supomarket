@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import '../entity/user_entity.dart';
+import 'package:supo_market/infra/my_info_data.dart';
+import 'package:supo_market/page/my_page/sub_my_page_selling_page.dart';
+import 'package:supo_market/page/my_page/sub_my_page_settings_page.dart';
+import '../../entity/goods_entity.dart';
+import '../../entity/user_entity.dart';
 
 class MyPage extends StatelessWidget{
   final User user;
-  const MyPage({Key? key, required this.user}) : super(key:key);
+  final List<Goods> list;
+  const MyPage({Key? key, required this.user, required this.list}) : super(key:key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +41,10 @@ class MyPage extends StatelessWidget{
                   SizedBox(
                       height: 50,
                       child: MaterialButton(
-                          onPressed: () {  },
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => SubMyPageSettingPage(user: user)));
+                          },
                           child: const Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
@@ -60,6 +68,25 @@ class MyPage extends StatelessWidget{
                               Icon(Icons.person),
                               SizedBox(width:18),
                               Text('내 정보 변경', style: TextStyle(fontSize: 15), textAlign: TextAlign.left),
+                            ],
+                          ),
+                        ),
+                      )
+                  ),
+                  SizedBox(
+                      height: 50,
+                      child: MaterialButton(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => SubMyPageSellingPage(list : list, user: user)));
+                        },
+                        child: const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Icon(Icons.inventory),
+                              SizedBox(width:18),
+                              Text('내가 판 상품', style: TextStyle(fontSize: 15), textAlign: TextAlign.left),
                             ],
                           ),
                         ),

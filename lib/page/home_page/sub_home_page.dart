@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'package:carousel_indicator/carousel_indicator.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import '../entity/goods_entity.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../../entity/goods_entity.dart';
 import 'package:flutter/services.dart';
 
 Color postechRed = Color(0xffac145a);
@@ -17,12 +21,15 @@ class SubHomePage extends StatefulWidget {
 
 class _SubHomePageState extends State<SubHomePage>{
 
+  int activeIndex = 0;
+
   @override
   Widget build(BuildContext context) {
 
     @override
     void initState(){
       debugPrint("Sub Home Page Initialize");
+      activeIndex = 0;
       super.initState();
     }
 
@@ -38,13 +45,46 @@ class _SubHomePageState extends State<SubHomePage>{
             Stack(
               children: [
                 Padding(padding: const EdgeInsets.only(top:0),
-                  child: Image.asset(widget.goods.imagePath_1!, width:400, height: 400, fit: BoxFit.fitHeight),
-                ),
-                Padding(padding: const EdgeInsets.only(top:30, left: 10),
-                    child: IconButton (onPressed: () {Navigator.pop(context);}, icon: Icon(Icons.arrow_back, color: Colors.white), iconSize: 30)
-                ),
+                  child: Stack(alignment: Alignment.bottomCenter, children: <Widget>[
+
+                    widget.goods.imageList.isEmpty?
+                    Image.asset("assets/images/main_logo.jpg", width: 400, height: 400, fit: BoxFit.fitHeight,)
+                    : CarouselSlider.builder(
+                        options: CarouselOptions(
+                          height: 400,
+                          initialPage: 0,
+                          viewportFraction: 1,
+                          enlargeCenterPage: true,
+                          onPageChanged: (index, reason) => setState(() {
+                            activeIndex = index;
+                          }),
+                          ),
+                            itemCount: widget.goods.imageList?.length,
+                            itemBuilder: (context, index, realIndex) {
+                              final path = widget.goods.imageList?[index].path;
+                              return imageSlider(path, index);
+                            },
+                      ),
+
+
+                    widget.goods.imageList.isEmpty? const SizedBox(width:0, height: 0)
+                    : Positioned(
+                      bottom : 20,
+                      child: CarouselIndicator(
+                          animationDuration: 100,
+                          count: widget.goods.imageList?.length,
+                          index: activeIndex,
+                        ),
+                    )
               ],
             ),
+            ),
+              Positioned(
+                  left: 10, top : 10,
+                  child: IconButton (onPressed: () {Navigator.pop(context);}, icon: Icon(Icons.arrow_back, color: Colors.white54), iconSize: 30)
+              ),
+           ],
+        ),
             Row(
               children: [
                 Expanded(
@@ -163,4 +203,13 @@ class _SubHomePageState extends State<SubHomePage>{
         )
     );
   }
+
+  //이미지 넘기는 슬라이더
+  Widget imageSlider(path, index) => Container(
+    width: 400,
+    height: 400,
+    color: Colors.grey,
+    child: Image.file(File(path), fit: BoxFit.cover, width: 400, height: 400),
+  );
+
 }

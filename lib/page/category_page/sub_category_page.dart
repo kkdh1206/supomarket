@@ -1,88 +1,91 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:supo_market/page/sub_home_page.dart';
-import '../entity/goods_entity.dart';
 import 'package:intl/intl.dart';
+import 'package:supo_market/page/home_page/sub_home_page.dart';
+import '../../entity/goods_entity.dart';
 
-Color postechRed = const Color(0xffac145a);
+
+/////////일단 안쓰는 page - 혹시모르니까 보류//////////////////
+
+
 var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
-String searchName = "";
+Color postechRed = const Color(0xffac145a);
 
-class HomePage extends StatefulWidget {
+class SubCategoryPage extends StatefulWidget{
+
   final List<Goods>? list;
-  const HomePage({Key? key, required this.list}) : super(key: key);
+  final String category;
+  const SubCategoryPage({Key? key, required this.list, required this.category}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _SubCategoryPageState createState() => _SubCategoryPageState();
 }
 
-class _HomePageState extends State<HomePage>{
+class _SubCategoryPageState extends State<SubCategoryPage> {
 
   List<Goods>? list;
-  late Future<int> futurePrice;
+  late String category;
   int refreshNum = 0;
+  late String searchName;
 
   @override
   void initState() {
     super.initState();
     list = widget.list;
+    category = widget.category;
+    searchName = "";
     refreshNum = 0;
-    debugPrint("Home Initiate");
-  }
-
-  @override
-  Future<void> updateList() async {
-    futurePrice = (await list?[0].sellingPrice) as Future<int>;
-    debugPrint("Home Update");
+    debugPrint("Sub Category Initiate");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0.0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            const Icon(
-              Icons.search,
-              color: Colors.black12,
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Flexible(
-              child: TextField(
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 16,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8),
-                    ),
-                  ),
-                  hintText: '제목 및 카테고리 검색',
-                ),
-                onChanged: (text) {
-                  setState((){searchName = text;});
-                },
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              const Icon(
+                Icons.search,
+                color: Colors.black12,
               ),
-            ),
-          ],
+              const SizedBox(
+                width: 8,
+              ),
+              Flexible(
+                child: TextField(
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 16,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8),
+                      ),
+                    ),
+                    hintText: '제목 및 카테고리 검색',
+                  ),
+                  onChanged: (text) {
+                    setState((){searchName = text;});
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      body: Center(
-        //위로 드래그하면 새로고침 -> 업데이트 되는 위젯 (Refresh Indicator)
-        child: RefreshIndicator(
+        body: Center(
+          //위로 드래그하면 새로고침 -> 업데이트 되는 위젯 (Refresh Indicator)
+          child: RefreshIndicator(
             onRefresh: () async {
-               refreshNum += 1;
-               setState(() {});
-               },
-          child: ListView.builder(itemBuilder: (context, position) {
+              refreshNum += 1;
+              setState(() {});
+            },
+            child: ListView.builder(itemBuilder: (context, position) {
               //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
 
               list![position].uploadDate = formatDate(list![position].uploadDateForCompare??DateTime.now());
@@ -152,23 +155,23 @@ class _HomePageState extends State<HomePage>{
                           //isQucikSell이 true라면 표시
                           list![position].isQuickSell == true?
                           Positioned(
-                              right: 10,
-                              bottom : 10,
-                              child: Container(
-                                width: 60,
-                                height: 25,
-                                decoration: BoxDecoration(
-                                  color: postechRed,
-                                  borderRadius : const BorderRadius.all(Radius.circular(10.0)),
-                                ),
-                                child: const Align(
-                                  alignment: Alignment.center,
-                                  child: Text("급처분",
-                                    style: TextStyle(color: Colors.white, fontSize : 10, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-
+                            right: 10,
+                            bottom : 10,
+                            child: Container(
+                              width: 60,
+                              height: 25,
+                              decoration: BoxDecoration(
+                                color: postechRed,
+                                borderRadius : const BorderRadius.all(Radius.circular(10.0)),
                               ),
+                              child: const Align(
+                                alignment: Alignment.center,
+                                child: Text("급처분",
+                                  style: TextStyle(color: Colors.white, fontSize : 10, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+
+                            ),
                           ) : const SizedBox(width:0, height:0),
                         ],
                       ),
@@ -185,8 +188,8 @@ class _HomePageState extends State<HomePage>{
             },
               itemCount: list!.length, //아이템 개수만큼 스크롤 가능
             ),
-        ),
-      )
+          ),
+        )
     );
   }
 }
@@ -206,4 +209,6 @@ String formatDate(DateTime date) {
     return '${date.year}.${date.month}.${date.day}';
   }
 }
+
+
 
