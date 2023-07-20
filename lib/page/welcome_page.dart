@@ -1,12 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:supo_market/firebase_options.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
+import '../infra/my_info_data.dart';
 import 'control_page.dart';
-import 'log_in_page.dart';
+import 'log_in_page/log_in_page.dart';
 
-String userState = "login";
 Color postechRed = Color(0xffac145a);
 
-void main() {
+void main() async {
+
+  //firebase 사용을 위한 호출들
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -64,7 +73,9 @@ Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot) {
   if(snapshot.hasError) {
     return const Text("Error!!");
   } else if(snapshot.hasData) {
-    return userState == "logout"? const WelcomePage() : const ControlPage();
+    //data를 받아와서 login이 되어있는 것을 확인했으면 ControlPage로 이동
+    //logout되어있으면 WelcomePage로 이동해서 Login 페이지로 이동할 수 있게 함
+    return myUserInfo.isUserLogin == false? const WelcomePage() : const ControlPage();
   } else {
     return SplashScreen();
   }

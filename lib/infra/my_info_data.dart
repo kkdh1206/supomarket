@@ -14,9 +14,12 @@ var mySetting = Setting(
 );
 
 var myUserInfo = User(
+    id: "io0818",
+    password : "12345678",
     userName: "이지현",
-    userState: "login",
     imagePath: "assets/images/user.png",
     userSchoolNum: "20210207",
     userGoodsNum: 0,
+    isUserLogin: false,
+    isMaster: true,
 );

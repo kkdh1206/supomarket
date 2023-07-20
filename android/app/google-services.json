@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "120702951032",
+    "project_id": "supomarket-b55d0",
+    "storage_bucket": "supomarket-b55d0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120702951032:android:8a91d870058f347c37178d",
+        "android_client_info": {
+          "package_name": "com.example.supo_market"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120702951032-p5lkfjmgpc4651f66ck9ko3vu2fegmob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuPEZ8taaoVsDjD8k1Am5fFAGrJPOEkhc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120702951032-p5lkfjmgpc4651f66ck9ko3vu2fegmob.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "120702951032-d5m7kjpp6aet36vb3bdi9bhvsnkb60c2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wiwlee"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120702951032:android:d1897fb490f6886237178d",
+        "android_client_info": {
+          "package_name": "com.example.wiwlee"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120702951032-p5lkfjmgpc4651f66ck9ko3vu2fegmob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuPEZ8taaoVsDjD8k1Am5fFAGrJPOEkhc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120702951032-p5lkfjmgpc4651f66ck9ko3vu2fegmob.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "120702951032-d5m7kjpp6aet36vb3bdi9bhvsnkb60c2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wiwlee"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

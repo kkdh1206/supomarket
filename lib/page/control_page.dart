@@ -35,7 +35,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
     debugPrint("control_initiate");
 
     controller = TabController(length: 5, vsync: this);
-    otherUser =  User(userName: "정태형", userState: "login", imagePath: "assets/images/user.png", userSchoolNum: "20210000", userGoodsNum: 0);
+    otherUser =  User(userName: "정태형", isUserLogin: true, imagePath: "assets/images/user.png", userSchoolNum: "20210000", userGoodsNum: 0, id: '1234', password: '12345677', isMaster: false);
     goodsList.add(Goods(sellingTitle: "냉장고 싸게 팝니다", goodsType: "냉장고", goodsQuality: "상", sellerName: "정태형", imagePath_1: "assets/images/refri_sample.png", sellingPrice: 10000, uploadDate: "10일 전", uploadDateForCompare: DateTime(2023, 7, 8, 18, 20), sellerImage: "assets/images/seller_sample.png", isLiked : false, isQuickSell: false, sellerSchoolNum: "20220000", imageList: []));
     goodsList.add(Goods(sellingTitle: "컴퓨터구조 교재 가져가세요", goodsType: "책", goodsQuality: "하", sellerName: "김도형", imagePath_1: "assets/images/main_logo.jpg", sellingPrice: 20000, uploadDate : "방금 전", uploadDateForCompare: DateTime(2000, 12, 31), sellerImage : "assets/images/user.png", isLiked : true, goodsDetail: "한 번밖에 안썼어요", isQuickSell: true, sellerSchoolNum: "20211111", imageList : []));
     chatRoomList.add(ChatRoom(traderName: "채팅봇", traderImage: "assets/images/bot.png", goodsName: "", lastChattingDay: "방금 전", lastChattingSentence: "안녕하세요, 슈포마켓에 오신 것을 환영합니다.", sellingTitle: '환영합니다'));
@@ -91,7 +91,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       ),
       body: TabBarView(
         controller: controller,
-        children: <Widget>[HomePage(list: goodsList), CategoryPage(list: goodsList), ChattingPage(list: chatRoomList), FavoritePage(list: goodsList), MyPage(user: myUserInfo, list: goodsList)],
+        children: <Widget>[HomePage(list: goodsList), CategoryPage(list: goodsList), ChattingPage(list: chatRoomList), FavoritePage(list: goodsList), MyPage(list: goodsList)],
       ),
       bottomNavigationBar: TabBar(tabs: const <Tab>[
         Tab(icon: Icon(Icons.home_filled, color: Color(0xffac145a)), child : Text("홈")),

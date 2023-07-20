@@ -3,7 +3,6 @@ import 'package:supo_market/page/category_page/sub_category_page.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
 import '../../entity/goods_entity.dart';
 import '../chatting_page/chatting_page.dart';
-import '../log_in_page.dart';
 import '../my_page/my_page.dart';
 
 Color postechRed = Color(0xffac145a);
