@@ -2,8 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
+import 'package:supo_market/page/log_in_page/auth_email_page.dart';
+import 'package:supo_market/page/log_in_page/register_page.dart';
 
 import '../control_page.dart';
+import 'finding_password_page.dart';
 
 Color postechRed = Color(0xffac145a);
 
@@ -18,34 +21,12 @@ class LogInPage extends StatefulWidget {
 
 class _LogInPageState extends State<LogInPage> {
 
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   bool checkForArrive = false;
   bool isPressed = false;
 
-  //비밀번호 7자리 이상, 아이디는 이메일 폼
-  Future<void> createEmailAndPassword(String id, String password) async {
-    try {
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: id,
-        password: password,
-      );
-      if(credential.user != null){
-         allUserIDPWList.add(credential);
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
   Future<void> signInWithEmailAndPassword(String id, String password) async {
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final credential = await firebaseAuth.signInWithEmailAndPassword(
           email: id,
           password: password
       );
@@ -59,8 +40,10 @@ class _LogInPageState extends State<LogInPage> {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
+        _notUserPopUp();
         print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
+        _wrongPasswordPopUp();
         print('Wrong password provided for that user.');
       }
     }
@@ -133,12 +116,13 @@ class _LogInPageState extends State<LogInPage> {
                                 decoration: InputDecoration(
                                     fillColor: Colors.grey.shade100,
                                     filled: true,
-                                    hintText: "ID",
+                                    hintText: "이메일",
+                                    suffixText: "@postech.ac.kr",
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     )),
                                 onChanged: (text){
-                                  givenID = text;
+                                  givenID = "$text@postech.ac.kr";
                                 },
                               ),
                               const SizedBox(
@@ -151,7 +135,7 @@ class _LogInPageState extends State<LogInPage> {
                                 decoration: InputDecoration(
                                     fillColor: Colors.grey.shade100,
                                     filled: true,
-                                    hintText: "Password",
+                                    hintText: "비밀번호",
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     )),
@@ -167,12 +151,14 @@ class _LogInPageState extends State<LogInPage> {
                                 children: [
                                   TextButton(
                                     onPressed: () {
-                                      createEmailAndPassword(givenID, givenPassword);
-                                    },
+                                        openRegisterPage();
+                                      },
                                     child: const Text("회원가입 하러가기", style: TextStyle(color: Colors.white54, decoration: TextDecoration.underline)),
                                   ),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      openFindingPasswordPage();
+                                    },
                                     child: const Text("비밀번호 찾기", style: TextStyle(color: Colors.white54, decoration: TextDecoration.underline)),
                                   ),
                                 ],
@@ -194,6 +180,7 @@ class _LogInPageState extends State<LogInPage> {
                                     child: IconButton(
                                         color: Colors.white,
                                         onPressed: () async {
+
                                           //isPress가 활성화되어있을 때 circle progress bar가 돌아가도록 함
                                           setState(() {
                                             isPressed = true;
@@ -201,6 +188,7 @@ class _LogInPageState extends State<LogInPage> {
                                           //Sign In 이 올바르면 checkForArrive가 true, 이상한 정보라면 false가 된다.
                                           await signInWithEmailAndPassword(givenID, givenPassword);
                                           setState((){
+
                                             isPressed = false;
                                             if(checkForArrive == true){
                                               debugPrint("로그인 정보의 correct는 ${myUserInfo.isUserLogin.toString()}다");
@@ -208,9 +196,19 @@ class _LogInPageState extends State<LogInPage> {
                                               if(myUserInfo.isUserLogin!){
                                                 //myUserInfo에 불러온 정보 적어주기
                                                 getMyUserInfo(givenID, givenPassword);
-                                                //다 지우고 control page가 첫 스택
-                                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                                                    builder: (BuildContext context) => ControlPage()), (route) => false);
+
+                                                //인증 되어 있으면 control page가 첫 스택, 아니라면 auth_email page 띄우
+                                                debugPrint("현재 로그인된 유저 이메일은 ${firebaseAuth.currentUser?.email} 입니다");
+                                                debugPrint("현재 로그인된 유저 이메일 인증 여부는 ${firebaseAuth.currentUser?.emailVerified.toString()} 입니다");
+
+                                                if(firebaseAuth.currentUser?.emailVerified??false){
+                                                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                                                      builder: (BuildContext context) => ControlPage()), (route) => false);
+                                                }
+                                                else {
+                                                  Navigator.push(context, MaterialPageRoute(
+                                                      builder: (BuildContext context) => AuthEmailPage()));
+                                                }
                                               }
                                             }
                                           });
@@ -252,5 +250,61 @@ class _LogInPageState extends State<LogInPage> {
 
   }
 
+  Future openRegisterPage() {
+    return Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
+  }
 
+  Future openFindingPasswordPage() {
+    return Navigator.push(context, MaterialPageRoute(builder: (context) => FindingPasswordPage()));
+  }
+
+  void _wrongPasswordPopUp(){
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const SingleChildScrollView(child: Text("올바른 정보가 아닙니다")),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _notUserPopUp(){
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const SingleChildScrollView(child: Text("유저 정보가 없습니다")),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

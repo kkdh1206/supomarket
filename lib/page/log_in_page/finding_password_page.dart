@@ -1,4 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:supo_market/page/log_in_page/sub_finding_password_page.dart';
+
+import 'log_in_page.dart';
 
 Color postechRed = Color(0xffac145a);
 
@@ -12,15 +16,35 @@ class FindingPasswordPage extends StatefulWidget {
 }
 
 class _FindingPasswordPageState extends State<FindingPasswordPage> {
-  bool isChecked = false;
+
+  String email = "";
+  bool checkForArrive = false;
+
   TextEditingController id = TextEditingController();
-  TextEditingController password = TextEditingController();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
+    checkForArrive = false;
   }
 
+  @override
+  Future<void> resetPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      checkForArrive = true;
+      return;
+    } on FirebaseAuthException catch (e) {
+      _notFoundPopUp();
+      checkForArrive = false;
+      return;
+    } catch (e) {
+      _notFoundPopUp();
+      checkForArrive = false;
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +60,7 @@ class _FindingPasswordPageState extends State<FindingPasswordPage> {
             Container(
               padding: const EdgeInsets.only(left: 35, top: 130),
               child: const Text(
-                '슈포마켓', style: TextStyle(color: Colors.white, fontSize: 33),
+                '비밀번호 찾기', style: TextStyle(color: Colors.white, fontSize: 33),
               ),
             ),
             SingleChildScrollView(
@@ -56,51 +80,26 @@ class _FindingPasswordPageState extends State<FindingPasswordPage> {
                             decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
                                 filled: true,
-                                hintText: "ID",
+                                suffixText: "@postech.ac.kr",
+                                hintText: "포스텍 이메일",
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 )),
+                            onChanged: (text){
+                              setState(() {
+                                email = "$text@postech.ac.kr";
+                              });
+                            },
                           ),
                           const SizedBox(
                             height: 30,
-                          ),
-                          TextField(
-                            controller: password,
-                            style: const TextStyle(),
-                            obscureText: true, //패스워드 별표 처리
-                            decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                hintText: "Password",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TextButton(
-                                  onPressed: () {},
-                                  child: const Text("회원가입 하러가기", style: TextStyle(color: Colors.white54, decoration: TextDecoration.underline)),
-                              ),
-                              TextButton(
-                                onPressed: () {},
-                                child: const Text("비밀번호 찾기", style: TextStyle(color: Colors.white54, decoration: TextDecoration.underline)),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               const Text(
-                                'Sign in', style: TextStyle(
-                                    fontSize: 27, fontWeight: FontWeight.w700, color: Colors.black45),
+                                '인증번호 받기', style: TextStyle(
+                                  fontSize: 27, fontWeight: FontWeight.w700, color: Colors.black45),
                               ),
                               const SizedBox(width: 15),
                               CircleAvatar(
@@ -108,20 +107,20 @@ class _FindingPasswordPageState extends State<FindingPasswordPage> {
                                 backgroundColor: const Color(0xff4c505b),
                                 child: IconButton(
                                     color: Colors.white,
-                                    onPressed: () {
-                                      // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
-                                      //   return home();
-                                      // },),);
-                                      //login();
+                                    onPressed: () async {
+
+                                      await resetPassword(email);
+
+                                      if(checkForArrive){
+                                        Navigator.push(context, MaterialPageRoute(
+                                            builder: (BuildContext context) => SubFindingPasswordPage()));
+                                      }
                                     },
                                     icon: const Icon(
                                       Icons.arrow_forward,
                                     )),
                               )
                             ],
-                          ),
-                          const SizedBox(
-                            height: 40,
                           ),
                         ],
                       ),
@@ -130,9 +129,39 @@ class _FindingPasswordPageState extends State<FindingPasswordPage> {
                 ),
               ),
             ),
+            Positioned(
+                left: 10, top : 30,
+                child: IconButton (onPressed: () {Navigator.pop(context);}, icon: Icon(Icons.arrow_back, color: Colors.white54), iconSize: 30)
+            ),
           ],
         ),
       ),
     );
   }
+
+  void _notFoundPopUp(){
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const SingleChildScrollView(child: Text("등록되지 않은 계정입니다")),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }

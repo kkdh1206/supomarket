@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../entity/user_entity.dart';
 
-//List<User> allUserInfoList = List.empty();
+List<UserCredential> allUserIDPWList = List.empty(growable: true);
 
-List<UserCredential> allUserIDPWList = List.empty();
+final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+final firebaseStorage = FirebaseStorage.instance;
