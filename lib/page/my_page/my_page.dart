@@ -1,16 +1,25 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/infra/my_info_data.dart';
+import 'package:supo_market/page/my_page/sub_my_info_page_change_password_page.dart';
+import 'package:supo_market/page/my_page/sub_my_page_my_info_page.dart';
 import 'package:supo_market/page/my_page/sub_my_page_selling_page.dart';
 import 'package:supo_market/page/my_page/sub_my_page_settings_page.dart';
 import '../../entity/goods_entity.dart';
 import '../../entity/user_entity.dart';
+import '../../infra/users_info_data.dart';
 import '../welcome_page.dart';
 import 'master_page.dart';
 
 class MyPage extends StatefulWidget{
   final List<Goods> list;
-  const MyPage({Key? key, required this.list}) : super(key:key);
+  final Future<Database> db;
+  const MyPage({Key? key, required this.list, required this.db}) : super(key:key);
 
   @override
   State<StatefulWidget> createState() {
@@ -34,6 +43,34 @@ class _MyPageState extends State<MyPage>{
     super.dispose();
   }
 
+  void _storeImage() async{
+    final picker = ImagePicker();
+    var _pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    pickedImageFunction(_pickedImage);
+  }
+
+  Future<void> pickedImageFunction(var image) async {
+    final ref = FirebaseStorage.instance.ref().child("users").child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
+    if(image != null){
+      await ref.putFile(File(image.path));
+      debugPrint("이미지 저장소에 저장");
+      getProfileImage();
+    }
+  }
+
+  Future<void> getProfileImage() async{
+    final ref = FirebaseStorage.instance.ref().child('users').child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
+    if(ref!= null) {
+      String _url = await ref.getDownloadURL();
+      debugPrint("이미지 네트워크 url은 $_url 입니다");
+      setState(() {
+        myUserInfo.imagePath = _url;
+      });
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,10 +80,16 @@ class _MyPageState extends State<MyPage>{
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Padding(padding: const EdgeInsets.only(left:20, top:30),
-                child : Image.asset(myUserInfo!.imagePath!, width: 80, height: 80, fit: BoxFit.contain),
+              Padding(padding: const EdgeInsets.only(left:10, top:30),
+                child : Container(
+                  height: 120, width: 120,
+                  child: IconButton(
+                    onPressed: () { _storeImage(); },
+                      icon: ClipOval(child: Image.network(myUserInfo!.imagePath!, fit: BoxFit.cover, width: 120, height: 120,)),
+                  ),
+                ),
               ),
-              Padding(padding: const EdgeInsets.only(top:30, left:20),
+              Padding(padding: const EdgeInsets.only(top:30, left:10),
                 child: Row(
                   children: [
                     Text(myUserInfo!.userSchoolNum??"", textScaleFactor: 1.2, style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -84,7 +127,10 @@ class _MyPageState extends State<MyPage>{
               SizedBox(
                   height: 50,
                   child: MaterialButton(
-                    onPressed: () {  },
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => SubMyPageMyInfoPage(db: widget.db)));
+                    },
                     child: const Align(
                       alignment: Alignment.centerLeft,
                       child: Row(
@@ -180,6 +226,7 @@ class _MyPageState extends State<MyPage>{
         ],
       ),
     );
+
   }
 
 //로그아웃 팝업
@@ -203,7 +250,7 @@ class _MyPageState extends State<MyPage>{
                     Navigator.pop(context);
                     myUserInfo.isUserLogin = false;
                     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                    builder: (BuildContext context) => WelcomePage()), (route) => false);
+                    builder: (BuildContext context) => WelcomePage(db: widget.db)), (route) => false);
                   },
                 ),
                 TextButton(
@@ -220,7 +267,5 @@ class _MyPageState extends State<MyPage>{
     );
   }
 }
-
-
 
 

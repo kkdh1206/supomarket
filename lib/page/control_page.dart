@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite_common/sqlite_api.dart';
 import 'package:supo_market/page/category_page/category_page.dart';
 import 'package:supo_market/page/sub_add_goods_page.dart';
 import '../entity/chat_room_entity.dart';
@@ -15,7 +16,8 @@ Goods emptyGoods = Goods(sellingTitle: "", goodsType: "", goodsQuality: "", sell
 
 class ControlPage extends StatefulWidget{
 
-  const ControlPage({super.key});
+  final Future<Database> db;
+  const ControlPage({super.key, required this.db});
 
   @override
   _ControlPageState createState() => _ControlPageState();
@@ -91,7 +93,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       ),
       body: TabBarView(
         controller: controller,
-        children: <Widget>[HomePage(list: goodsList), CategoryPage(list: goodsList), ChattingPage(list: chatRoomList), FavoritePage(list: goodsList), MyPage(list: goodsList)],
+        children: <Widget>[HomePage(list: goodsList, db: widget.db), CategoryPage(list: goodsList), ChattingPage(list: chatRoomList), FavoritePage(list: goodsList), MyPage(list: goodsList, db: widget.db)],
       ),
       bottomNavigationBar: TabBar(tabs: const <Tab>[
         Tab(icon: Icon(Icons.home_filled, color: Color(0xffac145a)), child : Text("홈")),

@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/log_in_page/auth_email_page.dart';
@@ -11,7 +17,8 @@ import 'finding_password_page.dart';
 Color postechRed = Color(0xffac145a);
 
 class LogInPage extends StatefulWidget {
-  const LogInPage({super.key});
+  final Future<Database> db;
+  const LogInPage({super.key, required this.db});
 
   @override
   State<StatefulWidget> createState() {
@@ -23,6 +30,26 @@ class _LogInPageState extends State<LogInPage> {
 
   bool checkForArrive = false;
   bool isPressed = false;
+
+  //시험----------------------------------
+  //
+  // void test(){
+  //   var jsonString =
+  //   '''[
+  //     {"score" : 40},
+  //     {"score" : 90}
+  //    ]
+  // ''';
+  //
+  //   var scores = jsonDecode(jsonString);
+  //   print(scores[0]);
+  //   print(scores[1]);
+  //   print(scores);
+  // }
+
+
+  //시험----------------------------------
+
 
   Future<void> signInWithEmailAndPassword(String id, String password) async {
     try {
@@ -63,6 +90,8 @@ class _LogInPageState extends State<LogInPage> {
     checkForArrive = false;
     myUserInfo.isUserLogin = false;
     isPressed = false;
+    //test();
+    //_pickImage();
     // myUserInfo.userGoodsNum = 0;
     // myUserInfo.userName = "";
     // myUserInfo.imagePath = "";
@@ -74,6 +103,36 @@ class _LogInPageState extends State<LogInPage> {
   void dispose(){
     super.dispose();
   }
+
+  Future<void> getUserInfo() async{
+    setState(() {
+      myUserInfo.id = firebaseAuth.currentUser?.email;
+      myUserInfo.userName = firebaseAuth.currentUser?.displayName;
+    });
+
+    Reference ref = FirebaseStorage.instance.ref().child('users').child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
+    if(ref!=null) {
+      try{
+        String url = await ref.getDownloadURL();
+        setState(() {
+          myUserInfo.imagePath = url;
+          debugPrint("프로필 사진 가져오기");
+        });
+      } catch (e, stack) {
+        myUserInfo.imagePath = "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
+        debugPrint("업로드된 이미지가 아직 없습니다");
+      }
+    }
+
+    ref = FirebaseStorage.instance.ref().child("users").child(firebaseAuth.currentUser!.uid).child("userSchoolNum"+".txt");
+    if(ref!= null) {
+      debugPrint("학번 가져오기");
+      setState(() {
+        myUserInfo.userSchoolNum= ref.name;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -188,30 +247,28 @@ class _LogInPageState extends State<LogInPage> {
                                           //Sign In 이 올바르면 checkForArrive가 true, 이상한 정보라면 false가 된다.
                                           await signInWithEmailAndPassword(givenID, givenPassword);
                                           setState((){
+                                              isPressed = false;
+                                              });
 
-                                            isPressed = false;
                                             if(checkForArrive == true){
                                               debugPrint("로그인 정보의 correct는 ${myUserInfo.isUserLogin.toString()}다");
                                               //로그인 되어있으면 넘어가기
                                               if(myUserInfo.isUserLogin!){
-                                                //myUserInfo에 불러온 정보 적어주기
-                                                getMyUserInfo(givenID, givenPassword);
-
                                                 //인증 되어 있으면 control page가 첫 스택, 아니라면 auth_email page 띄우
                                                 debugPrint("현재 로그인된 유저 이메일은 ${firebaseAuth.currentUser?.email} 입니다");
                                                 debugPrint("현재 로그인된 유저 이메일 인증 여부는 ${firebaseAuth.currentUser?.emailVerified.toString()} 입니다");
 
                                                 if(firebaseAuth.currentUser?.emailVerified??false){
+                                                  await getUserInfo();
                                                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                                                      builder: (BuildContext context) => ControlPage()), (route) => false);
+                                                      builder: (BuildContext context) => ControlPage(db : widget.db)), (route) => false);
                                                 }
                                                 else {
                                                   Navigator.push(context, MaterialPageRoute(
-                                                      builder: (BuildContext context) => AuthEmailPage()));
+                                                      builder: (BuildContext context) => AuthEmailPage(db : widget.db)));
                                                 }
                                               }
                                             }
-                                          });
                                         },
                                         icon: const Icon(
                                           Icons.arrow_forward,
@@ -237,25 +294,13 @@ class _LogInPageState extends State<LogInPage> {
     );
   }
 
-  bool checkLogin(String id, String password){
-
-    //체크 방법
-
-    return true;
-  }
-
-  void getMyUserInfo(String id, String password){
-
-    //myUserInfo.info = allUserInfoList에서 가져와 대입
-
-  }
 
   Future openRegisterPage() {
-    return Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
+    return Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(db: widget.db)));
   }
 
   Future openFindingPasswordPage() {
-    return Navigator.push(context, MaterialPageRoute(builder: (context) => FindingPasswordPage()));
+    return Navigator.push(context, MaterialPageRoute(builder: (context) => FindingPasswordPage(db : widget.db)));
   }
 
   void _wrongPasswordPopUp(){

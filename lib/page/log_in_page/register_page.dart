@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import '../../infra/users_info_data.dart';
 import 'auth_email_page.dart';
 import 'log_in_page.dart';
@@ -9,12 +10,12 @@ import 'package:path/path.dart' as path;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:html';
 
 Color postechRed = Color(0xffac145a);
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  final Future<Database> db;
+  const RegisterPage({super.key, required this.db});
 
   @override
   State<StatefulWidget> createState() {
@@ -39,6 +40,35 @@ class _RegisterPageState extends State<RegisterPage> {
   bool checkForArrive = false;
   bool isPressed = false;
 
+  Future<void> setUserInfo(UserCredential credential) async {
+    Reference ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("email"+".txt");
+    if(firebaseAuth.currentUser != null) {
+      await ref.putString(credential.user!.email.toString());
+    }
+
+    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("emailVerified"+".txt");
+    if(firebaseAuth.currentUser != null) {
+      await ref.putString(credential.user!.emailVerified.toString()??"");
+    }
+
+    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("userSchoolNum"+".txt");
+    if(firebaseAuth.currentUser != null) {
+      await ref.putString(newUserSchoolNum);
+    }
+
+    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("password"+".txt");
+    if(firebaseAuth.currentUser != null) {
+      await ref.putString(newPassword);
+    }
+
+    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("userName"+".txt");
+    if(firebaseAuth.currentUser != null) {
+      await ref.putString(credential.user!.displayName.toString());
+    }
+
+    debugPrint("유저 정보 저장하기");
+  }
+
   @override
   void initState() {
     super.initState();
@@ -60,7 +90,8 @@ class _RegisterPageState extends State<RegisterPage> {
       if(credential.user != null){
         allUserIDPWList.add(credential);
         credential.user?.updateDisplayName(newUserName);
-        //학번
+        //학번 저장
+        setUserInfo(credential);
         checkForArrive = true;
         return;
       }
@@ -79,29 +110,6 @@ class _RegisterPageState extends State<RegisterPage> {
     checkForArrive = false;
     return;
   }
-
-  // Future _uploadImage() async {
-  //
-  //   Reference _ref = http.get(Uri.parse("https://picsum.photos/seed/picsum/200/300");
-  //
-  //   if(_ref != null) {
-  //     // 업로드 완료되면 데이터의 주소를 얻을수 있음, future object
-  //     var downloadUrl = await _ref.getDownloadURL();
-  //
-  //     // post collection 만들고, 하위에 문서를 만든다
-  //     var doc = FirebaseFirestore.instance.collection('images').doc();
-  //     doc.set({
-  //       'id': doc.id,
-  //       'datetime' : DateTime.now().toString(),
-  //       'displayName': firebaseAuth.currentUser?.displayName,
-  //       'userPhotoUrl': "https://images.chosun.com/resizer/dP9UUdi85WMXOMeeedo_N8SjGsQ=/574x749/smart/cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/PBP3VTZFSA3FLQAEYKMXPD7LQE.jpg",
-  //     }).then((onValue) {
-  //       //정보 인서트후, 상위페이지로 이동
-  //       Navigator.pop(context);
-  //     });
-  //   }
-  // }
-
 
   @override
   Widget build(BuildContext context) {
@@ -257,15 +265,14 @@ class _RegisterPageState extends State<RegisterPage> {
 
                                         await createEmailAndPassword(newID, newPassword, newUserName, newUserSchoolNum);
 
-                                        setState(() {
-                                          isPressed = false;
+                                      setState(() {
+                                        isPressed = false;
 
-                                          if (checkForArrive) {
-                                            //로그인 되어있으면 넘어가기
-                                            //_uploadImage();
-                                            Navigator.pushAndRemoveUntil(
-                                                context, MaterialPageRoute(
-                                                builder: (BuildContext context) => AuthEmailPage()), (route) => false);
+                                        if (checkForArrive) {
+                                          //로그인 되어있으면 넘어가기
+                                          //uploadInfo();
+                                          Navigator.pushAndRemoveUntil(
+                                              context, MaterialPageRoute(builder: (BuildContext context) => AuthEmailPage(db: widget.db)), (route) => false);
                                           }
                                         });
                                       } else{

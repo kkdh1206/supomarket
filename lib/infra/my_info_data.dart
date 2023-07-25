@@ -14,12 +14,12 @@ var mySetting = Setting(
 );
 
 var myUserInfo = User(
-    id: "io0818",
-    password : "12345678",
-    userName: "이지현",
+    id: "",
+    password : "",
+    userName: "",
     imagePath: "assets/images/user.png",
-    userSchoolNum: "20210207",
+    userSchoolNum: "",
     userGoodsNum: 0,
-    isUserLogin: false,
+    isUserLogin: false, //이걸로 초기 페이지 조절 가능
     isMaster: true,
 );

@@ -221,19 +221,6 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                       itemCount: list!.length, //아이템 개수만큼 스크롤 가능
                     ),
                   );
-                  // ...List.generate(10,
-                  //       (index) => Container(
-                  //     height: 100,
-                  //     width: double.infinity,
-                  //     margin: const EdgeInsets.all(20),
-                  //     color: Colors.white,
-                  //     alignment: Alignment.center,
-                  //     child: Text(
-                  //       "index : $index",
-                  //       style: const TextStyle(fontSize: 20),
-                  //     ),
-                  //   ),
-                  // )
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),

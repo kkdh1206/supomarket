@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
 import '../../entity/goods_entity.dart';
 import 'package:intl/intl.dart';
+
+import '../../entity/user_entity.dart';
 
 
 Color postechRed = const Color(0xffac145a);
@@ -12,8 +15,9 @@ var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
 String searchName = "";
 
 class HomePage extends StatefulWidget {
+  final Future<Database> db;
   final List<Goods>? list;
-  const HomePage({Key? key, required this.list}) : super(key: key);
+  const HomePage({Key? key, required this.list, required this.db}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -35,6 +39,10 @@ class _HomePageState extends State<HomePage>{
       selectedOption = options[0];
     });
     debugPrint("Home Initiate");
+
+    //DB 기능... 못하겠따
+    //_insertUser();
+    //getUser();
   }
 
   @override
@@ -215,6 +223,20 @@ class _HomePageState extends State<HomePage>{
         ),
       )
     );
+  }
+
+  void _insertUser() async {
+    AUser user = AUser(email : "1", password: "2", userSchoolNum: "4", userName: "3");
+    final Database database = await widget.db;
+    await database.insert("user", user.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> getUser() async {
+    final Database database = await widget.db;
+    final List<Map<String, dynamic>> maps = await database.query('user');
+    
+    print(maps);
+
   }
 }
 
