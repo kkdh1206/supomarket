@@ -14,7 +14,7 @@ import '../../entity/goods_entity.dart';
 import '../../entity/user_entity.dart';
 import '../../infra/users_info_data.dart';
 import '../welcome_page.dart';
-import 'master_page.dart';
+import '../master_page/master_page.dart';
 
 class MyPage extends StatefulWidget{
   final List<Goods> list;
@@ -205,7 +205,7 @@ class _MyPageState extends State<MyPage>{
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => MasterPage(list : list)));
+                      builder: (context) => MasterPage(list : list!, db: widget.db,)));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,

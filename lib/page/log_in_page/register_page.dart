@@ -88,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
         password: password,
       );
       if(credential.user != null){
-        allUserIDPWList.add(credential);
+        allUserList.add(credential);
         credential.user?.updateDisplayName(newUserName);
         //학번 저장
         setUserInfo(credential);

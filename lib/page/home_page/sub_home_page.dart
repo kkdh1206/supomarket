@@ -160,7 +160,7 @@ class _SubHomePageState extends State<SubHomePage>{
                   Padding(padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 15),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100.0),
-                      child: Image.asset(widget.goods.sellerImage??"assets/images/user.png", width:100, height: 100, fit: BoxFit.fitHeight),),
+                      child: Image.network(widget.goods.sellerImage!, width:100, height: 100, fit: BoxFit.cover),),
                   ),
                   Text("판매자 : ${widget.goods.sellerName??"미상"}", textScaleFactor: 1.2),
                   const Expanded(child: SizedBox(width:1)),

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:supo_market/infra/my_info_data.dart';
+import 'package:supo_market/infra/users_info_data.dart';
 import '../entity/goods_entity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -40,7 +41,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
       imagePath_1: "",
       sellingPrice: 0,
       uploadDate: "",
-      sellerImage: "",
+      sellerImage: myUserInfo.imagePath,
       isLiked: false,
       isQuickSell: false,
       uploadDateForCompare: DateTime.now(),
@@ -95,7 +96,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
       debugPrint(
           "addGoodsPage initiate, 현재 list 3번은 ${list?[2].goodsQuality} 퀄리티이다.");
       newGoods.imagePath_1 = "assets/images/main_logo.jpg";
-      newGoods.sellerImage = "assets/images/user.png";
+      newGoods.sellerImage = myUserInfo!.imagePath!;
       firstController = FixedExtentScrollController(initialItem: 0);
       secondController = FixedExtentScrollController(initialItem: 0);
       list = widget.list;
@@ -129,6 +130,9 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                 //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
                 newGoods.uploadDate = "방금 전";
                 newGoods.uploadDateForCompare = DateTime.now();
+                if(newGoods.isQuickSell){
+                  allQuicksellNum = allQuicksellNum + 1;
+                }
               });
               Navigator.pop(
                   context, ReturnData(goods: newGoods, returnType: "add"));

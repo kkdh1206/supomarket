@@ -59,6 +59,7 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
 
+
   @override
   void initState() {
     //값 받아오기 전 초기값
@@ -72,6 +73,15 @@ class MyAppState extends State<MyApp> {
     //firebase 유저 정보 불러오기
     getUserInfo();
     super.initState();
+
+    //로그인 여부 판단
+    if(firebaseAuth.currentUser != null){
+      myUserInfo.isUserLogin = true;
+      debugPrint("로그인 상태입니다");
+    }
+    else{
+      debugPrint("로그아웃 상태입니다");
+    }
   }
 
   @override
@@ -152,8 +162,6 @@ Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot, Future<Database> d
   if(snapshot.hasError) {
     return const Text("Error!!");
   } else if(snapshot.hasData) {
-    //data를 받아와서 login이 되어있는 것을 확인했으면 ControlPage로 이동
-    //logout되어있으면 WelcomePage로 이동해서 Login 페이지로 이동할 수 있게 함
     return myUserInfo.isUserLogin == false? WelcomePage(db : database) : ControlPage(db: database);
   } else {
     return SplashScreen();
