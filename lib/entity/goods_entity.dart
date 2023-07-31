@@ -9,15 +9,14 @@ class Goods{
   String? sellerSchoolNum;
   int sellingPrice;
   String? goodsDetail;
-  String? imagePath_1;
-  String? imagePath_2;
-  String? imagePath_3;
   String? goodsNum;
   String? uploadDate;
   DateTime? uploadDateForCompare;
   bool? isLiked;
   bool isQuickSell;
-  List<XFile> imageList;
+  List<XFile> imageListA;
+  List<String> imageListB;
+  int sellingState;
 
   Goods( //생성자
       { required this.sellingTitle,
@@ -25,18 +24,17 @@ class Goods{
         required this.goodsQuality,
         required this.sellerName,
         required this.sellerImage,
-        required this.imagePath_1,
         required this.sellingPrice,
         required this.isLiked,
         required this.isQuickSell,
         required this.sellerSchoolNum,
         this.goodsDetail,
-        this.imagePath_2,
-        this.imagePath_3,
         this.goodsNum,
         required this.uploadDate,
         required this.uploadDateForCompare,
-        required this.imageList,}
+        required this.imageListA,
+        required this.imageListB,
+        required this.sellingState}
       );
 
 }

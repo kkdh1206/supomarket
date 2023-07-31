@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import '../../entity/goods_entity.dart';
@@ -23,7 +26,7 @@ class SubSellingPageModifyPage extends StatefulWidget {
 class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
 
   late Goods originalGoods;
-  Goods modifiedGoods = Goods(sellingTitle: "", goodsType: "", goodsQuality: "", sellerName: "", imagePath_1: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false,isQuickSell: false,  uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageList : []);
+  Goods modifiedGoods = Goods(sellingTitle: "", goodsType: "", goodsQuality: "", sellerName: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false,isQuickSell: false,  uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [], sellingState: 0);
   FixedExtentScrollController? firstController;
   FixedExtentScrollController? secondController;
 
@@ -41,7 +44,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
     modifiedGoods.goodsType = originalGoods.goodsType;
     modifiedGoods.goodsQuality = originalGoods.goodsQuality;
     modifiedGoods.sellingPrice = originalGoods.sellingPrice;
-    modifiedGoods.imagePath_1 = originalGoods.imagePath_1;
+    modifiedGoods.imageListB = originalGoods.imageListB;
     modifiedGoods.goodsDetail = originalGoods.goodsDetail;
     modifiedGoods.isQuickSell = originalGoods.isQuickSell;
   }
@@ -66,7 +69,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
               Navigator.pop(context,
                 ReturnData(returnType: 'exit',
                     sellingTitle: modifiedGoods.sellingTitle??"",
-                    imagePath1: modifiedGoods.imagePath_1??"",
+                    imagePath: modifiedGoods.imageListB.isEmpty?[]:modifiedGoods.imageListB,
                     goodsType: modifiedGoods.goodsType??"",
                     goodsQuality: modifiedGoods.goodsQuality??"",
                     sellingPrice: modifiedGoods.sellingPrice??0,
@@ -84,12 +87,12 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
             });
             Navigator.pop(context, ReturnData(returnType: 'modified',
                 sellingTitle: modifiedGoods.sellingTitle??"",
-                imagePath1: modifiedGoods.imagePath_1??"",
                 goodsType: modifiedGoods.goodsType??"",
                 goodsQuality: modifiedGoods.goodsQuality??"",
                 sellingPrice: modifiedGoods.sellingPrice??0,
                 isQuickSell : modifiedGoods.isQuickSell??false,
-                goodsDetail: modifiedGoods.goodsDetail??""
+                goodsDetail: modifiedGoods.goodsDetail??"",
+                imagePath: modifiedGoods.imageListB??[],
             )
             );
           },
@@ -128,21 +131,8 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const SizedBox(width:10),
-              RawMaterialButton(
-                  onPressed: (){
-                    //사진 추가
-                  },
-                  child: Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.grey[200],
-                    ),
-                    child: const Icon(Icons.add, color: Colors.grey),
-                  )
-              ),
+              const SizedBox(width: 10),
+              LoadImageButton(),
             ],
           ),
           const SizedBox(height: 10),
@@ -312,11 +302,209 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
       ),
     );
   }
+
+  Widget LoadImageButton() {
+    debugPrint(modifiedGoods.imageListB.length.toString());
+    return modifiedGoods.imageListB.isEmpty ?
+    PlusMaterialButton()
+        : Flexible(
+         child: SizedBox(
+          height: 100,
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            children: [
+              PlusMaterialButton(),
+              const SizedBox(width: 10),
+              Expanded(child:
+              ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: modifiedGoods.imageListB?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Row(
+                    children: [
+                      Stack(
+                        children: [
+                          RawMaterialButton(onPressed: () {
+                            setState(() {
+                              //편집 기능
+                            });
+                          },
+                              child: Image.network(
+                                  modifiedGoods.imageListB![index], width: 100, height: 100, fit: BoxFit.fitHeight)),
+                          Positioned(
+                            right: -20,
+                            child: RawMaterialButton(
+                              onPressed: () {
+                                setState(() {
+                                  modifiedGoods.imageListB!.removeAt(index);
+                                });
+                              },
+                              shape: const CircleBorder(),
+                              fillColor: Colors.white,
+                              child: const Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.close,
+                                  size: 25,
+                                  color: Colors.black45,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
+              ),
+            ],
+          )
+      ),
+    );
+  }
+
+  Widget CameraGalleryButton(String text, Icon icon) {
+    return Column(
+      children: [
+        Container(
+          width: 60, height: 60,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            color: Colors.grey[200],
+            icon: icon,
+            onPressed: (){
+              if(modifiedGoods.imageListB.length == 5){
+                _showDialog();
+              }
+              else{
+                text == "카메라 열기" ? getImageFromCamera() : getImage();
+              }
+            },
+          ),
+        ),
+        Text(text),
+      ],
+    );
+  }
+
+
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.pickMultiImage(
+        imageQuality: 100,
+        maxHeight: 1000,
+        maxWidth: 1000
+    );
+
+    if(pickedFile.length + modifiedGoods.imageListB.length> 5){
+      _showDialog();
+    }
+    else if(pickedFile != null) {
+      setState(() {
+        modifiedGoods.imageListA.addAll(pickedFile);
+        //B로 변환
+        for(int i = 0; i<pickedFile.length; i++){
+          modifiedGoods.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
+        }
+      });
+    }
+  }
+
+  Future getImageFromCamera() async{
+    final pickedFile = await picker.pickImage(
+      imageQuality: 100,
+      maxHeight: 1000,
+      maxWidth: 1000,
+      source: ImageSource.camera,
+    );
+
+    if(pickedFile != null){
+      setState(() {
+        modifiedGoods.imageListA.add(pickedFile);
+        //A를 B로 변환
+        modifiedGoods.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
+
+      });
+    }
+  }
+
+  //5장을 넘길 때 팝업 경고창
+  void _showDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          //화면 잘리는 것 방지
+          content: const SingleChildScrollView(child:Text("업로드 가능한 이미지 수는 5장 입니다")),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("확인"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget PlusMaterialButton () {
+    return RawMaterialButton(
+      onPressed: () async {
+        showModalBottomSheet(context: context,
+          enableDrag: true,
+          isDismissible: true,
+          barrierColor: Colors.black.withOpacity(0.1),
+          constraints: const BoxConstraints( //크기 설정
+            minWidth: 500,
+            maxWidth: 500,
+            minHeight: 100,
+            maxHeight: 150,
+          ),
+          isScrollControlled: true,
+          builder: (BuildContext context) {
+            return ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CameraGalleryButton("카메라 열기", const Icon(Icons.camera, color: Colors.black45,)),
+                        const SizedBox(width: 30),
+                        CameraGalleryButton("갤러리 열기", const Icon(Icons.image, color : Colors.black45)),
+                      ],
+                    ),
+                  ],
+                )
+            );
+          },
+        );
+      },
+      child: Container(
+        height: 100,
+        width: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.grey[200],
+        ),
+        child: const Icon(Icons.add, color: Colors.grey),
+      ),
+    );
+  }
 }
 
 class ReturnData {
   String sellingTitle;
-  String imagePath1;
+  List<String> imagePath;
   String goodsType;
   String goodsQuality;
   int sellingPrice;
@@ -326,7 +514,7 @@ class ReturnData {
 
   ReturnData(
       {required this.sellingTitle,
-        required this.imagePath1,
+        required this.imagePath,
         required this.goodsType,
         required this.goodsQuality,
         required this.sellingPrice,

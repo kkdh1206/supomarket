@@ -47,7 +47,7 @@ class _SubHomePageState extends State<SubHomePage>{
                 Padding(padding: const EdgeInsets.only(top:0),
                   child: Stack(alignment: Alignment.bottomCenter, children: <Widget>[
 
-                    widget.goods.imageList.isEmpty?
+                    widget.goods.imageListB.isEmpty?
                     Image.asset("assets/images/main_logo.jpg", width: 400, height: 400, fit: BoxFit.fitHeight,)
                     : CarouselSlider.builder(
                         options: CarouselOptions(
@@ -59,20 +59,20 @@ class _SubHomePageState extends State<SubHomePage>{
                             activeIndex = index;
                           }),
                           ),
-                            itemCount: widget.goods.imageList?.length,
+                            itemCount: widget.goods.imageListB?.length,
                             itemBuilder: (context, index, realIndex) {
-                              final path = widget.goods.imageList?[index].path;
-                              return imageSlider(path, index);
+                              final url = widget.goods.imageListB?[index];
+                              return imageSlider(url, index);
                             },
                       ),
 
 
-                    widget.goods.imageList.isEmpty? const SizedBox(width:0, height: 0)
+                    widget.goods.imageListB.isEmpty? const SizedBox(width:0, height: 0)
                     : Positioned(
                       bottom : 20,
                       child: CarouselIndicator(
                           animationDuration: 100,
-                          count: widget.goods.imageList?.length,
+                          count: widget.goods.imageListB?.length,
                           index: activeIndex,
                         ),
                     )
@@ -160,7 +160,8 @@ class _SubHomePageState extends State<SubHomePage>{
                   Padding(padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 15),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100.0),
-                      child: Image.network(widget.goods.sellerImage!, width:100, height: 100, fit: BoxFit.cover),),
+                      child: widget.goods.sellerImage==null? Image.asset("assets/images/user.png",  width:100, height: 100, fit: BoxFit.cover)
+                      : Image.network(widget.goods.sellerImage??"", width:100, height: 100, fit: BoxFit.cover),),
                   ),
                   Text("판매자 : ${widget.goods.sellerName??"미상"}", textScaleFactor: 1.2),
                   const Expanded(child: SizedBox(width:1)),
@@ -205,11 +206,11 @@ class _SubHomePageState extends State<SubHomePage>{
   }
 
   //이미지 넘기는 슬라이더
-  Widget imageSlider(path, index) => Container(
+  Widget imageSlider(url, index) => Container(
     width: 400,
     height: 400,
     color: Colors.grey,
-    child: Image.file(File(path), fit: BoxFit.cover, width: 400, height: 400),
+    child: Image.network(url, fit: BoxFit.cover, width: 400, height: 400),
   );
 
 }

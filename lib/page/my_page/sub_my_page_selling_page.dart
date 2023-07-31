@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
@@ -79,11 +81,9 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                       top: 10, bottom: 10, left: 10, right: 15),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.asset(
-                                          list![position].imagePath_1 ??
-                                              "assets/images/main_logo.png",
-                                          width: 100,
-                                          height: 100, fit: BoxFit.fitHeight),
+                                      child: list![position].imageListB.isEmpty?
+                                      Image.asset( "assets/images/main_logo.jpg",width: 100, height: 100, fit: BoxFit.cover) :
+                                      Image.network(list![position].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
                                     ),
                                   ),
                                   Expanded(
@@ -183,20 +183,13 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                     setState(() {
                                       if (newData.returnType == "modified") {
                                         //userName 여기서 등록
-                                        list?[position].goodsDetail =
-                                        newData.goodsDetail!;
-                                        list?[position].sellingTitle =
-                                        newData.sellingTitle!;
-                                        list?[position].goodsQuality =
-                                        newData.goodsQuality!;
-                                        list?[position].isQuickSell =
-                                        newData.isQuickSell!;
-                                        list?[position].imagePath_1 =
-                                            newData.imagePath1;
-                                        list?[position].sellingPrice =
-                                            newData.sellingPrice;
-                                        list?[position].goodsType =
-                                            newData.goodsType;
+                                        list?[position].goodsDetail = newData.goodsDetail!;
+                                        list?[position].sellingTitle = newData.sellingTitle!;
+                                        list?[position].goodsQuality = newData.goodsQuality!;
+                                        list?[position].isQuickSell = newData.isQuickSell!;
+                                        list?[position].imageListB = newData.imagePath!;
+                                        list?[position].sellingPrice = newData.sellingPrice;
+                                        list?[position].goodsType = newData.goodsType;
                                         //수정하면 시간도 방금전 업데이트
                                         list?[position].uploadDate = "방금 전";
                                         list?[position].uploadDateForCompare =
@@ -232,6 +225,27 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                     style: TextStyle(color: Colors.white,
                                         fontSize: 10,
                                         fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width : 10),
+                              Container(
+                                width: 100,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                  color: postechRed,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10.0)),
+                                ),
+                                child: MaterialButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      list?.removeAt(position);
+                                      myUserInfo.userGoodsNum = (myUserInfo.userGoodsNum! - 1)!;
+                                      //instance delete는 나중에 생각해보자
+                                    });
+                                  },
+                                  child: const Text("판매완료", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ),

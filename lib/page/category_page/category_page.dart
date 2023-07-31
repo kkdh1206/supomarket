@@ -1,11 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:supo_market/page/category_page/sub_category_page.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
 import '../../entity/goods_entity.dart';
 import '../chatting_page/chatting_page.dart';
 import '../my_page/my_page.dart';
-
-Color postechRed = Color(0xffac145a);
+import 'package:supo_market/constants.dart';
+import 'package:provider/provider.dart';
 
 class CategoryPage extends StatefulWidget{
 
@@ -33,7 +35,7 @@ class _CategoryPageState extends State<CategoryPage>{
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Row(
+         Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CategoryButton(list!, context, Colors.greenAccent, "냉장고", const Icon(Icons.kitchen_outlined, size: 40)),
@@ -97,6 +99,7 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
 
   Color temp = color;
   String categoryName = text;
+  Color postechRed = Color(0xffac145a);
 
   return Column(
     children: [
@@ -120,10 +123,10 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                     child : ListView.builder(itemBuilder: (context, position) {
                       //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
 
-                      list![position].uploadDate = formatDate(list![position].uploadDateForCompare??DateTime.now());
+                      list![list!.length-position-1].uploadDate = formatDate(list![list!.length-position-1].uploadDateForCompare??DateTime.now());
                       //uploadDate를 현재 시간 기준으로 계속 업데이트하기
 
-                      if(list?[position]!.goodsType!.contains(categoryName)??true){
+                      if(list?[list!.length-position-1]!.goodsType!.contains(categoryName)??true){
                         //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
                         return GestureDetector(
                             child: Card(
@@ -138,8 +141,9 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                                           top: 10, bottom: 10, left: 10, right: 15),
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(8.0),
-                                          child: Image.asset(list![position].imagePath_1 ?? "assets/images/main_logo.png", width: 100,
-                                              height: 100, fit: BoxFit.fitHeight),
+                                          child: list![list!.length-position-1].imageListB.isEmpty?
+                                          Image.asset("assets/images/main_logo.jpg", width: 100, height: 100, fit: BoxFit.cover) :
+                                          Image.network(list![list!.length-position-1].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
                                         ),
                                       ),
                                       Expanded(
@@ -150,7 +154,7 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                                               Row(
                                                 children: [
                                                   Expanded(
-                                                    child: Text(list![position].sellingTitle!,
+                                                    child: Text(list![list!.length-position-1].sellingTitle!,
                                                         style: const TextStyle(fontSize: 20),
                                                         overflow: TextOverflow.ellipsis),
                                                   ),
@@ -161,7 +165,7 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                                                 children: [
                                                   Expanded(
                                                     child: Text(
-                                                        "등록 일자: ${list![position].uploadDate ?? ""}",
+                                                        "등록 일자: ${list![list!.length-position-1].uploadDate ?? ""}",
                                                         style: const TextStyle(fontSize: 10),
                                                         overflow: TextOverflow.ellipsis),
                                                   ),
@@ -172,7 +176,7 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                                                 children: [
                                                   Expanded(
                                                     child: Text("가격: ${f.format(
-                                                        list![position].sellingPrice!)}원",
+                                                        list![list!.length-position-1].sellingPrice!)}원",
                                                         style: const TextStyle(fontSize: 10),
                                                         overflow: TextOverflow.ellipsis),
                                                   ),
@@ -185,7 +189,7 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                                     ],
                                   ),
                                   //isQucikSell이 true라면 표시
-                                  list![position].isQuickSell == true?
+                                  list![list!.length-position-1].isQuickSell == true?
                                   Positioned(
                                     right: 10,
                                     bottom : 10,
@@ -210,7 +214,7 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                             ),
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => SubHomePage(goods: list![position])));
+                                  builder: (context) => SubHomePage(goods: list![list!.length-position-1])));
                             }
                         );
                       }

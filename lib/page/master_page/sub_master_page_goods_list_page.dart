@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
@@ -81,11 +82,9 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
                                       top: 10, bottom: 10, left: 10, right: 15),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.asset(
-                                          list![position].imagePath_1 ??
-                                              "assets/images/main_logo.png",
-                                          width: 100,
-                                          height: 100, fit: BoxFit.fitHeight),
+                                      child:list![position].imageListB.isEmpty?
+                                      Image.asset( "assets/images/main_logo.jpg",width: 100, height: 100, fit: BoxFit.cover) :
+                                      Image.network(list![position].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
                                     ),
                                   ),
                                   Expanded(
@@ -189,12 +188,12 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
                                         newData.goodsQuality!;
                                         list?[position].isQuickSell =
                                         newData.isQuickSell!;
-                                        list?[position].imagePath_1 =
-                                            newData.imagePath1;
                                         list?[position].sellingPrice =
                                             newData.sellingPrice;
                                         list?[position].goodsType =
                                             newData.goodsType;
+                                        list?[position].imageListB =
+                                            newData.imagePath;
                                         //수정하면 시간도 방금전 업데이트
                                         list?[position].uploadDate = "방금 전";
                                         list?[position].uploadDateForCompare =

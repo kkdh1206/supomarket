@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -106,8 +108,9 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                                   top: 10, bottom: 10, left: 10, right: 15),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.asset(list![position].imagePath_1 ?? "assets/images/main_logo.png", width: 100,
-                                      height: 100, fit: BoxFit.fitHeight),
+                                  child: list![position].imageListB[0] == null?
+                                  Image.asset( "assets/images/main_logo.png",width: 100, height: 100, fit: BoxFit.cover) :
+                                  Image.network(list![position].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
                                 ),
                               ),
                               Expanded(

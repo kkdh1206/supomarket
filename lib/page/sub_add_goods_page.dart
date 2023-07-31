@@ -38,7 +38,6 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
       goodsType: "",
       goodsQuality: "",
       sellerName: "",
-      imagePath_1: "",
       sellingPrice: 0,
       uploadDate: "",
       sellerImage: myUserInfo.imagePath,
@@ -46,7 +45,9 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
       isQuickSell: false,
       uploadDateForCompare: DateTime.now(),
       sellerSchoolNum: '20000000',
-      imageList : []);
+      imageListA : [],
+      imageListB: [],
+      sellingState: 0);
 
 
 
@@ -59,12 +60,12 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
         maxWidth: 1000
     );
 
-    if(pickedFile.length + newGoods.imageList.length> 5){
+    if(pickedFile.length + newGoods.imageListA.length> 5){
       _showDialog();
     }
     else if(pickedFile != null) {
       setState(() {
-        newGoods.imageList.addAll(pickedFile);
+        newGoods.imageListA.addAll(pickedFile);
       });
     }
   }
@@ -79,7 +80,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
 
     if(pickedFile != null){
       setState(() {
-        newGoods.imageList.add(pickedFile);
+        newGoods.imageListA.add(pickedFile);
       });
     }
   }
@@ -95,7 +96,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
 
       debugPrint(
           "addGoodsPage initiate, 현재 list 3번은 ${list?[2].goodsQuality} 퀄리티이다.");
-      newGoods.imagePath_1 = "assets/images/main_logo.jpg";
+      // newGoods.imageList[0].path = "assets/images/main_logo.jpg";
       newGoods.sellerImage = myUserInfo!.imagePath!;
       firstController = FixedExtentScrollController(initialItem: 0);
       secondController = FixedExtentScrollController(initialItem: 0);
@@ -133,6 +134,8 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                 if(newGoods.isQuickSell){
                   allQuicksellNum = allQuicksellNum + 1;
                 }
+                //A를 B로 변환해서 넣어주기!!!!!!!!!!!!!
+                newGoods.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
               });
               Navigator.pop(
                   context, ReturnData(goods: newGoods, returnType: "add"));
@@ -405,8 +408,8 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
     // }
 
     Widget LoadImageButton() {
-    debugPrint(newGoods.imageList.length.toString());
-      return newGoods.imageList.isEmpty ?
+    debugPrint(newGoods.imageListA.length.toString());
+      return newGoods.imageListA.isEmpty ?
         PlusMaterialButton()
         : Flexible(
           child: SizedBox(
@@ -419,7 +422,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                 Expanded(child:
                 ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: newGoods.imageList?.length,
+                  itemCount: newGoods.imageListA?.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Row(
                       children: [
@@ -430,7 +433,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                                         //편집 기능
                                     });
                                   },
-                                     child: Image.file(File(newGoods.imageList![index].path),
+                                     child: Image.file(File(newGoods.imageListA![index].path),
                                       width: 100, height: 100, fit: BoxFit.fitHeight)
                                   ),
                                   Positioned(
@@ -438,7 +441,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                                     child: RawMaterialButton(
                                     onPressed: (){
                                       setState(() {
-                                        newGoods.imageList!.removeAt(index);
+                                        newGoods.imageListA!.removeAt(index);
                                       });
                                     },
                                       shape: const CircleBorder(),
@@ -480,7 +483,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
               icon: icon,
                 onPressed: (){
 
-                  if(newGoods.imageList.length == 5){
+                  if(newGoods.imageListA.length == 5){
                     _showDialog();
                   }
                   else{

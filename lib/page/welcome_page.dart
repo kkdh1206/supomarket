@@ -210,24 +210,3 @@ class WelcomePage extends StatelessWidget {
     );
   }
 }
-
-//
-//
-// class DatabaseClass extends StatefulWidget{
-//   @override
-//   State<StatefulWidget> createState() {
-//     return DatabaseClassState();
-//   }
-//
-// }
-//
-// class DatabaseClassState extends State<DatabaseClass>{
-//
-//   @override
-//   Widget build(BuildContext context) {
-//      return Container(
-//
-//      );
-//   }
-//
-// }

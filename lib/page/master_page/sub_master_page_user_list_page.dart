@@ -54,7 +54,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageUserListPage> {
                       Navigator.push(context, MaterialPageRoute(
                           builder: (context) => SubMyInfoPageChangePasswordPage(db: widget.db)));
                     },
-                    child: Align(
+                    child: const Align(
                       alignment: Alignment.center,
                       child:
                           Column(
