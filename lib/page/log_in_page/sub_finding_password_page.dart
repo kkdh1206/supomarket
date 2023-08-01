@@ -6,8 +6,8 @@ import 'log_in_page.dart';
 Color postechRed = Color(0xffac145a);
 
 class SubFindingPasswordPage extends StatefulWidget {
-  final Future<Database> db;
-  const SubFindingPasswordPage({super.key, required this.db});
+
+  const SubFindingPasswordPage({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -23,7 +23,7 @@ class _SubFindingPasswordPageState extends State<SubFindingPasswordPage> {
     Timer(Duration(seconds: 3), () {
       Navigator.pushAndRemoveUntil(
           context, MaterialPageRoute(
-          builder: (BuildContext context) => LogInPage(db: widget.db)), (route) => false);
+          builder: (BuildContext context) => LogInPage()), (route) => false);
     });
   }
 

@@ -17,8 +17,8 @@ import 'finding_password_page.dart';
 Color postechRed = Color(0xffac145a);
 
 class LogInPage extends StatefulWidget {
-  final Future<Database> db;
-  const LogInPage({super.key, required this.db});
+
+  const LogInPage({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -241,11 +241,11 @@ class _LogInPageState extends State<LogInPage> {
                                                 if(firebaseAuth.currentUser?.emailVerified??false){
                                                   await getUserInfo();
                                                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                                                      builder: (BuildContext context) => ControlPage(db : widget.db)), (route) => false);
+                                                      builder: (BuildContext context) => ControlPage()), (route) => false);
                                                 }
                                                 else {
                                                   Navigator.push(context, MaterialPageRoute(
-                                                      builder: (BuildContext context) => AuthEmailPage(db : widget.db)));
+                                                      builder: (BuildContext context) => AuthEmailPage()));
                                                 }
                                               }
                                             }
@@ -276,11 +276,11 @@ class _LogInPageState extends State<LogInPage> {
 
 
   Future openRegisterPage() {
-    return Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(db: widget.db)));
+    return Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
   }
 
   Future openFindingPasswordPage() {
-    return Navigator.push(context, MaterialPageRoute(builder: (context) => FindingPasswordPage(db : widget.db)));
+    return Navigator.push(context, MaterialPageRoute(builder: (context) => FindingPasswordPage()));
   }
 
   void _wrongPasswordPopUp(){

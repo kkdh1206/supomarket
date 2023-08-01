@@ -16,9 +16,8 @@ Color postechRed = Color(0xffac145a);
 var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
 
 class SubMasterPageGoodsListPage extends StatefulWidget {
-  final Future<Database> db;
   final List<Goods> list;
-  const SubMasterPageGoodsListPage({super.key, required this.db, required this.list});
+  const SubMasterPageGoodsListPage({super.key, required this.list});
 
   @override
   State<StatefulWidget> createState() {
@@ -39,7 +38,6 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
     list = widget.list;
     refreshNum = 0;
     debugPrint("My Selling Page Initiate");
-    debugPrint(myUserInfo.userGoodsNum.toString());
   }
 
   @override

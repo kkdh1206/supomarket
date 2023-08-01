@@ -10,8 +10,8 @@ import 'log_in_page.dart';
 Color postechRed = Color(0xffac145a);
 
 class AuthEmailPage extends StatefulWidget {
-  final Future<Database> db;
-  const AuthEmailPage({super.key, required this.db});
+
+  const AuthEmailPage({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -28,7 +28,7 @@ class _AuthEmailPageState extends State<AuthEmailPage> {
     Timer(Duration(seconds: 3), () {
       Navigator.pushAndRemoveUntil(
           context, MaterialPageRoute(
-          builder: (BuildContext context) => LogInPage(db: widget.db)), (route) => false);
+          builder: (BuildContext context) => LogInPage()), (route) => false);
     });
 
   }

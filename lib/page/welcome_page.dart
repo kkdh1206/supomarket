@@ -87,8 +87,6 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
 
-  Future<Database> database = initDatabase();
-
     return MaterialApp(
       theme: ThemeData(
         fontFamily: 'Nanum',
@@ -98,26 +96,14 @@ class MyAppState extends State<MyApp> {
           builder: (context, snapshot) {
             return AnimatedSwitcher(
               duration: const Duration(milliseconds: 1000),
-              child: SplashConditionWidget(snapshot, database),
+              child: SplashConditionWidget(snapshot),
           );
         },
       ),
         initialRoute: '/',
-        routes: {'/control': (context) => ControlPage(db : database),
+        routes: {'/control': (context) => ControlPage(),
         //'/subHome': (context) => const SubHomePage()
         },
-    );
-  }
-
-  Future<Database> initDatabase() async{
-    return openDatabase(
-      join(await getDatabasesPath(), 'user_info.db'),
-      onCreate: (db, version) async {
-        return db.execute(
-          '''CREATE TABLE user (email STRING PRIMARY KEY AUTOINCREMENT, password STRING,userName STRING,userSchoolNum STRING)'''
-        );
-      },
-      version: 1,
     );
   }
 
@@ -158,11 +144,11 @@ class MyAppState extends State<MyApp> {
   }
 }
 
-Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot, Future<Database> database) {
+Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot) {
   if(snapshot.hasError) {
     return const Text("Error!!");
   } else if(snapshot.hasData) {
-    return myUserInfo.isUserLogin == false? WelcomePage(db : database) : ControlPage(db: database);
+    return myUserInfo.isUserLogin == false? WelcomePage() : ControlPage();
   } else {
     return SplashScreen();
   }
@@ -171,8 +157,8 @@ Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot, Future<Database> d
 
 
 class WelcomePage extends StatelessWidget {
-  final Future<Database> db;
-  const WelcomePage({super.key, required this.db});
+
+  const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +185,7 @@ class WelcomePage extends StatelessWidget {
                       color: const Color(0xffac145a),
                       elevation: 5,
                       onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => LogInPage(db : db)));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => LogInPage()));
                       },
                       child: const Text("시작하기", textScaleFactor: 2.0, textAlign: TextAlign.center, style: TextStyle(color: Colors.white))),
               ),

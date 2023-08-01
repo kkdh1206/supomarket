@@ -18,8 +18,7 @@ import '../master_page/master_page.dart';
 
 class MyPage extends StatefulWidget{
   final List<Goods> list;
-  final Future<Database> db;
-  const MyPage({Key? key, required this.list, required this.db}) : super(key:key);
+  const MyPage({Key? key, required this.list}) : super(key:key);
 
   @override
   State<StatefulWidget> createState() {
@@ -129,7 +128,7 @@ class _MyPageState extends State<MyPage>{
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMyPageMyInfoPage(db: widget.db)));
+                          builder: (context) => SubMyPageMyInfoPage()));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,
@@ -205,7 +204,7 @@ class _MyPageState extends State<MyPage>{
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => MasterPage(list : list!, db: widget.db,)));
+                      builder: (context) => MasterPage(list : list!)));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,
@@ -250,7 +249,7 @@ class _MyPageState extends State<MyPage>{
                     Navigator.pop(context);
                     myUserInfo.isUserLogin = false;
                     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                    builder: (BuildContext context) => WelcomePage(db: widget.db)), (route) => false);
+                    builder: (BuildContext context) => WelcomePage()), (route) => false);
                   },
                 ),
                 TextButton(

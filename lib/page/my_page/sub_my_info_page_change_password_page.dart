@@ -10,8 +10,7 @@ import '../log_in_page/log_in_page.dart';
 Color postechRed = Color(0xffac145a);
 
 class SubMyInfoPageChangePasswordPage extends StatefulWidget {
-  final Future<Database> db;
-  const SubMyInfoPageChangePasswordPage({super.key, required this.db});
+  const SubMyInfoPageChangePasswordPage({super.key});
 
   @override
   State<StatefulWidget> createState() {

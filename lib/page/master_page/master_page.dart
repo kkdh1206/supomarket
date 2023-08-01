@@ -13,9 +13,8 @@ import '../log_in_page/log_in_page.dart';
 Color postechRed = Color(0xffac145a);
 
 class MasterPage extends StatefulWidget {
-  final Future<Database> db;
   final List<Goods> list;
-  const MasterPage({super.key, required this.db, required this.list});
+  const MasterPage({super.key, required this.list});
 
   @override
   State<StatefulWidget> createState() {
@@ -55,7 +54,7 @@ class _MasterPageState extends State<MasterPage> {
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMasterPageUserListPage(db: widget.db, list: widget.list)));
+                          builder: (context) => SubMasterPageUserListPage(list: widget.list)));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,
@@ -74,7 +73,7 @@ class _MasterPageState extends State<MasterPage> {
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMasterPageGoodsListPage(db: widget.db, list: widget.list)));
+                          builder: (context) => SubMasterPageGoodsListPage(list: widget.list)));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,
@@ -93,7 +92,7 @@ class _MasterPageState extends State<MasterPage> {
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMasterPageQuicksellGoodsListPage(db: widget.db, list: widget.list)));
+                          builder: (context) => SubMasterPageQuicksellGoodsListPage(list: widget.list)));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,

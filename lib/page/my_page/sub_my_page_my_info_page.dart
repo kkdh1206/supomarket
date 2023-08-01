@@ -9,8 +9,7 @@ import '../log_in_page/log_in_page.dart';
 Color postechRed = Color(0xffac145a);
 
 class SubMyPageMyInfoPage extends StatefulWidget {
-  final Future<Database> db;
-  const  SubMyPageMyInfoPage({super.key, required this.db});
+  const  SubMyPageMyInfoPage({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -50,7 +49,7 @@ class _SubMyPageMyInfoPageState extends State< SubMyPageMyInfoPage> {
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMyInfoPageChangePasswordPage(db: widget.db)));
+                          builder: (context) => SubMyInfoPageChangePasswordPage()));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,

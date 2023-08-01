@@ -19,8 +19,7 @@ Goods emptyGoods = Goods(sellingTitle: "", goodsType: "", goodsQuality: "", sell
 
 class ControlPage extends StatefulWidget{
 
-  final Future<Database> db;
-  const ControlPage({super.key, required this.db});
+  const ControlPage({super.key});
 
   @override
   _ControlPageState createState() => _ControlPageState();
@@ -98,7 +97,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       ),
       body: TabBarView(
         controller: controller,
-        children: <Widget>[HomePage(list: goodsList, db: widget.db), CategoryPage(list: goodsList), ChattingPage(list: chatRoomList), FavoritePage(list: goodsList), MyPage(list: goodsList, db: widget.db)],
+        children: <Widget>[HomePage(list: goodsList), CategoryPage(list: goodsList), ChattingPage(list: chatRoomList), FavoritePage(list: goodsList), MyPage(list: goodsList)],
       ),
       bottomNavigationBar: TabBar(tabs: const <Tab>[
         Tab(icon: Icon(Icons.home_filled, color: Color(0xffac145a)), child : Text("홈")),

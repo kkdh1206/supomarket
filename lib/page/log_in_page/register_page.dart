@@ -14,8 +14,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 Color postechRed = Color(0xffac145a);
 
 class RegisterPage extends StatefulWidget {
-  final Future<Database> db;
-  const RegisterPage({super.key, required this.db});
+  const RegisterPage({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -272,7 +271,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           //로그인 되어있으면 넘어가기
                                           //uploadInfo();
                                           Navigator.pushAndRemoveUntil(
-                                              context, MaterialPageRoute(builder: (BuildContext context) => AuthEmailPage(db: widget.db)), (route) => false);
+                                              context, MaterialPageRoute(builder: (BuildContext context) => AuthEmailPage()), (route) => false);
                                           }
                                         });
                                       } else{

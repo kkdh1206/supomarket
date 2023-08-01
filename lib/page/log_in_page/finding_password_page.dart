@@ -8,8 +8,8 @@ import 'log_in_page.dart';
 Color postechRed = Color(0xffac145a);
 
 class FindingPasswordPage extends StatefulWidget {
-  final Future<Database> db;
-  const FindingPasswordPage({super.key, required this.db});
+
+  const FindingPasswordPage({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -115,7 +115,7 @@ class _FindingPasswordPageState extends State<FindingPasswordPage> {
 
                                       if(checkForArrive){
                                         Navigator.push(context, MaterialPageRoute(
-                                            builder: (BuildContext context) => SubFindingPasswordPage(db : widget.db)));
+                                            builder: (BuildContext context) => SubFindingPasswordPage()));
                                       }
                                     },
                                     icon: const Icon(
