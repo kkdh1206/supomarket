@@ -9,7 +9,6 @@ class Goods{
   String? sellerSchoolNum;
   int sellingPrice;
   String? goodsDetail;
-  String? goodsNum;
   String? uploadDate;
   DateTime? uploadDateForCompare;
   bool? isLiked;
@@ -29,7 +28,6 @@ class Goods{
         required this.isQuickSell,
         required this.sellerSchoolNum,
         this.goodsDetail,
-        this.goodsNum,
         required this.uploadDate,
         required this.uploadDateForCompare,
         required this.imageListA,

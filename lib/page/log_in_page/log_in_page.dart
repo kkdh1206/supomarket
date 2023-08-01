@@ -31,26 +31,6 @@ class _LogInPageState extends State<LogInPage> {
   bool checkForArrive = false;
   bool isPressed = false;
 
-  //시험----------------------------------
-  //
-  // void test(){
-  //   var jsonString =
-  //   '''[
-  //     {"score" : 40},
-  //     {"score" : 90}
-  //    ]
-  // ''';
-  //
-  //   var scores = jsonDecode(jsonString);
-  //   print(scores[0]);
-  //   print(scores[1]);
-  //   print(scores);
-  // }
-
-
-  //시험----------------------------------
-
-
   Future<void> signInWithEmailAndPassword(String id, String password) async {
     try {
       final credential = await firebaseAuth.signInWithEmailAndPassword(
