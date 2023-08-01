@@ -26,6 +26,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
   List<Goods>? list;
   late User? user;
   int refreshNum = 0;
+  String stateText = "판매중";
 
 
   @override
@@ -233,19 +234,19 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                 width: 100,
                                 height: 25,
                                 decoration: BoxDecoration(
-                                  color: postechRed,
+                                  color: Colors.grey,
                                   borderRadius: const BorderRadius.all(
                                       Radius.circular(10.0)),
                                 ),
                                 child: MaterialButton(
                                   onPressed: () {
                                     setState(() {
-                                      list?.removeAt(position);
-                                      myUserInfo.userGoodsNum = (myUserInfo.userGoodsNum! - 1)!;
-                                      //instance delete는 나중에 생각해보자
+                                      list![position].sellingState = (list![position].sellingState + 1)%3;
+                                      stateText = list![position].sellingState == 0? "판매중"
+                                          : list![position].sellingState == 1? "예약중" : "판매완료";
                                     });
                                   },
-                                  child: const Text("판매완료", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                  child: Text(stateText, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ),

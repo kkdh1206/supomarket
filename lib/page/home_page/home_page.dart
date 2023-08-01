@@ -127,75 +127,82 @@ class _HomePageState extends State<HomePage>{
                  },
           child: ListView.builder(
             itemBuilder: (context, position) {
+
               //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
               list![list!.length-position-1].uploadDate = formatDate(list![list!.length-position-1].uploadDateForCompare??DateTime.now());
               //uploadDate를 현재 시간 기준으로 계속 업데이트하기
 
               if(list![list!.length-position-1]!.sellingTitle!.contains(searchName)??true){
                 //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
-                return GestureDetector(
-                    child: Card(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
-                      elevation: 1,
-                      child: Stack(
-                        children: [
-                          Row(
-                            children: [
-                              Padding(padding: const EdgeInsets.only(
-                                  top: 10, bottom: 10, left: 10, right: 15),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: list![list!.length-position-1].imageListB.isEmpty?
-                                  Image.asset("assets/images/main_logo.jpg", width: 100, height: 100, fit: BoxFit.cover)
-                                  : Image.network(list![list!.length-position-1].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
-                                ),
-                              ),
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(list![list!.length-position-1].sellingTitle!,
-                                                style: const TextStyle(fontSize: 20),
-                                                overflow: TextOverflow.ellipsis),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                                "등록 일자: ${list![list!.length-position-1].uploadDate ?? ""}",
-                                                style: const TextStyle(fontSize: 10),
-                                                overflow: TextOverflow.ellipsis),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text("가격: ${f.format(
-                                                list![list!.length-position-1].sellingPrice!)}원",
-                                                style: const TextStyle(fontSize: 10),
-                                                overflow: TextOverflow.ellipsis),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+
+                debugPrint(list!.length.toString());
+                debugPrint(position.toString());
+                debugPrint(list![list!.length-position-1]!.isQuickSell.toString());
+                if(list![list!.length-position-1]!.isQuickSell == false){
+                  //급처분 아이템은 보여주지 않기
+                  return GestureDetector(
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 10),
+                        elevation: 1,
+                        child: Stack(
+                          children: [
+                            Row(
+                              children: [
+                                Padding(padding: const EdgeInsets.only(
+                                    top: 10, bottom: 10, left: 10, right: 15),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: list![list!.length-position-1].imageListB.isEmpty?
+                                    Image.asset("assets/images/main_logo.jpg", width: 100, height: 100, fit: BoxFit.cover)
+                                        : Image.network(list![list!.length-position-1].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          //isQucikSell이 true라면 표시
-                          list![list!.length-position-1].isQuickSell == true?
-                          Positioned(
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(list![list!.length-position-1].sellingTitle!,
+                                                  style: const TextStyle(fontSize: 20),
+                                                  overflow: TextOverflow.ellipsis),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                  "등록 일자: ${list![list!.length-position-1].uploadDate ?? ""}",
+                                                  style: const TextStyle(fontSize: 10),
+                                                  overflow: TextOverflow.ellipsis),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text("가격: ${f.format(
+                                                  list![list!.length-position-1].sellingPrice!)}원",
+                                                  style: const TextStyle(fontSize: 10),
+                                                  overflow: TextOverflow.ellipsis),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            //isQucikSell이 true라면 표시
+                            list![list!.length-position-1].isQuickSell == true?
+                            Positioned(
                               right: 10,
                               bottom : 10,
                               child: Container(
@@ -213,15 +220,19 @@ class _HomePageState extends State<HomePage>{
                                 ),
 
                               ),
-                          ) : const SizedBox(width:0, height:0),
-                        ],
+                            ) : const SizedBox(width:0, height:0),
+                          ],
+                        ),
                       ),
-                    ),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubHomePage(goods: list![list!.length-position-1])));
-                    }
-                );
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) => SubHomePage(goods: list![list!.length-position-1])));
+                      }
+                  );
+                }
+                else{
+                  return const SizedBox(height: 0, width: 0);
+                }
               }
               else{
                 return const SizedBox(height: 0, width: 0);
@@ -304,7 +315,7 @@ class _HomePageState extends State<HomePage>{
       else{
         itemCount = itemCount + 10;
       }
-      debugPrint("현재 로딩된 Max Item Count는 $itemCount 입니다");
+      debugPrint("현재 로딩된 (급처분 포함) Max Item Count는 $itemCount 입니다");
     });
     // 가상으로 잠시 지연 줌
     return await Future.delayed(Duration(milliseconds: 1000));
