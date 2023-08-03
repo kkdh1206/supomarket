@@ -57,16 +57,6 @@ class _CategoryPageState extends State<CategoryPage>{
              ],
            ),
           const SizedBox(height: 30.0),
-           // Expanded(
-           //     child: Card(
-           //         shape: const RoundedRectangleBorder(
-           //             borderRadius: BorderRadius.all(Radius.circular(100))
-           //         ),
-           //         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-           //         elevation: 2,
-           //         child: Container(height: 400, color:Colors.yellow)
-           //     ),
-           // )
         ],
       ),
     );
@@ -126,7 +116,12 @@ Widget CategoryButton(List<Item> list, BuildContext context, Color color, String
                       list![list!.length-position-1].uploadDate = formatDate(list![list!.length-position-1].uploadDateForCompare??DateTime.now());
                       //uploadDate를 현재 시간 기준으로 계속 업데이트하기
 
-                      if(list?[list!.length-position-1]!.itemType.toString().contains(categoryName)??true){
+                      if(list?[list!.length-position-1]!.itemType.toString().contains(
+                          categoryName=="냉장고"?"REFRIGERATOR":
+                          categoryName=="의류"?"CLOTHES":
+                          categoryName=="자취방"?"ROOM":
+                          categoryName=="모니터"?"MONITOR":
+                          categoryName=="책"?"BOOK": "ETC")??true){
                         //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
                         return GestureDetector(
                             child: Card(
@@ -189,7 +184,7 @@ Widget CategoryButton(List<Item> list, BuildContext context, Color color, String
                                     ],
                                   ),
                                   //isQucikSell이 true라면 표시
-                                  list![list!.length-position-1].isQuickSell == true?
+                                  list![list!.length-position-1].itemStatus == ItemStatus.FASTSELL?
                                   Positioned(
                                     right: 10,
                                     bottom : 10,

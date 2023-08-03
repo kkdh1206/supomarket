@@ -139,7 +139,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                 ],
                               ),
                               //isQucikSell이 true라면 표시
-                              list![position].isQuickSell == true ?
+                              list![position].itemStatus == ItemStatus.FASTSELL?
                               Positioned(
                                 right: 10,
                                 bottom: 10,
@@ -187,7 +187,8 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                         list?[position].itemDetail = newData.itemDetail!;
                                         list?[position].sellingTitle = newData.sellingTitle!;
                                         list?[position].itemQuality = newData.itemQuality!;
-                                        list?[position].isQuickSell = newData.isQuickSell!;
+                                        list?[position].itemStatus= newData.Status!;
+                                        list?[position].itemType = newData.itemType!;
                                         list?[position].imageListB = newData.imagePath!;
                                         list?[position].sellingPrice = newData.sellingPrice;
                                         list?[position].itemType = newData.itemType;
@@ -242,21 +243,20 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                   onPressed: () {
                                     setState(() {
                                       if(list![position].itemStatus == ItemStatus.TRADING){
-                                        list![position].itemStatus = ItemStatus.RESERVED;
-                                        stateText = "예약중";}
+                                        list![position].itemStatus = ItemStatus.RESERVED;}
                                       else if(list![position].itemStatus == ItemStatus.RESERVED){
                                         list![position].itemStatus = ItemStatus.SOLDOUT;
-                                        stateText = "판매완료";
                                       }else if(list![position].itemStatus == ItemStatus.SOLDOUT){
                                         list![position].itemStatus = ItemStatus.FASTSELL;
-                                        stateText = "급처분";
                                       }else{
                                         list![position].itemStatus = ItemStatus.TRADING;
-                                        stateText = "거래가능";
                                       };
                                     });
                                   },
-                                  child: Text(stateText, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                  child: Text(list![position].itemStatus == ItemStatus.TRADING? "거래가능"
+                                      : list![position].itemStatus == ItemStatus.FASTSELL? "급처분"
+                                      : list![position].itemStatus == ItemStatus.SOLDOUT? "판매완료" : "예약중"
+                                      , style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ),

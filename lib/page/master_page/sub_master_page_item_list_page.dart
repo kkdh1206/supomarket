@@ -133,7 +133,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                                 ],
                               ),
                               //isQucikSell이 true라면 표시
-                              list![position].isQuickSell == true ?
+                              list![position].itemStatus == ItemStatus.FASTSELL?
                               Positioned(
                                 right: 10,
                                 bottom: 10,
@@ -184,8 +184,12 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                                         newData.sellingTitle!;
                                         list?[position].itemQuality =
                                         newData.itemQuality!;
-                                        list?[position].isQuickSell =
-                                        newData.isQuickSell!;
+                                        list?[position].itemQuality =
+                                        newData.itemQuality!;
+                                        list?[position].itemStatus =
+                                            newData.itemStatus;
+                                        list?[position].itemType =
+                                            newData.itemType;
                                         list?[position].sellingPrice =
                                             newData.sellingPrice;
                                         list?[position].itemType =

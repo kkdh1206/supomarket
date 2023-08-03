@@ -32,6 +32,7 @@ class SubAddItemPage extends StatefulWidget {
 class _SubAddItemPageState extends State<SubAddItemPage> {
 
   List<Item>? list;
+  bool isFastSellForToggle = false;
   FixedExtentScrollController? firstController;
   FixedExtentScrollController? secondController;
   Item newItem = Item(sellingTitle: "",
@@ -42,7 +43,6 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
       uploadDate: "",
       sellerImage: myUserInfo.imagePath,
       isLiked: false,
-      isQuickSell: false,
       uploadDateForCompare: DateTime.now(),
       sellerSchoolNum: '20000000',
       imageListA : [],
@@ -132,7 +132,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
                 newItem.uploadDate = "방금 전";
                 newItem.uploadDateForCompare = DateTime.now();
-                if(newItem.isQuickSell){
+                if(newItem.itemStatus == ItemStatus.FASTSELL){
                   allQuicksellNum = allQuicksellNum + 1;
                 }
                 //A를 B로 변환해서 넣어주기!!!!!!!!!!!!!
@@ -331,12 +331,13 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 const Text("급처분 : ", style: TextStyle(fontSize: 15)),
                 CupertinoSwitch(
                   // 급처분 여부
-                  value: newItem.isQuickSell,
+                  value: isFastSellForToggle,
                   activeColor: CupertinoColors.activeOrange,
                   onChanged: (bool? value) {
                     // 스위치가 토글될 때 실행될 코드
                     setState(() {
-                      newItem.isQuickSell = value ?? false;
+                      newItem.itemStatus = (value==true ? ItemStatus.FASTSELL : ItemStatus.TRADING);
+                      isFastSellForToggle = value??false;
                     });
                   },
                 ),

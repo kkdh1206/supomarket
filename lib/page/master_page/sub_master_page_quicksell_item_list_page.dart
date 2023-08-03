@@ -64,7 +64,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageQuicksellItemLi
 
               list![position].uploadDate = formatDate(list![position].uploadDateForCompare??DateTime.now());
               //uploadDate를 현재 시간 기준으로 계속 업데이트하기
-              if(list![position].isQuickSell) {
+              if(list![position].itemStatus == ItemStatus.FASTSELL) {
                 //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
                 return GestureDetector(
                     child: Card(
@@ -138,7 +138,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageQuicksellItemLi
                                 ],
                               ),
                               //isQucikSell이 true라면 표시
-                              list![position].isQuickSell == true ?
+                              list![position].itemStatus == ItemStatus.FASTSELL?
                               Positioned(
                                 right: 10,
                                 bottom: 10,
@@ -189,8 +189,10 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageQuicksellItemLi
                                         newData.sellingTitle!;
                                         list?[position].itemQuality =
                                         newData.itemQuality!;
-                                        list?[position].isQuickSell =
-                                        newData.isQuickSell!;
+                                        list?[position].itemStatus =
+                                        newData.itemStatus;
+                                        list?[position].itemType =
+                                            newData.itemType;
                                         list?[position].sellingPrice =
                                             newData.sellingPrice;
                                         list?[position].itemType =

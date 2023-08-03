@@ -6,4 +6,4 @@ List<UserCredential> allUserList = List.empty(growable: true);
 
 final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-int allQuicksellNum = 1;
+int allQuicksellNum = 0;

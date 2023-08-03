@@ -156,7 +156,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                             ],
                           ),
                           //isQucikSell이 true라면 표시
-                          list![position].isQuickSell == true?
+                          list![position].itemStatus == ItemStatus.FASTSELL?
                           Positioned(
                             right: 10,
                             bottom : 10,

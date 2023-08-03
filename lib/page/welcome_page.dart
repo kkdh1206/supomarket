@@ -148,6 +148,7 @@ Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot) {
   if(snapshot.hasError) {
     return const Text("Error!!");
   } else if(snapshot.hasData) {
+
     return myUserInfo.isUserLogin == false? WelcomePage() : ControlPage();
   } else {
     return SplashScreen();

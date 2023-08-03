@@ -4,4 +4,3 @@ import '../entity/user_entity.dart';
 
 int itemCount = 0;
 List<Item> itemList = List.empty(growable:true);
-

@@ -26,9 +26,10 @@ class SubSellingPageModifyPage extends StatefulWidget {
 class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
 
   late Item originalItem;
-  Item modifiedItem = Item(sellingTitle: "", itemType: ItemType.ETC, itemQuality: ItemQuality.HIGH, sellerName: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false,isQuickSell: false,  uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [], itemStatus: ItemStatus.TRADING);
+  Item modifiedItem = Item(sellingTitle: "", itemType: ItemType.ETC, itemQuality: ItemQuality.HIGH, sellerName: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false, uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [], itemStatus: ItemStatus.TRADING);
   FixedExtentScrollController? firstController;
   FixedExtentScrollController? secondController;
+  bool isFastSellForToggle = false;
 
   @override
   void initState(){
@@ -46,7 +47,9 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
     modifiedItem.sellingPrice = originalItem.sellingPrice;
     modifiedItem.imageListB = originalItem.imageListB;
     modifiedItem.itemDetail = originalItem.itemDetail;
-    modifiedItem.isQuickSell = originalItem.isQuickSell;
+    modifiedItem.itemStatus = originalItem.itemStatus;
+    modifiedItem.itemType = originalItem.itemType;
+    isFastSellForToggle = (originalItem.itemStatus == ItemStatus.FASTSELL);
   }
 
   @override
@@ -70,11 +73,11 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                 ReturnData(returnType: 'exit',
                     sellingTitle: modifiedItem.sellingTitle??"",
                     imagePath: modifiedItem.imageListB.isEmpty?[]:modifiedItem.imageListB,
-                    itemType: modifiedItem.itemType??ItemType.BOOK,
+                    itemType: modifiedItem.itemType??ItemType.ETC,
                     itemQuality: modifiedItem.itemQuality??ItemQuality.MID,
                     sellingPrice: modifiedItem.sellingPrice??0,
-                    isQuickSell: modifiedItem.isQuickSell??false,
-                    itemDetail: modifiedItem.itemDetail??""));
+                    itemDetail: modifiedItem.itemDetail??"",
+                    itemStatus: modifiedItem.itemStatus??ItemStatus.TRADING));
               },
                 icon: const Icon(Icons.clear, color: Colors.black45), iconSize: 30)
         ),
@@ -90,9 +93,10 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                 itemType: modifiedItem.itemType??ItemType.BOOK,
                 itemQuality: modifiedItem.itemQuality??ItemQuality.MID,
                 sellingPrice: modifiedItem.sellingPrice??0,
-                isQuickSell : modifiedItem.isQuickSell??false,
+
                 itemDetail: modifiedItem.itemDetail??"",
                 imagePath: modifiedItem.imageListB??[],
+                itemStatus : modifiedItem.itemStatus??ItemStatus.TRADING,
             )
             );
           },
@@ -186,7 +190,12 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                         );
                       }
                   );
-                }, child: Text("카테고리 : ${modifiedItem.itemType}"),),
+                }, child: Text("상품 종류 : ${modifiedItem.itemType == ItemType.REFRIGERATOR? "냉장고":
+                  modifiedItem.itemType == ItemType.MONITOR? "모니터":
+                  modifiedItem.itemType == ItemType.BOOK? "책":
+                  modifiedItem.itemType == ItemType.ROOM? "자취방":
+                  modifiedItem.itemType == ItemType.CLOTHES? "옷": "기타"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
+                  ),
               const SizedBox(width: 10),
               CupertinoButton(
                 minSize: 0,
@@ -229,7 +238,9 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                         );
                       }
                   );
-                }, child: Text("품질 : ${modifiedItem.itemQuality}"),),
+                }, child:  Text("품질 : ${modifiedItem.itemQuality == ItemQuality.HIGH? "상" :
+              modifiedItem.itemQuality == ItemQuality.MID? "중" :"하"}"),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -241,12 +252,13 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
               const Text("급처분 : ", style: TextStyle(fontSize:15)),
               CupertinoSwitch(
                 // 급처분 여부
-                value: modifiedItem.isQuickSell,
+                value: isFastSellForToggle,
                 activeColor: CupertinoColors.activeOrange,
                 onChanged: (bool? value) {
                   // 스위치가 토글될 때 실행될 코드
                   setState(() {
-                    modifiedItem.isQuickSell = value ?? false;
+                    modifiedItem.itemStatus = (value==true? ItemStatus.FASTSELL : ItemStatus.TRADING);
+                    isFastSellForToggle = value??false;
                   });
                 },
               ),
@@ -507,10 +519,10 @@ class ReturnData {
   List<String> imagePath;
   ItemType itemType;
   ItemQuality itemQuality;
+  ItemStatus itemStatus;
   int sellingPrice;
   String itemDetail;
   String returnType;
-  bool isQuickSell;
 
   ReturnData(
       {required this.sellingTitle,
@@ -519,6 +531,6 @@ class ReturnData {
         required this.itemQuality,
         required this.sellingPrice,
         required this.itemDetail,
-        required this.isQuickSell,
-        required this.returnType,});
+        required this.returnType,
+        required this.itemStatus,});
 }

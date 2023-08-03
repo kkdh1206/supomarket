@@ -16,7 +16,6 @@ class Item{
   String? uploadDate;
   DateTime? uploadDateForCompare;
   bool? isLiked;
-  bool isQuickSell;
   List<XFile> imageListA;
   List<String> imageListB;
   ItemStatus itemStatus;
@@ -29,7 +28,6 @@ class Item{
         required this.sellerImage,
         required this.sellingPrice,
         required this.isLiked,
-        required this.isQuickSell,
         required this.sellerSchoolNum,
         this.itemDetail,
         required this.uploadDate,
