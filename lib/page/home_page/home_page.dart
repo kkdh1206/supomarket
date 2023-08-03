@@ -147,8 +147,7 @@ class _HomePageState extends State<HomePage> {
                                   if (list![list!.length - position - 1]!.sellingTitle!.contains(searchName) ?? true) {
                                     //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
 
-                                    if (list![list!.length - position - 1]
-                                        .itemStatus != ItemStatus.FASTSELL) {
+                                    if (list![list!.length - position - 1].itemStatus != ItemStatus.FASTSELL) {
                                       //급처분 아이템은 보여주지 않기
                                       return GestureDetector(
                                           child: Card(
@@ -420,11 +419,14 @@ String formatDate(DateTime date) {
 Future<bool> _fetchData() async{
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   print(token);
-
   Dio dio = Dio();
   print('여긴가??');
   dio.options.headers['Authorization'] = 'Bearer $token';
   String url = 'http://kdh.supomarket.com/items';
+
+  itemList.clear();
+  itemCount = 0;
+
   try {
     Response response = await dio.get(url);
     // Map<String, dynamic> JsonData = json.decode(response.data);
@@ -439,14 +441,15 @@ Future<bool> _fetchData() async{
       // String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
       int price = data['price'] as int;
       // String category = data['category'] as String;
+      String updated_At = data['updatedAt'] as String;
       List<String> imageUrl = List<String>.from(data['ImageUrls']);
       // 사진도 받아야하는데
+      DateTime dateTime = DateTime.parse(updated_At);
 
 
       // 시간 어떻게 받아올지 고민하기!!!!!!
       // 그리고 userId 는 현재 null 상태 해결해야함!!!
-
-      itemList.add(Item(sellingTitle: title, itemType: ItemType.REFRIGERATOR, itemQuality: ItemQuality.HIGH, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: DateTime(2023, 7, 8, 18, 20), itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: ItemStatus.TRADING));
+      itemList.add(Item(sellingTitle: title, itemType: ItemType.REFRIGERATOR, itemQuality: ItemQuality.HIGH, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: ItemStatus.TRADING));
       itemCount++;
     }
 

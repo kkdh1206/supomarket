@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -127,17 +129,52 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                   iconSize: 30)
           ),
           actions: <Widget>[TextButton(
-            onPressed: () {
+            onPressed: () async {
               setState(() {
                 //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
                 newItem.uploadDate = "방금 전";
                 newItem.uploadDateForCompare = DateTime.now();
+
+                myUserInfo.userItemNum = (myUserInfo.userItemNum! +1)!;
                 if(newItem.itemStatus == ItemStatus.FASTSELL){
                   allQuicksellNum = allQuicksellNum + 1;
                 }
                 //A를 B로 변환해서 넣어주기!!!!!!!!!!!!!
                 newItem.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
               });
+
+              //--도형 코드---
+              String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+              print(token);
+
+              Dio dio = Dio();
+              print('여긴가??');
+              dio.options.headers['Authorization'] = 'Bearer $token';
+              String url = 'http://kdh.supomarket.com/items';
+
+
+              FormData formData = FormData.fromMap({
+                'title': newItem.sellingTitle??"무제",
+                'description': newItem.itemDetail??"",
+                'price': newItem.sellingPrice??0,
+              });
+              for (int i = 0; i < newItem.imageListA.length; i++) {
+                formData.files.add(MapEntry('image' , await MultipartFile.fromFile(newItem.imageListA[i].path, filename:'image.jpg')));
+              }
+
+
+              print(formData);
+              try {
+                Response response = await dio.post(url, data: formData);
+              print(response);
+              } catch (e) {
+                print('Error sending POST request : $e');
+              }
+              //--도형 코드---
+
+
+
+
               Navigator.pop(
                   context, ReturnData(item: newItem, returnType: "add"));
             },
