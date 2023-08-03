@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
-import '../entity/goods_entity.dart';
+import '../entity/item_entity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -17,26 +17,26 @@ Color postechRed = Color(0xffac145a);
 String temp = "";
 Map<String, int> myData = Map();
 
-class SubAddGoodsPage extends StatefulWidget {
+class SubAddItemPage extends StatefulWidget {
 
-  final List<Goods> list;
-  const SubAddGoodsPage({Key? key, required this.list}) : super(key: key);
+  final List<Item> list;
+  const SubAddItemPage({Key? key, required this.list}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _SubAddGoodsPageState();
+    return _SubAddItemPageState();
   }
 
 }
 
-class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
+class _SubAddItemPageState extends State<SubAddItemPage> {
 
-  List<Goods>? list;
+  List<Item>? list;
   FixedExtentScrollController? firstController;
   FixedExtentScrollController? secondController;
-  Goods newGoods = Goods(sellingTitle: "",
-      goodsType: "",
-      goodsQuality: "",
+  Item newItem = Item(sellingTitle: "",
+      itemType: ItemType.ETC,
+      itemQuality: ItemQuality.MID,
       sellerName: "",
       sellingPrice: 0,
       uploadDate: "",
@@ -47,7 +47,8 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
       sellerSchoolNum: '20000000',
       imageListA : [],
       imageListB: [],
-      sellingState: 0);
+      itemStatus: ItemStatus.TRADING,
+      );
 
 
 
@@ -60,12 +61,12 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
         maxWidth: 1000
     );
 
-    if(pickedFile.length + newGoods.imageListA.length> 5){
+    if(pickedFile.length + newItem.imageListA.length> 5){
       _showDialog();
     }
     else if(pickedFile != null) {
       setState(() {
-        newGoods.imageListA.addAll(pickedFile);
+        newItem.imageListA.addAll(pickedFile);
       });
     }
   }
@@ -80,7 +81,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
 
     if(pickedFile != null){
       setState(() {
-        newGoods.imageListA.add(pickedFile);
+        newItem.imageListA.add(pickedFile);
       });
     }
   }
@@ -90,14 +91,14 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
     @override
     void initState() {
       super.initState();
-      newGoods.goodsType = "";
-      newGoods.goodsQuality = "";
-      newGoods.sellingPrice = 0;
+      newItem.itemType = ItemType.ETC;
+      newItem.itemQuality = ItemQuality.MID;
+      newItem.sellingPrice = 0;
 
       debugPrint(
-          "addGoodsPage initiate, 현재 list 3번은 ${list?[2].goodsQuality} 퀄리티이다.");
-      // newGoods.imageList[0].path = "assets/images/main_logo.jpg";
-      newGoods.sellerImage = myUserInfo!.imagePath!;
+          "addItemPage initiate, 현재 list 3번은 ${list?[2].itemQuality} 퀄리티이다.");
+      // newItem.imageList[0].path = "assets/images/main_logo.jpg";
+      newItem.sellerImage = myUserInfo!.imagePath!;
       firstController = FixedExtentScrollController(initialItem: 0);
       secondController = FixedExtentScrollController(initialItem: 0);
       list = widget.list;
@@ -120,7 +121,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
           leading: Padding(padding: const EdgeInsets.only(top: 10, left: 10),
               child: IconButton(onPressed: () {
                 Navigator.pop(
-                    context, ReturnData(goods: newGoods, returnType: "exit"));
+                    context, ReturnData(item: newItem, returnType: "exit"));
               },
                   icon: const Icon(Icons.clear, color: Colors.black45),
                   iconSize: 30)
@@ -129,16 +130,16 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
             onPressed: () {
               setState(() {
                 //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
-                newGoods.uploadDate = "방금 전";
-                newGoods.uploadDateForCompare = DateTime.now();
-                if(newGoods.isQuickSell){
+                newItem.uploadDate = "방금 전";
+                newItem.uploadDateForCompare = DateTime.now();
+                if(newItem.isQuickSell){
                   allQuicksellNum = allQuicksellNum + 1;
                 }
                 //A를 B로 변환해서 넣어주기!!!!!!!!!!!!!
-                newGoods.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
+                newItem.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
               });
               Navigator.pop(
-                  context, ReturnData(goods: newGoods, returnType: "add"));
+                  context, ReturnData(item: newItem, returnType: "add"));
             },
             style: OutlinedButton.styleFrom(backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
@@ -168,7 +169,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                     ),
                     onChanged: (text) {
                       setState(() {
-                        newGoods.sellingTitle = text;
+                        newItem.sellingTitle = text;
                       });
                     },
                   ),
@@ -213,17 +214,17 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                                       setState(() {
                                         switch (index) {
                                           case(0) :
-                                            newGoods.goodsType = "냉장고";
+                                            newItem.itemType = ItemType.REFRIGERATOR;
                                           case(1) :
-                                            newGoods.goodsType = "의류";
+                                            newItem.itemType = ItemType.CLOTHES;
                                           case(2) :
-                                            newGoods.goodsType = "자취방";
+                                            newItem.itemType = ItemType.ROOM;
                                           case(3) :
-                                            newGoods.goodsType = "모니터";
+                                            newItem.itemType = ItemType.MONITOR;
                                           case(4) :
-                                            newGoods.goodsType = "책";
+                                            newItem.itemType = ItemType.BOOK;
                                           case(5) :
-                                            newGoods.goodsType = "기타";
+                                            newItem.itemType = ItemType.ETC;
                                         }
                                       });
                                     },
@@ -255,7 +256,12 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                         }
                     );
                   },
-                  child: Text("카테고리 : ${newGoods.goodsType}"),),
+                  child: Text("상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR? "냉장고":
+                  newItem.itemType == ItemType.MONITOR? "모니터":
+                  newItem.itemType == ItemType.BOOK? "책":
+                  newItem.itemType == ItemType.ROOM? "자취방":
+                  newItem.itemType == ItemType.CLOTHES? "옷": "기타"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
+                ),
                 const SizedBox(width: 10),
                 CupertinoButton(
                   minSize: 0,
@@ -280,11 +286,11 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                                       setState(() {
                                         switch (Index) {
                                           case(0) :
-                                            newGoods.goodsQuality = "상";
+                                            newItem.itemQuality = ItemQuality.HIGH;
                                           case(1) :
-                                            newGoods.goodsQuality = "중";
+                                            newItem.itemQuality = ItemQuality.MID;
                                           case(2) :
-                                            newGoods.goodsQuality = "하";
+                                            newItem.itemQuality = ItemQuality.LOW;
                                         }
                                       });
                                     },
@@ -311,7 +317,9 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                         }
                     );
                   },
-                  child: Text("품질 : ${newGoods.goodsQuality}"),),
+                  child: Text("품질 : ${newItem.itemQuality == ItemQuality.HIGH? "상" :
+                  newItem.itemQuality == ItemQuality.MID? "중" :"하"}"),
+                ),
               ],
             ),
             const SizedBox(height: 10),
@@ -323,12 +331,12 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                 const Text("급처분 : ", style: TextStyle(fontSize: 15)),
                 CupertinoSwitch(
                   // 급처분 여부
-                  value: newGoods.isQuickSell,
+                  value: newItem.isQuickSell,
                   activeColor: CupertinoColors.activeOrange,
                   onChanged: (bool? value) {
                     // 스위치가 토글될 때 실행될 코드
                     setState(() {
-                      newGoods.isQuickSell = value ?? false;
+                      newItem.isQuickSell = value ?? false;
                     });
                   },
                 ),
@@ -360,7 +368,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                     onChanged: (text) {
                       setState(() {
                         temp = text;
-                        newGoods.sellingPrice = int.parse(temp);
+                        newItem.sellingPrice = int.parse(temp);
                       });
                     },
                   ),
@@ -384,7 +392,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                     ),
                     onChanged: (text) {
                       setState(() {
-                        newGoods.goodsDetail = text;
+                        newItem.itemDetail = text;
                       });
                     },
                   ),
@@ -408,8 +416,8 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
     // }
 
     Widget LoadImageButton() {
-    debugPrint(newGoods.imageListA.length.toString());
-      return newGoods.imageListA.isEmpty ?
+    debugPrint(newItem.imageListA.length.toString());
+      return newItem.imageListA.isEmpty ?
         PlusMaterialButton()
         : Flexible(
           child: SizedBox(
@@ -422,7 +430,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                 Expanded(child:
                 ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: newGoods.imageListA?.length,
+                  itemCount: newItem.imageListA?.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Row(
                       children: [
@@ -433,7 +441,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                                         //편집 기능
                                     });
                                   },
-                                     child: Image.file(File(newGoods.imageListA![index].path),
+                                     child: Image.file(File(newItem.imageListA![index].path),
                                       width: 100, height: 100, fit: BoxFit.fitHeight)
                                   ),
                                   Positioned(
@@ -441,7 +449,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
                                     child: RawMaterialButton(
                                     onPressed: (){
                                       setState(() {
-                                        newGoods.imageListA!.removeAt(index);
+                                        newItem.imageListA!.removeAt(index);
                                       });
                                     },
                                       shape: const CircleBorder(),
@@ -483,7 +491,7 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
               icon: icon,
                 onPressed: (){
 
-                  if(newGoods.imageListA.length == 5){
+                  if(newItem.imageListA.length == 5){
                     _showDialog();
                   }
                   else{
@@ -568,11 +576,11 @@ class _SubAddGoodsPageState extends State<SubAddGoodsPage> {
 }
 
 class ReturnData {
-  Goods goods;
+  Item item;
   String returnType;
 
   ReturnData(
-      {required this.goods,
+      {required this.item,
         required this.returnType});
 
 }

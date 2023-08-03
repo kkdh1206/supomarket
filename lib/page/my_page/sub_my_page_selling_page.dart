@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
 import 'package:supo_market/page/my_page/sub_selling_page_modify_page.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 import 'package:intl/intl.dart';
 import '../../entity/user_entity.dart';
 
@@ -13,8 +13,8 @@ var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
 String searchName = "";
 
 class SubMyPageSellingPage extends StatefulWidget {
-  final List<Goods>? list;
-  final User? user;
+  final List<Item>? list;
+  final AUser? user;
   const SubMyPageSellingPage({Key? key, required this.list, required this.user}) : super(key: key);
 
   @override
@@ -23,8 +23,8 @@ class SubMyPageSellingPage extends StatefulWidget {
 
 class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
 
-  List<Goods>? list;
-  late User? user;
+  List<Item>? list;
+  late AUser? user;
   int refreshNum = 0;
   String stateText = "판매중";
 
@@ -36,7 +36,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
     user = widget.user;
     refreshNum = 0;
     debugPrint("My Selling Page Initiate");
-    debugPrint(myUserInfo.userGoodsNum.toString());
+    debugPrint(myUserInfo.userItemNum.toString());
   }
 
   @override
@@ -59,7 +59,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
             },
 
             //내 물품이 없음면 Text 출력
-            child: myUserInfo.userGoodsNum == 0 ? const Text("내 물품이 없습니다") :
+            child: myUserInfo.userItemNum == 0 ? const Text("내 물품이 없습니다") :
             ListView.builder(itemBuilder: (context, position) {
               //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
 
@@ -180,17 +180,17 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                         context, MaterialPageRoute(
                                         builder: (context) =>
                                             SubSellingPageModifyPage(
-                                                goods: list![position])));
+                                                item: list![position])));
                                     setState(() {
                                       if (newData.returnType == "modified") {
                                         //userName 여기서 등록
-                                        list?[position].goodsDetail = newData.goodsDetail!;
+                                        list?[position].itemDetail = newData.itemDetail!;
                                         list?[position].sellingTitle = newData.sellingTitle!;
-                                        list?[position].goodsQuality = newData.goodsQuality!;
+                                        list?[position].itemQuality = newData.itemQuality!;
                                         list?[position].isQuickSell = newData.isQuickSell!;
                                         list?[position].imageListB = newData.imagePath!;
                                         list?[position].sellingPrice = newData.sellingPrice;
-                                        list?[position].goodsType = newData.goodsType;
+                                        list?[position].itemType = newData.itemType;
                                         //수정하면 시간도 방금전 업데이트
                                         list?[position].uploadDate = "방금 전";
                                         list?[position].uploadDateForCompare =
@@ -218,7 +218,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                   onPressed: () {
                                     setState(() {
                                       list?.removeAt(position);
-                                      myUserInfo.userGoodsNum = (myUserInfo.userGoodsNum! - 1)!;
+                                      myUserInfo.userItemNum = (myUserInfo.userItemNum! - 1)!;
                                       //instance delete는 나중에 생각해보자
                                     });
                                   },
@@ -241,9 +241,19 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                                 child: MaterialButton(
                                   onPressed: () {
                                     setState(() {
-                                      list![position].sellingState = (list![position].sellingState + 1)%3;
-                                      stateText = list![position].sellingState == 0? "판매중"
-                                          : list![position].sellingState == 1? "예약중" : "판매완료";
+                                      if(list![position].itemStatus == ItemStatus.TRADING){
+                                        list![position].itemStatus = ItemStatus.RESERVED;
+                                        stateText = "예약중";}
+                                      else if(list![position].itemStatus == ItemStatus.RESERVED){
+                                        list![position].itemStatus = ItemStatus.SOLDOUT;
+                                        stateText = "판매완료";
+                                      }else if(list![position].itemStatus == ItemStatus.SOLDOUT){
+                                        list![position].itemStatus = ItemStatus.FASTSELL;
+                                        stateText = "급처분";
+                                      }else{
+                                        list![position].itemStatus = ItemStatus.TRADING;
+                                        stateText = "거래가능";
+                                      };
                                     });
                                   },
                                   child: Text(stateText, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
@@ -259,7 +269,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(
                           builder: (context) =>
-                              SubHomePage(goods: list![position])));
+                              SubHomePage(item: list![position])));
                     }
                 );
               } else{

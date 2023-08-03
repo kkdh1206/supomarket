@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 import 'package:intl/intl.dart';
-
 import '../../entity/user_entity.dart';
-import '../../infra/goods_list_data.dart';
+import '../../infra/item_list_data.dart';
+
+
 
 
 Color postechRed = const Color(0xffac145a);
@@ -16,7 +17,7 @@ var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
 String searchName = "";
 
 class HomePage extends StatefulWidget {
-  final List<Goods>? list;
+  final List<Item>? list;
   const HomePage({Key? key, required this.list}) : super(key: key);
 
   @override
@@ -25,7 +26,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  List<Goods>? list;
+  List<Item>? list;
   int refreshNum = 0;
   String selectedOption = "최신 순";
   final options = ["최신 순", "가격 순"];
@@ -271,7 +272,7 @@ class _HomePageState extends State<HomePage> {
                                     Navigator.push(context, MaterialPageRoute(
                                         builder: (context) =>
                                             SubHomePage(
-                                                goods: list![list!.length -
+                                                item: list![list!.length -
                                                     position - 1])));
                                   }
                               );

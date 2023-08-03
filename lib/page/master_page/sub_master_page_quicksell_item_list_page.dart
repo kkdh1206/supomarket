@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/page/my_page/sub_my_info_page_change_password_page.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 import '../../entity/user_entity.dart';
 import '../../infra/my_info_data.dart';
 import '../../infra/users_info_data.dart';
@@ -15,9 +15,9 @@ import '../my_page/sub_selling_page_modify_page.dart';
 Color postechRed = Color(0xffac145a);
 var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
 
-class SubMasterPageGoodsListPage extends StatefulWidget {
-  final List<Goods> list;
-  const SubMasterPageGoodsListPage({super.key, required this.list});
+class SubMasterPageQuicksellItemListPage extends StatefulWidget {
+  final List<Item> list;
+  const SubMasterPageQuicksellItemListPage({super.key, required this.list});
 
   @override
   State<StatefulWidget> createState() {
@@ -25,12 +25,9 @@ class SubMasterPageGoodsListPage extends StatefulWidget {
   }
 }
 
-class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> {
-
-
-  List<Goods>? list;
+class _SubMasterPageUserListPageState extends State<SubMasterPageQuicksellItemListPage> {
+  List<Item>? list;
   int refreshNum = 0;
-
 
   @override
   void initState() {
@@ -38,6 +35,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
     list = widget.list;
     refreshNum = 0;
     debugPrint("My Selling Page Initiate");
+    debugPrint(myUserInfo.userItemNum.toString());
   }
 
   @override
@@ -60,11 +58,14 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
             },
 
             //내 물품이 없음면 Text 출력
-            child:
+            child: allQuicksellNum == 0 ? const Text("급처분 물품이 없습니다") :
             ListView.builder(itemBuilder: (context, position) {
               //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
+
               list![position].uploadDate = formatDate(list![position].uploadDateForCompare??DateTime.now());
               //uploadDate를 현재 시간 기준으로 계속 업데이트하기
+              if(list![position].isQuickSell) {
+                //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
                 return GestureDetector(
                     child: Card(
                       margin: const EdgeInsets.symmetric(
@@ -80,9 +81,9 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
                                       top: 10, bottom: 10, left: 10, right: 15),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8.0),
-                                      child:list![position].imageListB.isEmpty?
-                                      Image.asset( "assets/images/main_logo.jpg",width: 100, height: 100, fit: BoxFit.cover) :
-                                      Image.network(list![position].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
+                                      child: list![position].imageListB.isEmpty?
+                                          Image.asset( "assets/images/main_logo.jpg",width: 100, height: 100, fit: BoxFit.cover) :
+                                          Image.network(list![position].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
                                     ),
                                   ),
                                   Expanded(
@@ -120,9 +121,13 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
                                           Row(
                                             children: [
                                               Expanded(
-                                                child: Text("가격: ${f.format(list![position].sellingPrice!)}원",
-                                                    style: const TextStyle(fontSize: 10),
-                                                    overflow: TextOverflow.ellipsis),
+                                                child: Text("가격: ${f.format(
+                                                    list![position]
+                                                        .sellingPrice!)}원",
+                                                    style: const TextStyle(
+                                                        fontSize: 10),
+                                                    overflow: TextOverflow
+                                                        .ellipsis),
                                               ),
                                             ],
                                           ),
@@ -174,24 +179,24 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
                                         context, MaterialPageRoute(
                                         builder: (context) =>
                                             SubSellingPageModifyPage(
-                                                goods: list![position])));
+                                                item: list![position])));
                                     setState(() {
                                       if (newData.returnType == "modified") {
                                         //userName 여기서 등록
-                                        list?[position].goodsDetail =
-                                        newData.goodsDetail!;
+                                        list?[position].itemDetail =
+                                        newData.itemDetail!;
                                         list?[position].sellingTitle =
                                         newData.sellingTitle!;
-                                        list?[position].goodsQuality =
-                                        newData.goodsQuality!;
+                                        list?[position].itemQuality =
+                                        newData.itemQuality!;
                                         list?[position].isQuickSell =
                                         newData.isQuickSell!;
                                         list?[position].sellingPrice =
                                             newData.sellingPrice;
-                                        list?[position].goodsType =
-                                            newData.goodsType;
+                                        list?[position].itemType =
+                                            newData.itemType;
                                         list?[position].imageListB =
-                                            newData.imagePath;
+                                            newData.imagePath!;
                                         //수정하면 시간도 방금전 업데이트
                                         list?[position].uploadDate = "방금 전";
                                         list?[position].uploadDateForCompare =
@@ -219,7 +224,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
                                   onPressed: () {
                                     setState(() {
                                       list?.removeAt(position);
-                                      myUserInfo.userGoodsNum = (myUserInfo.userGoodsNum! - 1)!;
+                                      myUserInfo.userItemNum = (myUserInfo.userItemNum! - 1)!;
                                       //instance delete는 나중에 생각해보자
                                     });
                                   },
@@ -239,9 +244,12 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageGoodsListPage> 
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(
                           builder: (context) =>
-                              SubHomePage(goods: list![position])));
+                              SubHomePage(item: list![position])));
                     }
                 );
+              } else{
+                return const SizedBox(width: 0, height: 0);
+              }
             },
               itemCount: list!.length, //아이템 개수만큼 스크롤 가능
             ),
@@ -266,3 +274,4 @@ String formatDate(DateTime date) {
     return '${date.year}.${date.month}.${date.day}';
   }
 }
+

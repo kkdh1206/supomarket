@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:supo_market/page/category_page/sub_category_page.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 import '../chatting_page/chatting_page.dart';
 import '../my_page/my_page.dart';
 import 'package:supo_market/constants.dart';
@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 class CategoryPage extends StatefulWidget{
 
-  final List<Goods>? list;
+  final List<Item>? list;
   const CategoryPage({Key? key, required this.list}) : super(key: key);
 
   @override
@@ -20,7 +20,7 @@ class CategoryPage extends StatefulWidget{
 
 class _CategoryPageState extends State<CategoryPage>{
 
-  List<Goods>? list;
+  List<Item>? list;
 
   @override
   void initState() {
@@ -95,7 +95,7 @@ Widget CategoryCard(Color color, String text){
 
 
 
-Widget CategoryButton(List<Goods> list, BuildContext context, Color color, String text, Icon icon){
+Widget CategoryButton(List<Item> list, BuildContext context, Color color, String text, Icon icon){
 
   Color temp = color;
   String categoryName = text;
@@ -126,7 +126,7 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                       list![list!.length-position-1].uploadDate = formatDate(list![list!.length-position-1].uploadDateForCompare??DateTime.now());
                       //uploadDate를 현재 시간 기준으로 계속 업데이트하기
 
-                      if(list?[list!.length-position-1]!.goodsType!.contains(categoryName)??true){
+                      if(list?[list!.length-position-1]!.itemType.toString().contains(categoryName)??true){
                         //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
                         return GestureDetector(
                             child: Card(
@@ -214,7 +214,7 @@ Widget CategoryButton(List<Goods> list, BuildContext context, Color color, Strin
                             ),
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => SubHomePage(goods: list![list!.length-position-1])));
+                                  builder: (context) => SubHomePage(item: list![list!.length-position-1])));
                             }
                         );
                       }

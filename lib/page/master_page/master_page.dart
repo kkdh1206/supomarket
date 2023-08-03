@@ -1,19 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:supo_market/page/master_page/sub_master_page_goods_list_page.dart';
-import 'package:supo_market/page/master_page/sub_master_page_quicksell_goods_list_page.dart';
+import 'package:supo_market/page/master_page/sub_master_page_item_list_page.dart';
+import 'package:supo_market/page/master_page/sub_master_page_quicksell_item_list_page.dart';
 import 'package:supo_market/page/master_page/sub_master_page_user_list_page.dart';
 import 'package:supo_market/page/my_page/sub_my_info_page_change_password_page.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 import '../../infra/my_info_data.dart';
 import '../../infra/users_info_data.dart';
-import '../log_in_page/log_in_page.dart';
 
 Color postechRed = Color(0xffac145a);
 
 class MasterPage extends StatefulWidget {
-  final List<Goods> list;
+  final List<Item> list;
   const MasterPage({super.key, required this.list});
 
   @override
@@ -73,7 +72,7 @@ class _MasterPageState extends State<MasterPage> {
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMasterPageGoodsListPage(list: widget.list)));
+                          builder: (context) => SubMasterPageItemListPage(list: widget.list)));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,
@@ -92,7 +91,7 @@ class _MasterPageState extends State<MasterPage> {
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMasterPageQuicksellGoodsListPage(list: widget.list)));
+                          builder: (context) => SubMasterPageQuicksellItemListPage(list: widget.list)));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,

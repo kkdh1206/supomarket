@@ -10,14 +10,14 @@ import 'package:supo_market/page/my_page/sub_my_info_page_change_password_page.d
 import 'package:supo_market/page/my_page/sub_my_page_my_info_page.dart';
 import 'package:supo_market/page/my_page/sub_my_page_selling_page.dart';
 import 'package:supo_market/page/my_page/sub_my_page_settings_page.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 import '../../entity/user_entity.dart';
 import '../../infra/users_info_data.dart';
 import '../welcome_page.dart';
 import '../master_page/master_page.dart';
 
 class MyPage extends StatefulWidget{
-  final List<Goods> list;
+  final List<Item> list;
   const MyPage({Key? key, required this.list}) : super(key:key);
 
   @override
@@ -29,7 +29,7 @@ class MyPage extends StatefulWidget{
 
 class _MyPageState extends State<MyPage>{
 
-  List<Goods>? list;
+  List<Item>? list;
 
   @override
   void initState() {
@@ -198,7 +198,7 @@ class _MyPageState extends State<MyPage>{
 
 
               //관리자만 보이는 메뉴
-              myUserInfo!.isMaster == true?
+              myUserInfo!.userStatus == UserStatus.NORMAL?
               SizedBox(
                   height: 50,
                   child: MaterialButton(

@@ -3,15 +3,15 @@ import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 import 'package:flutter/services.dart';
 
 Color postechRed = Color(0xffac145a);
 
 class SubHomePage extends StatefulWidget {
 
-  final Goods goods;
-  const SubHomePage({Key? key, required this.goods}) : super(key: key);
+  final Item item;
+  const SubHomePage({Key? key, required this.item}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -47,7 +47,7 @@ class _SubHomePageState extends State<SubHomePage>{
                 Padding(padding: const EdgeInsets.only(top:0),
                   child: Stack(alignment: Alignment.bottomCenter, children: <Widget>[
 
-                    widget.goods.imageListB.isEmpty?
+                    widget.item.imageListB.isEmpty?
                     Image.asset("assets/images/main_logo.jpg", width: 400, height: 400, fit: BoxFit.fitHeight,)
                     : CarouselSlider.builder(
                         options: CarouselOptions(
@@ -59,20 +59,20 @@ class _SubHomePageState extends State<SubHomePage>{
                             activeIndex = index;
                           }),
                           ),
-                            itemCount: widget.goods.imageListB?.length,
+                            itemCount: widget.item.imageListB?.length,
                             itemBuilder: (context, index, realIndex) {
-                              final url = widget.goods.imageListB?[index];
+                              final url = widget.item.imageListB?[index];
                               return imageSlider(url, index);
                             },
                       ),
 
 
-                    widget.goods.imageListB.isEmpty? const SizedBox(width:0, height: 0)
+                    widget.item.imageListB.isEmpty? const SizedBox(width:0, height: 0)
                     : Positioned(
                       bottom : 20,
                       child: CarouselIndicator(
                           animationDuration: 100,
-                          count: widget.goods.imageListB?.length,
+                          count: widget.item.imageListB?.length,
                           index: activeIndex,
                         ),
                     )
@@ -92,7 +92,7 @@ class _SubHomePageState extends State<SubHomePage>{
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10, top: 10),
-                      child : Text(widget.goods.sellingTitle!, textScaleFactor: 1.8, style: const TextStyle(fontWeight: FontWeight.w900), textAlign: TextAlign.start),
+                      child : Text(widget.item.sellingTitle!, textScaleFactor: 1.8, style: const TextStyle(fontWeight: FontWeight.w900), textAlign: TextAlign.start),
                     ),
                   ),
                 ),
@@ -105,7 +105,7 @@ class _SubHomePageState extends State<SubHomePage>{
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10, top: 10),
-                      child : Text("등록 날짜 : ${widget.goods.uploadDate??"미상"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
+                      child : Text("등록 날짜 : ${widget.item.uploadDate??"미상"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
                     ),
                   ),
                 ),
@@ -118,7 +118,12 @@ class _SubHomePageState extends State<SubHomePage>{
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10, top: 10),
-                      child : Text("상품 종류 : ${widget.goods.goodsType??"미상"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
+                      child : Text("상품 종류 : "
+                        "${widget.item.itemType == ItemType.REFRIGERATOR? "냉장고":
+                        widget.item.itemType == ItemType.MONITOR? "모니터":
+                        widget.item.itemType == ItemType.BOOK? "책":
+                        widget.item.itemType == ItemType.ROOM? "자취방":
+                        widget.item.itemType == ItemType.CLOTHES? "옷": "기타"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
                     ),
                   ),
                 ),
@@ -131,7 +136,9 @@ class _SubHomePageState extends State<SubHomePage>{
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10, top: 10),
-                      child : Text("상품 품질 : ${widget.goods.goodsQuality??"미상"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
+                      child : Text("상품 품질 : "
+                          "${widget.item.itemQuality == ItemQuality.HIGH? "상" :
+                            widget.item.itemQuality == ItemQuality.MID? "중" :"하"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
                     ),
                   ),
                 ),
@@ -144,7 +151,7 @@ class _SubHomePageState extends State<SubHomePage>{
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10, top: 10),
-                      child : Text("상품 내용 : ${widget.goods.goodsDetail??""}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
+                      child : Text("상품 내용 : ${widget.item.itemDetail??""}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
                     ),
                   ),
                 ),
@@ -160,10 +167,10 @@ class _SubHomePageState extends State<SubHomePage>{
                   Padding(padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 15),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100.0),
-                      child: widget.goods.sellerImage==null? Image.asset("assets/images/user.png",  width:100, height: 100, fit: BoxFit.cover)
-                      : Image.network(widget.goods.sellerImage??"", width:100, height: 100, fit: BoxFit.cover),),
+                      child: widget.item.sellerImage==null? Image.asset("assets/images/user.png",  width:100, height: 100, fit: BoxFit.cover)
+                      : Image.network(widget.item.sellerImage??"", width:100, height: 100, fit: BoxFit.cover),),
                   ),
-                  Text("판매자 : ${widget.goods.sellerName??"미상"}", textScaleFactor: 1.2),
+                  Text("판매자 : ${widget.item.sellerName??"미상"}", textScaleFactor: 1.2),
                   const Expanded(child: SizedBox(width:1)),
                 ],
               ),
@@ -175,7 +182,7 @@ class _SubHomePageState extends State<SubHomePage>{
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10, top: 10),
-                      child : Text("${widget.goods.sellingPrice!.toString()}원", textScaleFactor: 1.8, style: const TextStyle(fontWeight: FontWeight.w900), textAlign: TextAlign.start),
+                      child : Text("${widget.item.sellingPrice!.toString()}원", textScaleFactor: 1.8, style: const TextStyle(fontWeight: FontWeight.w900), textAlign: TextAlign.start),
                     ),
                   ),
                 ),
@@ -186,9 +193,9 @@ class _SubHomePageState extends State<SubHomePage>{
         bottomNavigationBar: BottomAppBar(
           child: Row(
             children: [
-              IconButton(icon: widget.goods.isLiked == true? Icon(Icons.favorite) : Icon(Icons.favorite_border),
+              IconButton(icon: widget.item.isLiked == true? Icon(Icons.favorite) : Icon(Icons.favorite_border),
                 onPressed: () {
-                  setState((){widget.goods.isLiked = !(widget.goods.isLiked!);});
+                  setState((){widget.item.isLiked = !(widget.item.isLiked!);});
                 }),
               IconButton(icon: Icon(Icons.chat),onPressed: () {},),
               IconButton(icon: Icon(Icons.more_vert),onPressed: () {},),

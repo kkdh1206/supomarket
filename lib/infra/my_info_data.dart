@@ -13,13 +13,13 @@ var mySetting = Setting(
   selectedCategoryAlarm: "없음",
 );
 
-var myUserInfo = User(
+var myUserInfo = AUser(
     id: "",
     password : "",
     userName: "",
     imagePath: "assets/images/user.png",
     userSchoolNum: "",
-    userGoodsNum: 0,
+    userItemNum: 0,
     isUserLogin: false, //이걸로 초기 페이지 조절 가능
-    isMaster: true,
+    userStatus: UserStatus.NORMAL,
 );

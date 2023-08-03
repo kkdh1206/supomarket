@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 
 
 /////////일단 안쓰는 page - 혹시모르니까 보류//////////////////
@@ -15,7 +15,7 @@ Color postechRed = const Color(0xffac145a);
 
 class SubCategoryPage extends StatefulWidget{
 
-  final List<Goods>? list;
+  final List<Item>? list;
   final String category;
   const SubCategoryPage({Key? key, required this.list, required this.category}) : super(key: key);
 
@@ -25,7 +25,7 @@ class SubCategoryPage extends StatefulWidget{
 
 class _SubCategoryPageState extends State<SubCategoryPage> {
 
-  List<Goods>? list;
+  List<Item>? list;
   late String category;
   int refreshNum = 0;
   late String searchName;
@@ -181,7 +181,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                     ),
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubHomePage(goods: list![position])));
+                          builder: (context) => SubHomePage(item: list![position])));
                     }
                 );
               }

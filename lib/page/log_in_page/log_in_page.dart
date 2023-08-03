@@ -72,7 +72,7 @@ class _LogInPageState extends State<LogInPage> {
     isPressed = false;
     //test();
     //_pickImage();
-    // myUserInfo.userGoodsNum = 0;
+    // myUserInfo.userItemNum = 0;
     // myUserInfo.userName = "";
     // myUserInfo.imagePath = "";
     // myUserInfo.userSchoolNum = "";

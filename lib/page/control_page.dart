@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:sqflite_common/sqlite_api.dart';
-import 'package:supo_market/infra/goods_list_data.dart';
 import 'package:supo_market/page/category_page/category_page.dart';
 import 'package:supo_market/page/sub_add_goods_page.dart';
 import '../entity/chat_room_entity.dart';
-import '../entity/goods_entity.dart';
+import '../entity/item_entity.dart';
 import '../entity/user_entity.dart';
+import '../infra/item_list_data.dart';
 import '../infra/my_info_data.dart';
 import 'chatting_page/chatting_page.dart';
 import 'favorite_page/favorite_page.dart';
@@ -15,7 +15,7 @@ import 'home_page/home_page.dart';
 import 'my_page/my_page.dart';
 
 
-Goods emptyGoods = Goods(sellingTitle: "", goodsType: "", goodsQuality: "", sellerName: "미상", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false,isQuickSell: false, uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [], sellingState: 0);
+Item emptyItem = Item(sellingTitle: "", itemType: ItemType.BOOK, itemQuality: ItemQuality.MID, sellerName: "미상", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false,isQuickSell: false, uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [],  itemStatus: ItemStatus.TRADING);
 
 class ControlPage extends StatefulWidget{
 
@@ -30,7 +30,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   //singleTickerProviderState를 상속에 추가하지 않으면 해당 클래스에서 애니메이션을 처리할 수 없다.
   TabController? controller;
   List<ChatRoom> chatRoomList = List.empty(growable: true);
-  late User otherUser;
+  late AUser otherUser;
   Color postechRed = Color(0xffac145a);
 
   @override
@@ -38,12 +38,12 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
     super.initState();
     debugPrint("control_initiate");
     controller = TabController(length: 5, vsync: this);
-    otherUser = User(userName: "정태형", isUserLogin: true, imagePath: "assets/images/user.png", userSchoolNum: "20210000", userGoodsNum: 0, id: '1234', password: '12345677', isMaster: false);
-    goodsList.add(Goods(sellingTitle: "냉장고 싸게 팝니다", goodsType: "냉장고", goodsQuality: "상", sellerName: "정태형", sellingPrice: 10000, uploadDate: "10일 전", uploadDateForCompare: DateTime(2023, 7, 8, 18, 20), sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, isQuickSell: false, sellerSchoolNum: "20220000", imageListA: [], imageListB: [], sellingState: 0));
-    goodsList.add(Goods(sellingTitle: "컴퓨터구조 교재 가져가세요", goodsType: "책", goodsQuality: "하", sellerName: "김도형", sellingPrice: 20000, uploadDate : "방금 전", uploadDateForCompare: DateTime(2000, 12, 31), sellerImage : "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fseller_sample.png?alt=media&token=15dbc13b-5eb3-41f8-9c2a-d33d447d2e15", isLiked : true, goodsDetail: "한 번밖에 안썼어요", isQuickSell: true, sellerSchoolNum: "20211111", imageListA : [], imageListB : [], sellingState: 0));
-    chatRoomList.add(ChatRoom(traderName: "채팅봇", traderImage: "assets/images/bot.png", goodsName: "", lastChattingDay: "방금 전", lastChattingSentence: "안녕하세요, 슈포마켓에 오신 것을 환영합니다.", sellingTitle: '환영합니다'));
+    otherUser = AUser(userName: "정태형", isUserLogin: true, imagePath: "assets/images/user.png", userSchoolNum: "20210000", userItemNum: 0, id: '1234', password: '12345677', userStatus: UserStatus.NORMAL);
+    itemList.add(Item(sellingTitle: "냉장고 싸게 팝니다", itemType: ItemType.REFRIGERATOR, itemQuality: ItemQuality.MID, sellerName: "정태형", sellingPrice: 10000, uploadDate: "10일 전", uploadDateForCompare: DateTime(2023, 7, 8, 18, 20), sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, isQuickSell: false, sellerSchoolNum: "20220000", imageListA: [], imageListB: [], itemStatus: ItemStatus.TRADING));
+    itemList.add(Item(sellingTitle: "컴퓨터구조 교재 가져가세요", itemType: ItemType.BOOK, itemQuality: ItemQuality.MID, sellerName: "김도형", sellingPrice: 20000, uploadDate : "방금 전", uploadDateForCompare: DateTime(2000, 12, 31), sellerImage : "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fseller_sample.png?alt=media&token=15dbc13b-5eb3-41f8-9c2a-d33d447d2e15", isLiked : true, itemDetail: "한 번밖에 안썼어요", isQuickSell: true, sellerSchoolNum: "20211111", imageListA : [], imageListB : [], itemStatus: ItemStatus.TRADING));
+    chatRoomList.add(ChatRoom(traderName: "채팅봇", traderImage: "assets/images/bot.png", itemName: "", lastChattingDay: "방금 전", lastChattingSentence: "안녕하세요, 슈포마켓에 오신 것을 환영합니다.", sellingTitle: '환영합니다'));
     setState(() {
-      myUserInfo.userGoodsNum ??= 0; //널이면 0 초기화
+      myUserInfo.userItemNum ??= 0; //널이면 0 초기화
     });
   }
 
@@ -77,15 +77,15 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
         backgroundColor: postechRed,
         onPressed: ()
           async {
-            final newData = await Navigator.push(context, MaterialPageRoute(builder: (context) => SubAddGoodsPage(list: goodsList)));
+            final newData = await Navigator.push(context, MaterialPageRoute(builder: (context) => SubAddItemPage(list: itemList)));
             setState(() {
               if(newData.returnType == "add"){
                 //userName 여기서 등록
-                newData.goods.sellerName = myUserInfo.userName;
-                newData.goods.sellerSchoolNum = myUserInfo.userSchoolNum;
-                goodsList.add(newData.goods??emptyGoods);
-                //userGoodsNum 증가
-                myUserInfo.userGoodsNum = (myUserInfo.userGoodsNum! + 1)!;
+                newData.item.sellerName = myUserInfo.userName;
+                newData.item.sellerSchoolNum = myUserInfo.userSchoolNum;
+                itemList.add(newData.item??emptyItem);
+                //userItemNum 증가
+                myUserInfo.userItemNum = (myUserInfo.userItemNum! + 1)!;
 
                 //추가했을 때는 10개가 넘어가도 괜찮음!
                 itemCount = itemCount + 1;
@@ -97,7 +97,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       ),
       body: TabBarView(
         controller: controller,
-        children: <Widget>[HomePage(list: goodsList), CategoryPage(list: goodsList), ChattingPage(list: chatRoomList), FavoritePage(list: goodsList), MyPage(list: goodsList)],
+        children: <Widget>[HomePage(list: itemList), CategoryPage(list: itemList), ChattingPage(list: chatRoomList), FavoritePage(list: itemList), MyPage(list: itemList)],
       ),
       bottomNavigationBar: TabBar(tabs: const <Tab>[
         Tab(icon: Icon(Icons.home_filled, color: Color(0xffac145a)), child : Text("홈")),

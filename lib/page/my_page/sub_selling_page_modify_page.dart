@@ -6,15 +6,15 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 
 Color postechRed = Color(0xffac145a);
 String temp = "";
 
 class SubSellingPageModifyPage extends StatefulWidget {
 
-  final Goods goods;
-  const SubSellingPageModifyPage({Key? key, required this.goods}) : super(key: key);
+  final Item item;
+  const SubSellingPageModifyPage({Key? key, required this.item}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -25,8 +25,8 @@ class SubSellingPageModifyPage extends StatefulWidget {
 
 class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
 
-  late Goods originalGoods;
-  Goods modifiedGoods = Goods(sellingTitle: "", goodsType: "", goodsQuality: "", sellerName: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false,isQuickSell: false,  uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [], sellingState: 0);
+  late Item originalItem;
+  Item modifiedItem = Item(sellingTitle: "", itemType: ItemType.ETC, itemQuality: ItemQuality.HIGH, sellerName: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false,isQuickSell: false,  uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [], itemStatus: ItemStatus.TRADING);
   FixedExtentScrollController? firstController;
   FixedExtentScrollController? secondController;
 
@@ -37,16 +37,16 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
     debugPrint("modifyPage initiate");
     firstController = FixedExtentScrollController(initialItem: 0);
     secondController = FixedExtentScrollController(initialItem: 0);
-    originalGoods = widget.goods;
+    originalItem = widget.item;
 
-    //temp modified goods 에 얕은 복사
-    modifiedGoods.sellingTitle = originalGoods.sellingTitle;
-    modifiedGoods.goodsType = originalGoods.goodsType;
-    modifiedGoods.goodsQuality = originalGoods.goodsQuality;
-    modifiedGoods.sellingPrice = originalGoods.sellingPrice;
-    modifiedGoods.imageListB = originalGoods.imageListB;
-    modifiedGoods.goodsDetail = originalGoods.goodsDetail;
-    modifiedGoods.isQuickSell = originalGoods.isQuickSell;
+    //temp modified item 에 얕은 복사
+    modifiedItem.sellingTitle = originalItem.sellingTitle;
+    modifiedItem.itemType = originalItem.itemType;
+    modifiedItem.itemQuality = originalItem.itemQuality;
+    modifiedItem.sellingPrice = originalItem.sellingPrice;
+    modifiedItem.imageListB = originalItem.imageListB;
+    modifiedItem.itemDetail = originalItem.itemDetail;
+    modifiedItem.isQuickSell = originalItem.isQuickSell;
   }
 
   @override
@@ -68,13 +68,13 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
             child: IconButton (onPressed: () {
               Navigator.pop(context,
                 ReturnData(returnType: 'exit',
-                    sellingTitle: modifiedGoods.sellingTitle??"",
-                    imagePath: modifiedGoods.imageListB.isEmpty?[]:modifiedGoods.imageListB,
-                    goodsType: modifiedGoods.goodsType??"",
-                    goodsQuality: modifiedGoods.goodsQuality??"",
-                    sellingPrice: modifiedGoods.sellingPrice??0,
-                    isQuickSell: modifiedGoods.isQuickSell??false,
-                    goodsDetail: modifiedGoods.goodsDetail??""));
+                    sellingTitle: modifiedItem.sellingTitle??"",
+                    imagePath: modifiedItem.imageListB.isEmpty?[]:modifiedItem.imageListB,
+                    itemType: modifiedItem.itemType??ItemType.BOOK,
+                    itemQuality: modifiedItem.itemQuality??ItemQuality.MID,
+                    sellingPrice: modifiedItem.sellingPrice??0,
+                    isQuickSell: modifiedItem.isQuickSell??false,
+                    itemDetail: modifiedItem.itemDetail??""));
               },
                 icon: const Icon(Icons.clear, color: Colors.black45), iconSize: 30)
         ),
@@ -82,17 +82,17 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
           onPressed: (){
             setState(() {
               //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
-              modifiedGoods.uploadDate = "방금 전";
-              modifiedGoods.uploadDateForCompare = DateTime.now();
+              modifiedItem.uploadDate = "방금 전";
+              modifiedItem.uploadDateForCompare = DateTime.now();
             });
             Navigator.pop(context, ReturnData(returnType: 'modified',
-                sellingTitle: modifiedGoods.sellingTitle??"",
-                goodsType: modifiedGoods.goodsType??"",
-                goodsQuality: modifiedGoods.goodsQuality??"",
-                sellingPrice: modifiedGoods.sellingPrice??0,
-                isQuickSell : modifiedGoods.isQuickSell??false,
-                goodsDetail: modifiedGoods.goodsDetail??"",
-                imagePath: modifiedGoods.imageListB??[],
+                sellingTitle: modifiedItem.sellingTitle??"",
+                itemType: modifiedItem.itemType??ItemType.BOOK,
+                itemQuality: modifiedItem.itemQuality??ItemQuality.MID,
+                sellingPrice: modifiedItem.sellingPrice??0,
+                isQuickSell : modifiedItem.isQuickSell??false,
+                itemDetail: modifiedItem.itemDetail??"",
+                imagePath: modifiedItem.imageListB??[],
             )
             );
           },
@@ -109,7 +109,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
               child: Padding(
                 padding: const EdgeInsets.only(left:10, right:10),
                 child: TextFormField(
-                  initialValue : modifiedGoods.sellingTitle,
+                  initialValue : modifiedItem.sellingTitle,
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 8,
@@ -120,7 +120,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                     hintText: '판매 제목을 작성하세요',
                   ),
                   onChanged: (text) {
-                    setState((){modifiedGoods.sellingTitle = text;});
+                    setState((){modifiedItem.sellingTitle = text;});
                   },
                 ),
               )
@@ -162,12 +162,12 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                                   onSelectedItemChanged: (index){
                                     setState(() {
                                       switch(index){
-                                        case(0) : modifiedGoods.goodsType = "냉장고";
-                                        case(1) : modifiedGoods.goodsType = "의류";
-                                        case(2) : modifiedGoods.goodsType = "자취방";
-                                        case(3) : modifiedGoods.goodsType= "모니터";
-                                        case(4) : modifiedGoods.goodsType = "책";
-                                        case(5) : modifiedGoods.goodsType = "기타";
+                                        case(0) : modifiedItem.itemType = ItemType.REFRIGERATOR;
+                                        case(1) : modifiedItem.itemType = ItemType.CLOTHES;
+                                        case(2) : modifiedItem.itemType = ItemType.ROOM;
+                                        case(3) : modifiedItem.itemType= ItemType.MONITOR;
+                                        case(4) : modifiedItem.itemType = ItemType.BOOK;
+                                        case(5) : modifiedItem.itemType = ItemType.ETC;
                                       }
                                     });
                                   },
@@ -186,7 +186,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                         );
                       }
                   );
-                }, child: Text("카테고리 : ${modifiedGoods.goodsType}"),),
+                }, child: Text("카테고리 : ${modifiedItem.itemType}"),),
               const SizedBox(width: 10),
               CupertinoButton(
                 minSize: 0,
@@ -209,9 +209,9 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                                   onSelectedItemChanged: (Index){
                                     setState(() {
                                       switch(Index){
-                                        case(0) : modifiedGoods.goodsQuality = "상";
-                                        case(1) : modifiedGoods.goodsQuality = "중";
-                                        case(2) : modifiedGoods.goodsQuality = "하";
+                                        case(0) : modifiedItem.itemQuality = ItemQuality.HIGH;
+                                        case(1) : modifiedItem.itemQuality = ItemQuality.MID;
+                                        case(2) : modifiedItem.itemQuality = ItemQuality.LOW;
                                       }
                                     });
                                   },
@@ -229,7 +229,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                         );
                       }
                   );
-                }, child: Text("품질 : ${modifiedGoods.goodsQuality}"),),
+                }, child: Text("품질 : ${modifiedItem.itemQuality}"),),
             ],
           ),
           const SizedBox(height: 10),
@@ -241,12 +241,12 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
               const Text("급처분 : ", style: TextStyle(fontSize:15)),
               CupertinoSwitch(
                 // 급처분 여부
-                value: modifiedGoods.isQuickSell,
+                value: modifiedItem.isQuickSell,
                 activeColor: CupertinoColors.activeOrange,
                 onChanged: (bool? value) {
                   // 스위치가 토글될 때 실행될 코드
                   setState(() {
-                    modifiedGoods.isQuickSell = value ?? false;
+                    modifiedItem.isQuickSell = value ?? false;
                   });
                 },
               ),
@@ -258,7 +258,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
               child: Padding(
                 padding: const EdgeInsets.only(left:10, right:10),
                 child: TextFormField(
-                  initialValue: modifiedGoods.sellingPrice.toString(),
+                  initialValue: modifiedItem.sellingPrice.toString(),
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 8,
@@ -270,7 +270,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                   ),
                   keyboardType: TextInputType.number,
                   onChanged: (text) {
-                    setState((){temp = text; modifiedGoods.sellingPrice =  int.parse(temp);});
+                    setState((){temp = text; modifiedItem.sellingPrice =  int.parse(temp);});
                   },
                 ),
               )
@@ -281,7 +281,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
               child: Padding(
                 padding: const EdgeInsets.only(left:10, right:10),
                 child: TextFormField(
-                  initialValue : modifiedGoods.goodsDetail,
+                  initialValue : modifiedItem.itemDetail,
                   maxLines: 10,
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
@@ -293,7 +293,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                     hintText: '추가로 알리고 싶은 내용을 적어주세요',
                   ),
                   onChanged: (text) {
-                    setState((){modifiedGoods.goodsDetail = text;});
+                    setState((){modifiedItem.itemDetail = text;});
                   },
                 ),
               )
@@ -304,8 +304,8 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
   }
 
   Widget LoadImageButton() {
-    debugPrint(modifiedGoods.imageListB.length.toString());
-    return modifiedGoods.imageListB.isEmpty ?
+    debugPrint(modifiedItem.imageListB.length.toString());
+    return modifiedItem.imageListB.isEmpty ?
     PlusMaterialButton()
         : Flexible(
          child: SizedBox(
@@ -318,7 +318,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
               Expanded(child:
               ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: modifiedGoods.imageListB?.length,
+                itemCount: modifiedItem.imageListB?.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Row(
                     children: [
@@ -330,13 +330,13 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                             });
                           },
                               child: Image.network(
-                                  modifiedGoods.imageListB![index], width: 100, height: 100, fit: BoxFit.fitHeight)),
+                                  modifiedItem.imageListB![index], width: 100, height: 100, fit: BoxFit.fitHeight)),
                           Positioned(
                             right: -20,
                             child: RawMaterialButton(
                               onPressed: () {
                                 setState(() {
-                                  modifiedGoods.imageListB!.removeAt(index);
+                                  modifiedItem.imageListB!.removeAt(index);
                                 });
                               },
                               shape: const CircleBorder(),
@@ -377,7 +377,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
             color: Colors.grey[200],
             icon: icon,
             onPressed: (){
-              if(modifiedGoods.imageListB.length == 5){
+              if(modifiedItem.imageListB.length == 5){
                 _showDialog();
               }
               else{
@@ -401,15 +401,15 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
         maxWidth: 1000
     );
 
-    if(pickedFile.length + modifiedGoods.imageListB.length> 5){
+    if(pickedFile.length + modifiedItem.imageListB.length> 5){
       _showDialog();
     }
     else if(pickedFile != null) {
       setState(() {
-        modifiedGoods.imageListA.addAll(pickedFile);
+        modifiedItem.imageListA.addAll(pickedFile);
         //B로 변환
         for(int i = 0; i<pickedFile.length; i++){
-          modifiedGoods.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
+          modifiedItem.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
         }
       });
     }
@@ -425,9 +425,9 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
 
     if(pickedFile != null){
       setState(() {
-        modifiedGoods.imageListA.add(pickedFile);
+        modifiedItem.imageListA.add(pickedFile);
         //A를 B로 변환
-        modifiedGoods.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
+        modifiedItem.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
 
       });
     }
@@ -505,20 +505,20 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
 class ReturnData {
   String sellingTitle;
   List<String> imagePath;
-  String goodsType;
-  String goodsQuality;
+  ItemType itemType;
+  ItemQuality itemQuality;
   int sellingPrice;
-  String goodsDetail;
+  String itemDetail;
   String returnType;
   bool isQuickSell;
 
   ReturnData(
       {required this.sellingTitle,
         required this.imagePath,
-        required this.goodsType,
-        required this.goodsQuality,
+        required this.itemType,
+        required this.itemQuality,
         required this.sellingPrice,
-        required this.goodsDetail,
+        required this.itemDetail,
         required this.isQuickSell,
         required this.returnType,});
 }

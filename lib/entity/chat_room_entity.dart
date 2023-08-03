@@ -1,7 +1,7 @@
 class ChatRoom{
   String? traderName;
   String? traderImage;
-  String? goodsName;
+  String? itemName;
   String? sellingTitle;
   //String? tradeCategory;
   String? lastChattingDay;
@@ -12,7 +12,7 @@ class ChatRoom{
     required this.traderName,
     required this.traderImage,
     //required this.tradeCategory,
-    required this.goodsName,
+    required this.itemName,
     required this.sellingTitle,
     this.lastChattingDay,
     this.lastChattingSentence

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/page/my_page/sub_my_info_page_change_password_page.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 import '../../infra/my_info_data.dart';
 import '../../infra/users_info_data.dart';
 import '../log_in_page/log_in_page.dart';
@@ -10,7 +10,7 @@ import '../log_in_page/log_in_page.dart';
 Color postechRed = Color(0xffac145a);
 
 class SubMasterPageUserListPage extends StatefulWidget {
-  final List<Goods> list;
+  final List<Item> list;
   const SubMasterPageUserListPage({super.key, required this.list});
 
   @override

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
-import '../../entity/goods_entity.dart';
+import '../../entity/item_entity.dart';
 
 Color postechRed = Color(0xffac145a);
 var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
@@ -11,7 +11,7 @@ String searchName = "";
 
 class FavoritePage extends StatefulWidget{
 
-  final List<Goods>? list;
+  final List<Item>? list;
   const FavoritePage({Key? key, required this.list}) : super(key: key);
 
   @override
@@ -21,7 +21,7 @@ class FavoritePage extends StatefulWidget{
 
 class _FavoritePageState extends State<FavoritePage>{
 
-  List<Goods>? list;
+  List<Item>? list;
 
   @override
   void initState() {
@@ -100,7 +100,7 @@ class _FavoritePageState extends State<FavoritePage>{
                 ),
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => SubHomePage(goods: list![list!.length-position-1])));
+                      builder: (context) => SubHomePage(item: list![list!.length-position-1])));
                  }
             );
           }

@@ -3,7 +3,7 @@ import 'package:supo_market/page/my_page/sub_setting_page_alarm_page.dart';
 import '../../entity/user_entity.dart';
 
 class SubMyPageSettingPage extends StatelessWidget{
-  final User user;
+  final AUser user;
   const SubMyPageSettingPage({Key? key, required this.user}) : super(key:key);
 
   @override
