@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/category_page/category_page.dart';
+import 'package:supo_market/page/search_page.dart';
 import 'package:supo_market/page/sub_add_goods_page.dart';
+import 'package:supo_market/page/util_function.dart';
 import '../entity/chat_room_entity.dart';
 import '../entity/item_entity.dart';
 import '../entity/user_entity.dart';
@@ -72,30 +74,39 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       appBar: AppBar(
           elevation: 0.0,
           centerTitle: false,
-          title: const Text("슈포마켓",
-              textAlign: TextAlign.left,
-              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black)
+          title: Stack(
+            children: [
+              Text("슈포마켓",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black)
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                    padding: EdgeInsets.only(right:5),
+                    child: IconButton(icon: Icon(Icons.search), color: Colors.black54,
+                      onPressed: (){
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (BuildContext context) => SearchPage(list: itemList)));
+                      }),
+                ),
+              ),
+            ],
           ),
           backgroundColor: Colors.white),
       floatingActionButton: FloatingActionButton(
         backgroundColor: postechRed,
         onPressed: ()
           async {
-            itemList.clear();
-            itemCount = 0;
             final newData = await Navigator.push(context, MaterialPageRoute(builder: (context) => SubAddItemPage(list: itemList)));
             setState(() {
               if(newData.returnType == "add"){
-                newData.item.sellerName = myUserInfo.userName;
-                newData.item.sellerSchoolNum = myUserInfo.userSchoolNum;
-                itemList.add(newData.item??emptyItem);
-                //userItemNum 증가
-                myUserInfo.userItemNum = (myUserInfo.userItemNum! + 1)!;
 
                 //추가했을 때는 10개가 넘어가도 괜찮음!
                 itemCount = itemCount + 1;
                 debugPrint("controlPage : 총 아이템 리스트는 ${itemCount+allQuicksellNum} 개입니다");
                 debugPrint("controlPage : 홈페이지에 표시되는 개수는 $itemCount 개입니다");
+                updateList();
               }
             });
           },
@@ -117,5 +128,12 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       ),
       backgroundColor: Colors.white,
     );
+  }
+
+  void updateList(){
+    debugPrint("update List");
+    setState(() {
+      homePageBuilder = fetchData();
+    });
   }
 }

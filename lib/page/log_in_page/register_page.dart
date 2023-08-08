@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
@@ -263,6 +264,29 @@ class _RegisterPageState extends State<RegisterPage> {
                                         });
 
                                         await createEmailAndPassword(newID, newPassword, newUserName, newUserSchoolNum);
+                                        String token = await firebaseAuth.currentUser?.getIdToken() ?? '';
+                                        // print('토큰받았따ㅏㅏㅏㅏㅏㅏㅏㅏ');
+                                        print(token);
+
+                                        Dio dio = Dio();
+
+                                        dio.options.headers['Authorization'] = 'Bearer $token';
+                                        String url = 'http://kdh.supomarket.com/auth/signup'; // 여기에 api 랑 endpoint 추가해야됨
+
+                                        Map<String, String> data = {
+                                          'Email': newID,
+                                          'username': newUserName,
+                                          'studentNumber': newUserSchoolNum
+                                        };
+                                        try {
+                                          print('!!!!!!!!!!!!!!!!!1');
+                                          print(data);
+                                          Response response = await dio.post(url, data: data);
+                                          print('???????????????????');
+                                          print(response);
+                                        } catch (e) {
+                                          print('Error sending POST request : $e');
+                                        }
 
                                       setState(() {
                                         isPressed = false;

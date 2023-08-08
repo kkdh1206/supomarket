@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -85,10 +86,42 @@ class _LogInPageState extends State<LogInPage> {
   }
 
   Future<void> getUserInfo() async{
-    setState(() {
+
+    //도형코드~
+    debugPrint("LogInPage : auth/userInfo : 유저 정보 Response 받아오기");
+    var token = await firebaseAuth.currentUser?.getIdToken();
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $token';
+        // dio.options.responseType = ResponseType.plain; // responseType 설정
+        String url = 'http://kdh.supomarket.com/auth/userInfo'; // 수정요망 (https://) 일단 뺌  --> 앞에 http든 https 든 꼭 있어야되구나!!
+
+        try {
+          Response response = await dio.get(url);
+          dynamic jsonData = response.data;
+
+          print("Response는 ${response}");
+
+          setState(() {
+            String studentNumber = jsonData['studentNumber'] as String;
+            debugPrint("LoginPage : 학번은 $studentNumber");
+            myUserInfo.userSchoolNum = studentNumber;
+          });
+
+          if (response.statusCode == 200){;
+          }
+          else {
+            print('Failed to get response. Status code: ${response.statusCode}');
+          }
+        }catch (e) {
+          print('Error sending GET request : $e');
+        }
+    //~도형코드
+
+    setState((){
       myUserInfo.id = firebaseAuth.currentUser?.email;
       myUserInfo.userName = firebaseAuth.currentUser?.displayName;
     });
+
 
     Reference ref = FirebaseStorage.instance.ref().child('users').child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
     if(ref!=null) {
@@ -104,13 +137,6 @@ class _LogInPageState extends State<LogInPage> {
       }
     }
 
-    ref = FirebaseStorage.instance.ref().child("users").child(firebaseAuth.currentUser!.uid).child("userSchoolNum"+".txt");
-    if(ref!= null) {
-      debugPrint("학번 가져오기");
-      setState(() {
-        myUserInfo.userSchoolNum= ref.name;
-      });
-    }
   }
 
 
@@ -226,9 +252,23 @@ class _LogInPageState extends State<LogInPage> {
                                           });
                                           //Sign In 이 올바르면 checkForArrive가 true, 이상한 정보라면 false가 된다.
                                           await signInWithEmailAndPassword(givenID, givenPassword);
+
+                                          //도형코드~
+                                          debugPrint("LogInPage : auth/signin 로그인 정보 받아오기");
+                                          var token = await firebaseAuth.currentUser?.getIdToken();
+                                          Dio dio = Dio();
+                                          dio.options.headers['Authorization'] = 'Bearer $token';
+                                          String url = 'http://kdh.supomarket.com/auth/signin';
+                                          try {
+                                            Response response = await dio.post(url);  // 근데 이걸 post로 해야하는지는 확신이 안서네 ;;
+                                          } catch (e) {
+                                            print('Error sending POST request : $e');
+                                          }
+                                          //~도형코드
+
                                           setState((){
                                               isPressed = false;
-                                              });
+                                            });
 
                                             if(checkForArrive == true){
                                               debugPrint("로그인 정보의 correct는 ${myUserInfo.isUserLogin.toString()}다");

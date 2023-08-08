@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,6 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
 
-
   @override
   void initState() {
     //값 받아오기 전 초기값
@@ -71,47 +71,57 @@ class MyAppState extends State<MyApp> {
     myUserInfo.userName = "";
 
     //firebase 유저 정보 불러오기
-    getUserInfo();
     super.initState();
+    debugPrint("welcomePage initiate");
 
     //로그인 여부 판단
-    if(firebaseAuth.currentUser != null){
+    if (firebaseAuth.currentUser != null) {
       myUserInfo.isUserLogin = true;
       debugPrint("로그인 상태입니다");
+      getUserInfo();
     }
-    else{
+    else {
       debugPrint("로그아웃 상태입니다");
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-
-    return MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'Nanum',
-      ),
-      home: FutureBuilder(
-        future: Future.delayed(const Duration(seconds: 3), () => "Intro Completed."),
-          builder: (context, snapshot) {
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 1000),
-              child: SplashConditionWidget(snapshot),
-          );
-        },
-      ),
-        initialRoute: '/',
-        routes: {'/control': (context) => ControlPage(),
-        //'/subHome': (context) => const SubHomePage()
-        },
-    );
-  }
-
   Future<void> getUserInfo() async{
-    setState(() {
+
+    //도형코드~
+    debugPrint("LogInPage : auth/userInfo : 유저 정보 Response 받아오기");
+    var token = await firebaseAuth.currentUser?.getIdToken();
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $token';
+    // dio.options.responseType = ResponseType.plain; // responseType 설정
+    String url = 'http://kdh.supomarket.com/auth/userInfo'; // 수정요망 (https://) 일단 뺌  --> 앞에 http든 https 든 꼭 있어야되구나!!
+
+    try {
+      Response response = await dio.get(url);
+      dynamic jsonData = response.data;
+
+      print("Response는 ${response}");
+
+      setState(() {
+        String studentNumber = jsonData['studentNumber'] as String;
+        debugPrint("WelcomePage : 학번은 $studentNumber");
+        myUserInfo.userSchoolNum = studentNumber;
+      });
+
+      if (response.statusCode == 200){;
+      }
+      else {
+        print('Failed to get response. Status code: ${response.statusCode}');
+      }
+    }catch (e) {
+      print('Error sending GET request : $e');
+    }
+    //~도형코드
+
+    setState((){
       myUserInfo.id = firebaseAuth.currentUser?.email;
       myUserInfo.userName = firebaseAuth.currentUser?.displayName;
     });
+
 
     Reference ref = FirebaseStorage.instance.ref().child('users').child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
     if(ref!=null) {
@@ -122,25 +132,33 @@ class MyAppState extends State<MyApp> {
           debugPrint("프로필 사진 가져오기");
         });
       } catch (e, stack) {
+        myUserInfo.imagePath = "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
         debugPrint("업로드된 이미지가 아직 없습니다");
       }
     }
+  }
 
-    ref = FirebaseStorage.instance.ref().child("users").child(firebaseAuth.currentUser!.uid).child("userSchoolNum"+".txt");
-    if(ref!= null) {
-      debugPrint("학번 가져오기");
-      setState(() {
-        myUserInfo.userSchoolNum= ref.name;
-      });
-    }
-
-    ref = FirebaseStorage.instance.ref().child("users").child(firebaseAuth.currentUser!.uid).child("password"+".txt");
-    if(ref!= null) {
-      debugPrint("비밀번호 가져오기");
-      setState(() {
-        myUserInfo.password= ref.name;
-      });
-    }
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'Nanum',
+      ),
+      home: FutureBuilder(
+        future: Future.delayed(
+            const Duration(seconds: 3), () => "Intro Completed."),
+        builder: (context, snapshot) {
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 1000),
+            child: SplashConditionWidget(snapshot),
+          );
+        },
+      ),
+      initialRoute: '/',
+      routes: {'/control': (context) => ControlPage(),
+        //'/subHome': (context) => const SubHomePage()
+      },
+    );
   }
 }
 
@@ -148,8 +166,7 @@ Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot) {
   if(snapshot.hasError) {
     return const Text("Error!!");
   } else if(snapshot.hasData) {
-
-    return myUserInfo.isUserLogin == false? WelcomePage() : ControlPage();
+    return (myUserInfo.isUserLogin == true) && (firebaseAuth.currentUser?.emailVerified == true)? ControlPage() : WelcomePage();
   } else {
     return SplashScreen();
   }
@@ -197,3 +214,4 @@ class WelcomePage extends StatelessWidget {
     );
   }
 }
+

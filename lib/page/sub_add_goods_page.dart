@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
+import 'package:supo_market/page/util_function.dart';
 import '../entity/item_entity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -53,8 +54,9 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
       );
 
 
-
   final picker = ImagePicker();
+  XFile? _image;
+  // List<XFile>? _imagelist =[];
 
   Future getImage() async {
     final pickedFile = await picker.pickMultiImage(
@@ -67,40 +69,45 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
       _showDialog();
     }
     else if(pickedFile != null) {
-      setState(() {
-        newItem.imageListA.addAll(pickedFile);
+      setState((){
+        int count = pickedFile.length;
+        for(int i=0; i<count; i++){
+          _image = XFile((pickedFile[i].path));
+          File file = File(_image!.path);
+          // FormData formdata =  FormData.fromMap({
+          // 'image': await MultipartFile.fromFile(file.path, filename: 'image.jpg'),});
+          newItem.imageListA.add(file);
+        }
       });
     }
   }
 
   Future getImageFromCamera() async{
     final pickedFile = await picker.pickImage(
-        imageQuality: 100,
-        maxHeight: 1000,
-        maxWidth: 1000,
-        source: ImageSource.camera,
+      imageQuality: 100,
+      maxHeight: 1000,
+      maxWidth: 1000,
+      source: ImageSource.camera,
     );
 
     if(pickedFile != null){
-      setState(() {
-        newItem.imageListA.add(pickedFile);
+      setState(() async{
+        _image = XFile(pickedFile.path);
+        File file = File(_image!.path);
+        // FormData formdata =  FormData.fromMap({
+        //   'image': await MultipartFile.fromFile(file.path, filename: 'image.jpg'),});
+        newItem.imageListA.add(file);
       });
     }
   }
 
-
-
     @override
     void initState() {
       super.initState();
-      newItem.itemType = ItemType.ETC;
-      newItem.itemQuality = ItemQuality.MID;
-      newItem.sellingPrice = 0;
 
-      debugPrint(
-          "addItemPage initiate, 현재 list 3번은 ${list?[2].itemQuality} 퀄리티이다.");
       // newItem.imageList[0].path = "assets/images/main_logo.jpg";
       newItem.sellerImage = myUserInfo!.imagePath!;
+      newItem.sellerImage = myUserInfo!.userName!;
       firstController = FixedExtentScrollController(initialItem: 0);
       secondController = FixedExtentScrollController(initialItem: 0);
       list = widget.list;
@@ -134,6 +141,8 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
                 newItem.uploadDate = "방금 전";
                 newItem.uploadDateForCompare = DateTime.now();
+                newItem.sellerName = myUserInfo.userName;
+                newItem.sellerSchoolNum = myUserInfo.userSchoolNum;
 
                 myUserInfo.userItemNum = (myUserInfo.userItemNum! +1)!;
                 if(newItem.itemStatus == ItemStatus.FASTSELL){
@@ -157,11 +166,13 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 'title': newItem.sellingTitle??"무제",
                 'description': newItem.itemDetail??"",
                 'price': newItem.sellingPrice??0,
+                'category' : ConvertEnumToString(newItem.itemType)??ItemType.ETC,
+                'status' : ConvertEnumToString(newItem.itemStatus)??ItemStatus.TRADING,
+                'quality' : ConvertEnumToString(newItem.itemQuality)??ItemQuality.MID,
               });
               for (int i = 0; i < newItem.imageListA.length; i++) {
                 formData.files.add(MapEntry('image' , await MultipartFile.fromFile(newItem.imageListA[i].path, filename:'image.jpg')));
               }
-
 
               print(formData);
               try {
@@ -171,9 +182,6 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 print('Error sending POST request : $e');
               }
               //--도형 코드---
-
-
-
 
               Navigator.pop(
                   context, ReturnData(item: newItem, returnType: "add"));
@@ -611,6 +619,15 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
       ),
     );
   }
+
+
+  void updateList(){
+    debugPrint("update List");
+    setState(() {
+      homePageBuilder = fetchData();
+    });
+  }
+
 }
 
 class ReturnData {
@@ -622,9 +639,5 @@ class ReturnData {
         required this.returnType});
 
 }
-
-
-
-
 
 

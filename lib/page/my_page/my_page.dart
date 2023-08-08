@@ -35,6 +35,7 @@ class _MyPageState extends State<MyPage>{
   void initState() {
     list = widget.list;
     super.initState();
+    debugPrint("학번은 ${myUserInfo.userSchoolNum.toString()}");
   }
 
   @override

@@ -10,14 +10,15 @@ import 'package:supo_market/page/home_page/sub_home_page.dart';
 import '../../entity/item_entity.dart';
 import 'package:intl/intl.dart';
 import '../../entity/user_entity.dart';
+import '../../entity/util_entity.dart';
 import '../../infra/item_list_data.dart';
+import '../util_function.dart';
 
 
 
 
 Color postechRed = const Color(0xffac145a);
 var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
-String searchName = "";
 
 class HomePage extends StatefulWidget {
   final List<Item>? list;
@@ -31,20 +32,25 @@ class _HomePageState extends State<HomePage> {
 
   List<Item>? list;
   int refreshNum = 0;
-  String selectedOption = "최신 순";
-  final options = ["최신 순", "가격 순"];
+  SortType selectedOption = SortType.DATEDESCEND;
+  final options = [
+    SortType.DATEDESCEND,
+    SortType.DATEASCEND,
+    SortType.PRICEDESCEND,
+    SortType.PRICEASCEND
+  ];
   int loadingCount = 0;
   double _dragDistance = 0;
   bool isMoreRequesting = false;
-  bool _isFirstLoadRunning = false;
+
+  int page = 1;
+  int pageSize = 10;
 
   @override
   void initState() {
-    itemCount = 0;
-    itemList.clear();
-    debugPrint("초기화");
     debugPrint("Home Initiate");
     super.initState();
+    updateList();
     list = widget.list;
     refreshNum = 0;
     loadingCount = 0;
@@ -54,10 +60,7 @@ class _HomePageState extends State<HomePage> {
     else {
       itemCount = 10;
     }
-    setState(() {
-      selectedOption = options[0];
-    });
-    debugPrint(itemList.length.toString());
+    selectedOption = options[0];
   }
 
   @override
@@ -71,50 +74,39 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        //toolbarHeight: 100,
+        toolbarHeight: 20,
         backgroundColor: Colors.white,
         elevation: 0.0,
         title: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
               children: [
-                const Icon(
-                  Icons.search,
-                  color: Colors.black12,
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                Flexible(
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 16,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                      ),
-                      hintText: '제목 검색',
-                    ),
-                    onChanged: (text) {
+                Padding(padding: EdgeInsets.only(left: 10),
+                  child: DropdownButton(
+                    value: selectedOption,
+                    items: options.map((e) =>
+                        DropdownMenuItem(value: e,
+                            child: Text(e == SortType.PRICEASCEND ? "가격 낮은 순"
+                                : e == SortType.PRICEDESCEND ? "가격 높은 순"
+                                : e == SortType.DATEASCEND ? "오래된 순" : "최신 순"
+                              , textScaleFactor: 0.8,))).toList(),
+                    onChanged: (value) {
                       setState(() {
-                        searchName = text;
+                        selectedOption = value!;
                       });
                     },
+                    itemHeight: 50.0,
+                    elevation: 1,
                   ),
-                ),
+                )
               ],
             ),
           ],
         ),
       ),
       body: FutureBuilder(
-          future: _fetchData(),
+          future: homePageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return Center(
@@ -123,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
-                      child: Container(
+                        child: Container(
                           color: Colors.white,
                           height: 150.0,
                           // child: NotificationListener<ScrollNotification>(
@@ -131,176 +123,182 @@ class _HomePageState extends State<HomePage> {
                           //     scrollNotification(notification);
                           //     return false;
                           //   },
-                            child: RefreshIndicator(
-                              onRefresh: () async {
-                                list?.clear();
-                                itemCount = 0;
-                                refreshNum += 1;
-                                setState(() {});
-                              },
-                              child: ListView.builder(
-                                itemBuilder: (context, position) {
-                                  //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
-                                  list![list!.length - position - 1].uploadDate = formatDate(list![list!.length - position - 1].uploadDateForCompare ?? DateTime.now());
-                                  //uploadDate를 현재 시간 기준으로 계속 업데이트하기
-
-                                  if (list![list!.length - position - 1]!.sellingTitle!.contains(searchName) ?? true) {
-                                    //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
-
-                                    if (list![list!.length - position - 1].itemStatus != ItemStatus.FASTSELL) {
-                                      //급처분 아이템은 보여주지 않기
-                                      return GestureDetector(
-                                          child: Card(
-                                            margin: const EdgeInsets.symmetric(
-                                                vertical: 10, horizontal: 10),
-                                            elevation: 1,
-                                            child: Stack(
+                          child: RefreshIndicator(
+                            onRefresh: () async {
+                              refreshNum += 1;
+                              setState(() {});
+                            },
+                            child: ListView.builder(
+                              itemBuilder: (context, position) {
+                                //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
+                                list![list!.length - position - 1].uploadDate =
+                                    formatDate(
+                                        list![list!.length - position - 1]
+                                            .uploadDateForCompare ??
+                                            DateTime.now());
+                                //uploadDate를 현재 시간 기준으로 계속 업데이트하기
+                                if (list![list!.length - position - 1]
+                                    .itemStatus != ItemStatus.FASTSELL) {
+                                  //급처분 아이템은 보여주지 않기
+                                  return GestureDetector(
+                                      child: Card(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 10),
+                                        elevation: 1,
+                                        child: Stack(
+                                          children: [
+                                            Row(
                                               children: [
-                                                Row(
-                                                  children: [
-                                                    Padding(
-                                                      padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 15),
-                                                      child: ClipRRect(
-                                                        borderRadius: BorderRadius
-                                                            .circular(8.0),
-                                                        child: list![list!.length - position - 1].imageListB.isEmpty ?
-                                                        Image.asset(
-                                                            "assets/images/main_logo.jpg", width: 100, height: 100, fit: BoxFit.cover)
-                                                            : Image.network(
-                                                            list![list!.length - position - 1].imageListB[0],
-                                                            width: 100,
-                                                            height: 100,
-                                                            fit: BoxFit.cover),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Align(
-                                                        alignment: Alignment
-                                                            .centerLeft,
-                                                        child: Column(
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .only(top: 10,
+                                                      bottom: 10,
+                                                      left: 10,
+                                                      right: 15),
+                                                  child: ClipRRect(
+                                                    borderRadius: BorderRadius
+                                                        .circular(8.0),
+                                                    child: list![list!.length -
+                                                        position - 1].imageListB
+                                                        .isEmpty ?
+                                                    Image.asset(
+                                                        "assets/images/main_logo.jpg",
+                                                        width: 100,
+                                                        height: 100,
+                                                        fit: BoxFit.cover)
+                                                        : Image.network(
+                                                        list![list!.length -
+                                                            position - 1]
+                                                            .imageListB[0],
+                                                        width: 100,
+                                                        height: 100,
+                                                        fit: BoxFit.cover),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: Align(
+                                                    alignment: Alignment
+                                                        .centerLeft,
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
                                                           children: [
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Text(
+                                                            Expanded(
+                                                              child: Text(
+                                                                  list![list!
+                                                                      .length -
+                                                                      position -
+                                                                      1]
+                                                                      .sellingTitle!,
+                                                                  style: const TextStyle(
+                                                                      fontSize: 20),
+                                                                  overflow: TextOverflow
+                                                                      .ellipsis),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 10),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: Text(
+                                                                  "등록 일자: ${list![list!
+                                                                      .length -
+                                                                      position -
+                                                                      1]
+                                                                      .uploadDate ??
+                                                                      ""}",
+                                                                  style: const TextStyle(
+                                                                      fontSize: 10),
+                                                                  overflow: TextOverflow
+                                                                      .ellipsis),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 10),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: Text(
+                                                                  "가격: ${f
+                                                                      .format(
                                                                       list![list!
                                                                           .length -
                                                                           position -
                                                                           1]
-                                                                          .sellingTitle!,
-                                                                      style: const TextStyle(
-                                                                          fontSize: 20),
-                                                                      overflow: TextOverflow
-                                                                          .ellipsis),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(
-                                                                height: 10),
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Text(
-                                                                      "등록 일자: ${list![list!
-                                                                          .length -
-                                                                          position -
-                                                                          1]
-                                                                          .uploadDate ??
-                                                                          ""}",
-                                                                      style: const TextStyle(
-                                                                          fontSize: 10),
-                                                                      overflow: TextOverflow
-                                                                          .ellipsis),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(
-                                                                height: 10),
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Text(
-                                                                      "가격: ${f
-                                                                          .format(
-                                                                          list![list!
-                                                                              .length -
-                                                                              position -
-                                                                              1]
-                                                                              .sellingPrice!)}원",
-                                                                      style: const TextStyle(
-                                                                          fontSize: 10),
-                                                                      overflow: TextOverflow
-                                                                          .ellipsis),
-                                                                ),
-                                                              ],
+                                                                          .sellingPrice!)}원",
+                                                                  style: const TextStyle(
+                                                                      fontSize: 10),
+                                                                  overflow: TextOverflow
+                                                                      .ellipsis),
                                                             ),
                                                           ],
                                                         ),
-                                                      ),
+                                                      ],
                                                     ),
-                                                  ],
-                                                ),
-                                                //isQucikSell이 true라면 표시
-                                                list![list!.length - position -
-                                                    1]
-                                                    .itemStatus ==
-                                                    ItemStatus.FASTSELL ?
-                                                Positioned(
-                                                  right: 10,
-                                                  bottom: 10,
-                                                  child: Container(
-                                                    width: 60,
-                                                    height: 25,
-                                                    decoration: BoxDecoration(
-                                                      color: postechRed,
-                                                      borderRadius: const BorderRadius
-                                                          .all(
-                                                          Radius.circular(
-                                                              10.0)),
-                                                    ),
-                                                    child: const Align(
-                                                      alignment: Alignment
-                                                          .center,
-                                                      child: Text("급처분",
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 10,
-                                                            fontWeight: FontWeight
-                                                                .bold),
-                                                      ),
-                                                    ),
-
                                                   ),
-                                                ) : const SizedBox(
-                                                    width: 0, height: 0),
+                                                ),
                                               ],
                                             ),
-                                          ),
-                                          onTap: () {
-                                            Navigator.push(
-                                                context, MaterialPageRoute(
-                                                builder: (context) =>
-                                                    SubHomePage(
-                                                        item: list![list!
-                                                            .length -
-                                                            position - 1])));
-                                          }
-                                      );
-                                    }
-                                    else {
-                                      return const SizedBox(
-                                          height: 0, width: 0);
-                                    }
-                                  }
-                                  else {
-                                    return const SizedBox(height: 0, width: 0);
-                                  }
-                                },
-                                itemCount: itemCount, //아이템 개수만큼 스크롤 가능
-                              ),
+                                            //isQucikSell이 true라면 표시
+                                            list![list!.length - position -
+                                                1]
+                                                .itemStatus ==
+                                                ItemStatus.FASTSELL ?
+                                            Positioned(
+                                              right: 10,
+                                              bottom: 10,
+                                              child: Container(
+                                                width: 60,
+                                                height: 25,
+                                                decoration: BoxDecoration(
+                                                  color: postechRed,
+                                                  borderRadius: const BorderRadius
+                                                      .all(
+                                                      Radius.circular(
+                                                          10.0)),
+                                                ),
+                                                child: const Align(
+                                                  alignment: Alignment
+                                                      .center,
+                                                  child: Text("급처분",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 10,
+                                                        fontWeight: FontWeight
+                                                            .bold),
+                                                  ),
+                                                ),
+
+                                              ),
+                                            ) : const SizedBox(
+                                                width: 0, height: 0),
+                                          ],
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        debugPrint(list![list!.length - position - 1].sellerSchoolNum);
+                                        debugPrint(list![list!.length - position - 1].sellerName);
+
+                                        Navigator.push(
+                                            context, MaterialPageRoute(
+                                            builder: (context) =>
+                                                SubHomePage(item: list![list!.length - position - 1])));
+                                      }
+                                  );
+                                }
+                                else {
+                                  return const SizedBox(
+                                      height: 0, width: 0);
+                                }
+                              },
+                              itemCount: itemCount, //아이템 개수만큼 스크롤 가능
                             ),
-                          )
-                      ),
+                          ),
+                        )
+                    ),
                     //),
                     isMoreRequesting ? Container(
                       height: 20.0,
@@ -382,25 +380,26 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void updateList() {
+    debugPrint("update List");
+    setState(() {
+      homePageBuilder = fetchData();
+    });
+  }
+
+  void setListSort() {
+    debugPrint("set sort List");
+    setState(() {
+      selectedOption;
+    });
+    updateList();
+  }
 
   Future<void> requestMore() async {
     // 해당부분은 서버에서 가져오는 내용을 가상으로 만든 것이기 때문에 큰 의미는 없다.
 
-    setState(() {
-      debugPrint("Request More : 현재 급처분 포함 총 리스트의 길이는 ${list!.length}입니다");
-      if (itemCount + 10 > (list!.length - allQuicksellNum)) {
-        itemCount = list!.length - allQuicksellNum;
-      }
-      else {
-        itemCount = itemCount + 10;
-      }
-      debugPrint("Request More : 현재 표시되는 Max Item Count는 $itemCount 입니다");
-    });
-    // 가상으로 잠시 지연 줌
-    return await Future.delayed(Duration(milliseconds: 1000));
   }
 }
-
 //(현재 Date) - (등록 Data) => 업로드 시간 표시
 String formatDate(DateTime date) {
   final now = DateTime.now();
@@ -416,49 +415,3 @@ String formatDate(DateTime date) {
   }
 }
 
-Future<bool> _fetchData() async{
-  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-  print(token);
-  Dio dio = Dio();
-  print('여긴가??');
-  dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items';
-
-  itemList.clear();
-  itemCount = 0;
-
-  try {
-    Response response = await dio.get(url);
-    // Map<String, dynamic> JsonData = json.decode(response.data);
-    dynamic jsonData = response.data;
-
-    //  print(jsonData);
-
-    for (var data in jsonData) {
-      int id = data['id'] as int;
-      String title = data['title'] as String;
-      String description = data['description'] as String;
-      // String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
-      int price = data['price'] as int;
-      // String category = data['category'] as String;
-      String updated_At = data['updatedAt'] as String;
-      List<String> imageUrl = List<String>.from(data['ImageUrls']);
-      // 사진도 받아야하는데
-      DateTime dateTime = DateTime.parse(updated_At);
-
-
-      // 시간 어떻게 받아올지 고민하기!!!!!!
-      // 그리고 userId 는 현재 null 상태 해결해야함!!!
-      itemList.add(Item(sellingTitle: title, itemType: ItemType.REFRIGERATOR, itemQuality: ItemQuality.HIGH, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: ItemStatus.TRADING));
-      itemCount++;
-    }
-
-  } catch (e) {
-    print('Error sending GET request : $e');
-  }
-
-  debugPrint("Home Page : 현재 표시되는 Max item count는 ${itemCount} 입니다.");
-  debugPrint("Home Page : 총 리스트 개수는 ${itemCount} 입니다.");
-
-  return true;
-}

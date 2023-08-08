@@ -16,7 +16,7 @@ class Item{
   String? uploadDate;
   DateTime? uploadDateForCompare;
   bool? isLiked;
-  List<XFile> imageListA;
+  List imageListA;
   List<String> imageListB;
   ItemStatus itemStatus;
 

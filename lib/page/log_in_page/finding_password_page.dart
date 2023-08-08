@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/page/log_in_page/sub_finding_password_page.dart';
 
+import '../../infra/users_info_data.dart';
 import 'log_in_page.dart';
 
 Color postechRed = Color(0xffac145a);
@@ -23,7 +24,6 @@ class _FindingPasswordPageState extends State<FindingPasswordPage> {
   bool checkForArrive = false;
 
   TextEditingController id = TextEditingController();
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _FindingPasswordPageState extends State<FindingPasswordPage> {
   @override
   Future<void> resetPassword(String email) async {
     try {
-      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      await firebaseAuth.sendPasswordResetEmail(email: email);
       checkForArrive = true;
       return;
     } on FirebaseAuthException catch (e) {

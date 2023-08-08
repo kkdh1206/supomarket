@@ -36,7 +36,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
     user = widget.user;
     refreshNum = 0;
     debugPrint("My Selling Page Initiate");
-    debugPrint(myUserInfo.userItemNum.toString());
+    debugPrint("내 물품은 ${myUserInfo.userItemNum.toString()}개이다");
   }
 
   @override
@@ -61,9 +61,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
             //내 물품이 없음면 Text 출력
             child: myUserInfo.userItemNum == 0 ? const Text("내 물품이 없습니다") :
             ListView.builder(itemBuilder: (context, position) {
-
               //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
-              debugPrint("내 물품은 ${myUserInfo.userItemNum.toString()}개이다");
 
               list![position].uploadDate = formatDate(list![position].uploadDateForCompare??DateTime.now());
               //uploadDate를 현재 시간 기준으로 계속 업데이트하기
