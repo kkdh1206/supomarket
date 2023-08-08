@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:supo_market/entity/util_entity.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/util_function.dart';
@@ -56,6 +57,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
   final picker = ImagePicker();
   XFile? _image;
+
   // List<XFile>? _imagelist =[];
 
   Future getImage() async {
@@ -104,7 +106,6 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
     @override
     void initState() {
       super.initState();
-
       // newItem.imageList[0].path = "assets/images/main_logo.jpg";
       newItem.sellerImage = myUserInfo!.imagePath!;
       newItem.sellerImage = myUserInfo!.userName!;
@@ -624,7 +625,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
   void updateList(){
     debugPrint("update List");
     setState(() {
-      homePageBuilder = fetchData();
+      homePageBuilder = fetchData(1,SortType.DATEASCEND);
     });
   }
 

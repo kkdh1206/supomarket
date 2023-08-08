@@ -21,8 +21,6 @@ import 'home_page/sub_home_page.dart';
 import 'my_page/my_page.dart';
 
 
-List<Item> searchList = [];
-int searchCount = 0;
 Item emptyItem = Item(sellingTitle: "", itemType: ItemType.BOOK, itemQuality: ItemQuality.MID, sellerName: "미상", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false, uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [],  itemStatus: ItemStatus.TRADING);
 
 class SearchPage extends StatefulWidget{
@@ -37,6 +35,7 @@ class SearchPage extends StatefulWidget{
 
 class _SearchPageState extends State<SearchPage>{
 
+  List<Item> searchList = [];
   var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
   Color postechRed = Color(0xffac145a);
   int refreshNum = 0;
@@ -44,6 +43,7 @@ class _SearchPageState extends State<SearchPage>{
   double _dragDistance = 0;
   bool isMoreRequesting = false;
   Future<String>? _futureResult;
+  int searchCount = 0;
 
 
 
@@ -52,12 +52,6 @@ class _SearchPageState extends State<SearchPage>{
     super.initState();
     refreshNum = 0;
     loadingCount = 0;
-    if (searchList!.length - allQuicksellNum < 10) {
-      searchCount = searchList!.length - allQuicksellNum;
-    }
-    else {
-      searchCount = 10;
-    }
     debugPrint("search_initiate");
   }
 
@@ -295,7 +289,7 @@ class _SearchPageState extends State<SearchPage>{
                                         height: 0, width: 0);
                                   }
                                 },
-                                itemCount: searchCount, //아이템 개수만큼 스크롤 가능
+                                itemCount: searchList.length, //아이템 개수만큼 스크롤 가능
                               ),
                             ),
                           )
@@ -393,8 +387,6 @@ class _SearchPageState extends State<SearchPage>{
           debugPrint("More Requesting");
 
           setState(() {
-            // 서버에서 데이터를 더 가져오는 효과를 주기 위함
-            // 하단에 프로그레스 서클 표시용
             isMoreRequesting = true;
           });
 
@@ -428,7 +420,6 @@ class _SearchPageState extends State<SearchPage>{
     String url = 'http://kdh.supomarket.com/items/search';
 
     searchList.clear();
-    searchCount = 0;
 
     try {
       Map<String, dynamic>data ={
@@ -465,24 +456,11 @@ class _SearchPageState extends State<SearchPage>{
       print('Error sending GET request : $e');
     }
 
-    debugPrint(searchCount.toString());
     return "end";
   }
 
   Future<void> requestMore() async {
     // 해당부분은 서버에서 가져오는 내용을 가상으로 만든 것이기 때문에 큰 의미는 없다.
-
-    setState(() {
-      debugPrint("Request More : 현재 급처분 포함 총 리스트의 길이는 ${searchList!.length}입니다");
-      if (searchCount + 10 > (searchList!.length - allQuicksellNum)) {
-        searchCount = searchList!.length - allQuicksellNum;
-      }
-      else {
-        searchCount = searchCount + 10;
-      }
-      debugPrint("Request More : 현재 표시되는 Max Item Count는 $searchCount 입니다");
-    });
-    // 가상으로 잠시 지연 줌
     return await Future.delayed(Duration(milliseconds: 1000));
   }
 }

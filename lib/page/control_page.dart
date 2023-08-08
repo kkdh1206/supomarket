@@ -12,6 +12,7 @@ import 'package:supo_market/page/util_function.dart';
 import '../entity/chat_room_entity.dart';
 import '../entity/item_entity.dart';
 import '../entity/user_entity.dart';
+import '../entity/util_entity.dart';
 import '../infra/item_list_data.dart';
 import '../infra/my_info_data.dart';
 import 'chatting_page/chatting_page.dart';
@@ -76,7 +77,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
           centerTitle: false,
           title: Stack(
             children: [
-              Text("슈포마켓",
+              const Text("슈포마켓",
                   textAlign: TextAlign.left,
                   style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black)
               ),
@@ -133,7 +134,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   void updateList(){
     debugPrint("update List");
     setState(() {
-      homePageBuilder = fetchData();
+      homePageBuilder = fetchData(1,SortType.DATEASCEND);
     });
   }
 }
