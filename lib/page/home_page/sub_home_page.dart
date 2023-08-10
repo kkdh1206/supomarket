@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:supo_market/entity/user_entity.dart';
+import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/util_function.dart';
 import '../../entity/item_entity.dart';
 import 'package:flutter/services.dart';
@@ -32,7 +33,7 @@ class _SubHomePageState extends State<SubHomePage>{
   void initState(){
     debugPrint("Sub Home Page Initialize");
     activeIndex = 0;
-    subHomePageBuilder = transferMyInfo();
+    subHomePageBuilder = transferUserInfo();
     super.initState();
   }
 
@@ -41,12 +42,12 @@ class _SubHomePageState extends State<SubHomePage>{
     super.dispose();
   }
 
-  Future<bool> transferMyInfo() async {
+  Future<bool> transferUserInfo() async {
     debugPrint("transferInfo");
-    AUser tempUser = await widget.user;
-    widget.item.sellerSchoolNum = tempUser.userStudentNumber;
-    widget.item.sellerName = tempUser.userName;
-    widget.item.isLiked = tempUser.userInterestedId.toString()?.contains(widget.item.itemID.toString());
+    AUser itemUser = await widget.user;
+    widget.item.sellerSchoolNum = itemUser.userStudentNumber;
+    widget.item.sellerName = itemUser.userName;
+    widget.item.isLiked = myUserInfo.userInterestedId.toString()?.contains(widget.item.itemID.toString());
     return true;
   }
 
@@ -325,8 +326,7 @@ class _SubHomePageState extends State<SubHomePage>{
                   child: Row(
                     children: [
                       IconButton(icon: widget.item.isLiked == true
-                      ? Icon(Icons.favorite)
-                          : Icon(Icons.favorite_border),
+                      ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
                       onPressed: () {
                         setState(() {
                          widget.item.isLiked = !(widget.item.isLiked!);
@@ -352,7 +352,7 @@ class _SubHomePageState extends State<SubHomePage>{
                   ),
                 );
               }else{
-                return SizedBox();
+                return const SizedBox();
               };
           },
         )

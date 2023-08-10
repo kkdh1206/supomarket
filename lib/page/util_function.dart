@@ -14,6 +14,7 @@ import '../infra/users_info_data.dart';
 Future<bool>? homePageBuilder;
 Future<bool>? subHomePageBuilder;
 Future<bool>? favoritePageBuilder;
+Future<bool>? sellingPageBuilder;
 
 Future<bool> fetchMyInfo() async{
 
