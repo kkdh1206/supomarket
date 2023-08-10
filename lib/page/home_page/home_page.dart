@@ -40,7 +40,6 @@ class _HomePageState extends State<HomePage> {
     SortType.PRICEASCEND
   ];
   SortType selectedOption = SortType.DATEASCEND;
-  int loadingCount = 0;
   double _dragDistance = 0;
   bool isMoreRequesting = false;
 
@@ -49,33 +48,39 @@ class _HomePageState extends State<HomePage> {
 
   ScrollController scrollController = ScrollController();
   double scrollOffset = 0.0;
+  bool isListened = false;
+  bool isEnded = false;
 
 
   @override
   void initState() {
     debugPrint("Home Initiate");
     super.initState();
-    updateList();
-    page = 1;
+    initialUpdateList();
+    isEnded = false; //리스트 끝에 도달함
+    page = 1; //늘어난 page 리스트 수
     list = widget.list;
-    refreshNum = 0;
-    loadingCount = 0;
+    refreshNum = 0; //새로고침 시
     selectedOption = options[0];
     scrollOffset = 0.0;
-    scrollController!.addListener(_scrollListener);
-    isMoreRequesting = false;
+    scrollController!.addListener(_scrollListener); //스크롤뷰 위치 이용 함수
+    isMoreRequesting = false; //요청 중이면 circle progress
+    isListened = false; //progress가 돌아가고 있으면 추가로 요청하지 않기 (한번만)
   }
 
   @override
   void dispose() {
     super.dispose();
-   scrollController.dispose();
+    scrollController.dispose();
   }
 
   void _scrollListener() {
-    if (scrollController!.offset >= scrollController!.position.maxScrollExtent && !scrollController!.position.outOfRange) {
+    if (scrollController!.offset + 500 >=
+        scrollController!.position.maxScrollExtent &&
+        !scrollController!.position.outOfRange && !isListened && !isEnded) {
       // 리스트의 마지막에 도달하면 새로운 리스트 아이템을 가져오는 함수 호출
       page++;
+      isListened = true;
       updateList();
     }
   }
@@ -90,42 +95,45 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         elevation: 0.0,
         title: Container(
-          color: Colors.white,
-          child: Column(
-            children: [
-            Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(padding: const EdgeInsets.only(left: 10),
-                child: DropdownButton(
-                  value: selectedOption,
-                  items: options.map((e) =>
-                      DropdownMenuItem(value: e,
-                          child: Text(e == SortType.PRICEASCEND ? "가격 낮은 순"
-                              : e == SortType.PRICEDESCEND ? "가격 높은 순"
-                              : e == SortType.DATEASCEND ? "최신 순" : "오래된 순"
-                            , textScaleFactor: 0.8,))).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedOption = value!;
-                    });
-                    page = 1;
-                    updateList();
-                  },
-                  itemHeight: 50.0,
-                  elevation: 0,
+            color: Colors.white,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(padding: const EdgeInsets.only(left: 10),
+                      child: DropdownButton(
+                        value: selectedOption,
+                        items: options.map((e) =>
+                            DropdownMenuItem(value: e,
+                                child: Text(
+                                  e == SortType.PRICEASCEND ? "가격 낮은 순"
+                                      : e == SortType.PRICEDESCEND ? "가격 높은 순"
+                                      : e == SortType.DATEASCEND
+                                      ? "최신 순"
+                                      : "오래된 순"
+                                  , textScaleFactor: 0.8,))).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedOption = value!;
+                          });
+                          page = 1;
+                          updateList();
+                        },
+                        itemHeight: 50.0,
+                        elevation: 0,
+                      ),
+                    )
+                  ],
                 ),
-              )
-            ],
-          ),
-        ],
-        )
+              ],
+            )
+        ),
       ),
-    ),
       body: FutureBuilder(
           future: homePageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.done){
+            if (snapshot.connectionState == ConnectionState.done) {
               return Center(
                 //위로 드래그하면 새로고침 -> 업데이트 되는 위젯 (Refresh Indicator)
                 child: Column(
@@ -286,15 +294,11 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ),
                                       onTap: () {
-                                        debugPrint(
-                                            list![position].sellerSchoolNum);
+                                        debugPrint(list![position].sellerSchoolNum);
                                         debugPrint(list![position].sellerName);
 
                                         Navigator.push(
-                                            context, MaterialPageRoute(
-                                            builder: (context) =>
-                                                SubHomePage(
-                                                    item: list![position])));
+                                            context, MaterialPageRoute(builder: (context) => SubHomePage(item: list![position], user: fetchUserInfo(list![position]),)));
                                       }
                                   );
                                 }
@@ -348,26 +352,30 @@ class _HomePageState extends State<HomePage> {
 
 
   void updateList() async {
-    debugPrint("update List");
+    debugPrint("update List 함수 호출");
     if (scrollController.hasClients) {
       scrollOffset = scrollController!.position.pixels;
-      debugPrint("scrollOffset 전 : $scrollOffset");
     }
-    await fetchData2(page, selectedOption);
+    await fetchDataMain(page, selectedOption);
+    isListened = false;
   }
 
   Future<void> moreSpaceFunction() async {
-    debugPrint("Second Function Start");
-    if (scrollController.hasClients && page!=1) {
-      scrollController.jumpTo(scrollOffset+50);
-      debugPrint("jump to $scrollOffset");
+    if (scrollController.hasClients && page != 1) {
+      scrollController.jumpTo(scrollOffset + 50);
+      debugPrint("jump to $scrollOffset+50");
     }
-    debugPrint("Second Function End");
     return;
   }
 
-  Future<bool> fetchData2(int page, SortType type) async{
+  void initialUpdateList() {
+    setState(() {
+      homePageBuilder = fetchItem(1, selectedOption);
+    });
+  }
 
+  //homePage에서의 fetch (나머지는 page 1 로딩을 위한 fetchData in Control/Add)
+  Future<bool> fetchDataMain(int page, SortType type) async {
     ItemType? tempItemType;
     ItemStatus? tempItemStatus;
     ItemQuality? tempItemQuality;
@@ -375,18 +383,13 @@ class _HomePageState extends State<HomePage> {
     String? tempSellerSchoolNum;
     int pageSize = 10;
 
-    setState(() {
-      isMoreRequesting = true;
-    });
-
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-    print(token);
     Dio dio = Dio();
-    print('여긴가??');
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&pageSize=${pageSize}';
+    String url = 'http://kdh.supomarket.com/items?sort=${ConvertEnumToString(
+        type)}&page=${page}&pageSize=${pageSize}';
 
-    if(page == 1){
+    if (page == 1) {
       itemList.clear();
     }
 
@@ -395,65 +398,71 @@ class _HomePageState extends State<HomePage> {
       // Map<String, dynamic> JsonData = json.decode(response.data);
       dynamic jsonData = response.data;
 
-      print(jsonData);
+      if (jsonData.toString() != "true") {
+        debugPrint("List 개수 update");
 
-      for (var data in jsonData) {
-        int id = data['id'] as int;
-        String title = data['title'] as String;
-        String description = data['description'] as String;
-        int price = data['price'] as int;
+        setState(() {
+          isMoreRequesting = true;
+        });
+        await Future.delayed(Duration(milliseconds: 100));
 
-        String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
-        tempItemStatus = ConvertStringToEnum(status);
 
-        String quality = data['quality'] as String;
-        tempItemQuality = ConvertStringToEnum(quality);
+        for (var data in jsonData) {
+          int id = data['id'] as int;
+          String title = data['title'] as String;
+          String description = data['description'] as String;
+          int price = data['price'] as int;
 
-        String category = data['category'] as String;
-        tempItemType = ConvertStringToEnum(category);
+          String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
+          tempItemStatus = convertStringToEnum(status);
 
-        String updatedAt = data['updatedAt'] as String;
-        List<String> imageUrl = List<String>.from(data['ImageUrls']);
+          String quality = data['quality'] as String;
+          tempItemQuality = convertStringToEnum(quality);
 
-        // 사진도 받아야하는데
-        DateTime dateTime = DateTime.parse(updatedAt);
+          String category = data['category'] as String;
+          tempItemType = convertStringToEnum(category);
 
-        // 시간 어떻게 받아올지 고민하기!!!!!!
-        // 그리고 userId 는 현재 null 상태 해결해야함!!!
-        itemList.add(Item(sellingTitle: title, itemType:tempItemType, itemQuality: tempItemQuality!, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: tempItemStatus!));
+          String updatedAt = data['updatedAt'] as String;
+          List<String> imageUrl = List<String>.from(data['ImageUrls']);
+
+          // 사진도 받아야하는데
+          DateTime dateTime = DateTime.parse(updatedAt);
+
+          // 시간 어떻게 받아올지 고민하기!!!!!!
+          // 그리고 userId 는 현재 null 상태 해결해야함!!!
+          itemList.add(Item(sellingTitle: title,
+              itemType: tempItemType,
+              itemQuality: tempItemQuality!,
+              sellerName: "정태형",
+              sellingPrice: price,
+              uploadDate: "10일 전",
+              uploadDateForCompare: dateTime,
+              itemDetail: description,
+              sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
+              isLiked: false,
+              sellerSchoolNum: "20220000",
+              imageListA: [],
+              imageListB: imageUrl,
+              itemStatus: tempItemStatus!,
+              itemID: id));
+        }
+
+        //await moreSpaceFunction();
+
+        setState(() {
+          isMoreRequesting = false;
+        });
       }
-
+      else{
+        setState(() {
+          isEnded = true;
+        });
+      }
     } catch (e) {
       print('Error sending GET request : $e');
     }
 
-    setState((){
-      //homePageBuilder = tempFunction();
-      debugPrint("homePageBuilder 변경");
-    });
-
-    setState(() {
-      isMoreRequesting = false;
-    });
-
-    await moreSpaceFunction();
     return true;
-  }
-
-}
-
-//(현재 Date) - (등록 Data) => 업로드 시간 표시
-String formatDate(DateTime date) {
-  final now = DateTime.now();
-  final difference = now.difference(date);
-  if (difference.inMinutes < 1) {
-    return '방금 전';
-  } else if (difference.inHours < 1) {
-    return '${difference.inMinutes} 분 전';
-  } else if (difference.inDays < 1) {
-    return '${difference.inHours} 시간 전';
-  } else {
-    return '${date.year}.${date.month}.${date.day}';
   }
 }
 

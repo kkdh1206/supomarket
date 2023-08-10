@@ -35,7 +35,7 @@ class _MyPageState extends State<MyPage>{
   void initState() {
     list = widget.list;
     super.initState();
-    debugPrint("학번은 ${myUserInfo.userSchoolNum.toString()}");
+    debugPrint("학번은 ${myUserInfo.userStudentNumber.toString()}");
   }
 
   @override
@@ -92,7 +92,7 @@ class _MyPageState extends State<MyPage>{
               Padding(padding: const EdgeInsets.only(top:30, left:10),
                 child: Row(
                   children: [
-                    Text(myUserInfo!.userSchoolNum??"", textScaleFactor: 1.2, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(myUserInfo!.userStudentNumber??"", textScaleFactor: 1.2, style: const TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(width: 5),
                     Text(myUserInfo!.userName??"", textScaleFactor: 1.2, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],

@@ -11,6 +11,7 @@ import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/log_in_page/auth_email_page.dart';
 import 'package:supo_market/page/log_in_page/register_page.dart';
+import 'package:supo_market/page/util_function.dart';
 
 import '../control_page.dart';
 import 'finding_password_page.dart';
@@ -71,72 +72,12 @@ class _LogInPageState extends State<LogInPage> {
     checkForArrive = false;
     myUserInfo.isUserLogin = false;
     isPressed = false;
-    //test();
-    //_pickImage();
-    // myUserInfo.userItemNum = 0;
-    // myUserInfo.userName = "";
-    // myUserInfo.imagePath = "";
-    // myUserInfo.userSchoolNum = "";
     super.initState();
   }
 
   @override
   void dispose(){
     super.dispose();
-  }
-
-  Future<void> getUserInfo() async{
-
-    //도형코드~
-    debugPrint("LogInPage : auth/userInfo : 유저 정보 Response 받아오기");
-    var token = await firebaseAuth.currentUser?.getIdToken();
-    Dio dio = Dio();
-    dio.options.headers['Authorization'] = 'Bearer $token';
-        // dio.options.responseType = ResponseType.plain; // responseType 설정
-        String url = 'http://kdh.supomarket.com/auth/userInfo'; // 수정요망 (https://) 일단 뺌  --> 앞에 http든 https 든 꼭 있어야되구나!!
-
-        try {
-          Response response = await dio.get(url);
-          dynamic jsonData = response.data;
-
-          print("Response는 ${response}");
-
-          setState(() {
-            String studentNumber = jsonData['studentNumber'] as String;
-            debugPrint("LoginPage : 학번은 $studentNumber");
-            myUserInfo.userSchoolNum = studentNumber;
-          });
-
-          if (response.statusCode == 200){;
-          }
-          else {
-            print('Failed to get response. Status code: ${response.statusCode}');
-          }
-        }catch (e) {
-          print('Error sending GET request : $e');
-        }
-    //~도형코드
-
-    setState((){
-      myUserInfo.id = firebaseAuth.currentUser?.email;
-      myUserInfo.userName = firebaseAuth.currentUser?.displayName;
-    });
-
-
-    Reference ref = FirebaseStorage.instance.ref().child('users').child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
-    if(ref!=null) {
-      try{
-        String url = await ref.getDownloadURL();
-        setState(() {
-          myUserInfo.imagePath = url;
-          debugPrint("프로필 사진 가져오기");
-        });
-      } catch (e, stack) {
-        myUserInfo.imagePath = "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
-        debugPrint("업로드된 이미지가 아직 없습니다");
-      }
-    }
-
   }
 
 
@@ -151,11 +92,6 @@ class _LogInPageState extends State<LogInPage> {
         backgroundColor: postechRed.withOpacity(0.9),
         body: Stack(
           children: [
-            isPressed == true?
-            const Align(
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(),
-            ) : const SizedBox(width: 0, height: 0),
             Container(
               padding: const EdgeInsets.only(left: 35, top: 130),
               child: const Text(
@@ -279,7 +215,7 @@ class _LogInPageState extends State<LogInPage> {
                                                 debugPrint("현재 로그인된 유저 이메일 인증 여부는 ${firebaseAuth.currentUser?.emailVerified.toString()} 입니다");
 
                                                 if(firebaseAuth.currentUser?.emailVerified??false){
-                                                  await getUserInfo();
+                                                  await fetchMyInfo();
                                                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
                                                       builder: (BuildContext context) => ControlPage()), (route) => false);
                                                 }
@@ -304,6 +240,11 @@ class _LogInPageState extends State<LogInPage> {
                         )
                       ],
                     ),
+                    isPressed == true?
+                    const Align(
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    ) : const SizedBox(width: 0, height: 0),
                   ],
                 ),
               ),

@@ -30,7 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController password = TextEditingController();
   TextEditingController password2 = TextEditingController();
   TextEditingController userName = TextEditingController();
-  TextEditingController userSchoolNum = TextEditingController();
+  TextEditingController userStudentNumber = TextEditingController();
 
   String newID = "";
   String newPassword = "";
@@ -51,7 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
       await ref.putString(credential.user!.emailVerified.toString()??"");
     }
 
-    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("userSchoolNum"+".txt");
+    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("userStudentNumber"+".txt");
     if(firebaseAuth.currentUser != null) {
       await ref.putString(newUserSchoolNum);
     }
@@ -122,11 +122,6 @@ class _RegisterPageState extends State<RegisterPage> {
         backgroundColor: postechRed.withOpacity(0.9),
         body: Stack(
           children: [
-            isPressed == true?
-            const Align(
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(),
-            ) : const SizedBox(width: 0, height: 0),
             Container(
               padding: const EdgeInsets.only(left: 35, top: 130),
               child: const Text(
@@ -225,7 +220,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             height: 30,
                           ),
                           TextField(
-                            controller: userSchoolNum,
+                            controller: userStudentNumber,
                             style: const TextStyle(),
                             decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
@@ -265,9 +260,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
                                         await createEmailAndPassword(newID, newPassword, newUserName, newUserSchoolNum);
                                         String token = await firebaseAuth.currentUser?.getIdToken() ?? '';
-                                        // print('토큰받았따ㅏㅏㅏㅏㅏㅏㅏㅏ');
-                                        print(token);
-
                                         Dio dio = Dio();
 
                                         dio.options.headers['Authorization'] = 'Bearer $token';
@@ -322,6 +314,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 left: 10, top : 30,
                 child: IconButton (onPressed: () {Navigator.pop(context);}, icon: Icon(Icons.arrow_back, color: Colors.white54), iconSize: 30)
             ),
+            isPressed == true?
+            const Align(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            ) : const SizedBox(width: 0, height: 0),
           ],
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/page/my_page/sub_my_info_page_change_password_page.dart';
+import 'package:supo_market/page/util_function.dart';
 import '../../entity/item_entity.dart';
 import '../../entity/user_entity.dart';
 import '../../infra/my_info_data.dart';
@@ -246,7 +247,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageQuicksellItemLi
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(
                           builder: (context) =>
-                              SubHomePage(item: list![position])));
+                              SubHomePage(item: list![position], user: fetchUserInfo(list![position]))));
                     }
                 );
               } else{
@@ -261,19 +262,4 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageQuicksellItemLi
   }
 }
 
-
-//(현재 Date) - (등록 Data) => 업로드 시간 표시
-String formatDate(DateTime date) {
-  final now = DateTime.now();
-  final difference = now.difference(date);
-  if (difference.inMinutes < 1) {
-    return '방금 전';
-  } else if (difference.inHours < 1) {
-    return '${difference.inMinutes} 분 전';
-  } else if (difference.inDays < 1) {
-    return '${difference.inHours} 시간 전';
-  } else {
-    return '${date.year}.${date.month}.${date.day}';
-  }
-}
 

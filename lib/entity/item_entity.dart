@@ -5,6 +5,7 @@ enum ItemType{BOOK, CLOTHES, REFRIGERATOR, MONITOR, ROOM, ETC}
 enum ItemStatus {RESERVED, FASTSELL, SOLDOUT, TRADING}
 
 class Item{
+  int? itemID;
   String? sellingTitle;
   ItemType? itemType;
   ItemQuality itemQuality;
@@ -34,7 +35,8 @@ class Item{
         required this.uploadDateForCompare,
         required this.imageListA,
         required this.imageListB,
-        required this.itemStatus}
+        required this.itemStatus,
+        required this.itemID}
       );
 
 }

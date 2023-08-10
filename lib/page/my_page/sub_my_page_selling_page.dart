@@ -7,6 +7,7 @@ import 'package:supo_market/page/my_page/sub_selling_page_modify_page.dart';
 import '../../entity/item_entity.dart';
 import 'package:intl/intl.dart';
 import '../../entity/user_entity.dart';
+import '../util_function.dart';
 
 Color postechRed = const Color(0xffac145a);
 var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
@@ -65,7 +66,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
 
               list![position].uploadDate = formatDate(list![position].uploadDateForCompare??DateTime.now());
               //uploadDate를 현재 시간 기준으로 계속 업데이트하기
-              if(list![position].sellerSchoolNum == (myUserInfo.userSchoolNum)) {
+              if(list![position].sellerSchoolNum == (myUserInfo.userStudentNumber)) {
                 //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
                 return GestureDetector(
                     child: Card(
@@ -269,7 +270,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage>{
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(
                           builder: (context) =>
-                              SubHomePage(item: list![position])));
+                              SubHomePage(item: list![position],user: fetchUserInfo(list![position]))));
                     }
                 );
               } else{

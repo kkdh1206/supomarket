@@ -8,6 +8,7 @@ import 'package:sqflite_common/sqlite_api.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/category_page/category_page.dart';
 import 'package:supo_market/page/sub_add_goods_page.dart';
+import 'package:supo_market/page/util_function.dart';
 import '../entity/chat_room_entity.dart';
 import '../entity/item_entity.dart';
 import '../entity/user_entity.dart';
@@ -21,7 +22,7 @@ import 'home_page/sub_home_page.dart';
 import 'my_page/my_page.dart';
 
 
-Item emptyItem = Item(sellingTitle: "", itemType: ItemType.BOOK, itemQuality: ItemQuality.MID, sellerName: "미상", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false, uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [],  itemStatus: ItemStatus.TRADING);
+Item emptyItem = Item(sellingTitle: "", itemType: ItemType.BOOK, itemQuality: ItemQuality.MID, sellerName: "미상", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false, uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [],  itemStatus: ItemStatus.TRADING, itemID: 3);
 
 class SearchPage extends StatefulWidget{
 
@@ -122,16 +123,10 @@ class _SearchPageState extends State<SearchPage>{
                               child: ListView.builder(
                                 itemBuilder: (context, position) {
                                   //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
-                                  searchList![searchList!.length - position - 1]
-                                      .uploadDate = formatDate(
-                                      searchList![searchList!.length -
-                                          position - 1].uploadDateForCompare ??
-                                          DateTime.now());
+                                  searchList![position].uploadDate = formatDate(searchList![position].uploadDateForCompare ?? DateTime.now());
                                   //uploadDate를 현재 시간 기준으로 계속 업데이트하기
 
-                                  if (searchList![searchList!.length -
-                                      position - 1].itemStatus !=
-                                      ItemStatus.FASTSELL) {
+                                  if (searchList![position].itemStatus != ItemStatus.FASTSELL) {
                                     //급처분 아이템은 보여주지 않기
                                     return GestureDetector(
                                         child: Card(
@@ -151,9 +146,7 @@ class _SearchPageState extends State<SearchPage>{
                                                     child: ClipRRect(
                                                       borderRadius: BorderRadius
                                                           .circular(8.0),
-                                                      child: searchList![searchList!
-                                                          .length - position -
-                                                          1].imageListB.isEmpty
+                                                      child: searchList![position].imageListB.isEmpty
                                                           ?
                                                       Image.asset(
                                                           "assets/images/main_logo.jpg",
@@ -161,10 +154,7 @@ class _SearchPageState extends State<SearchPage>{
                                                           height: 100,
                                                           fit: BoxFit.cover)
                                                           : Image.network(
-                                                          searchList![searchList!
-                                                              .length -
-                                                              position - 1]
-                                                              .imageListB[0],
+                                                          searchList![position].imageListB[0],
                                                           width: 100,
                                                           height: 100,
                                                           fit: BoxFit.cover),
@@ -179,11 +169,7 @@ class _SearchPageState extends State<SearchPage>{
                                                             children: [
                                                               Expanded(
                                                                 child: Text(
-                                                                    searchList![searchList!
-                                                                        .length -
-                                                                        position -
-                                                                        1]
-                                                                        .sellingTitle!,
+                                                                    searchList![position].sellingTitle!,
                                                                     style: const TextStyle(
                                                                         fontSize: 20),
                                                                     overflow: TextOverflow
@@ -197,16 +183,7 @@ class _SearchPageState extends State<SearchPage>{
                                                             children: [
                                                               Expanded(
                                                                 child: Text(
-                                                                    "등록 일자: ${searchList![searchList!
-                                                                        .length -
-                                                                        position -
-                                                                        1]
-                                                                        .uploadDate ??
-                                                                        ""}",
-                                                                    style: const TextStyle(
-                                                                        fontSize: 10),
-                                                                    overflow: TextOverflow
-                                                                        .ellipsis),
+                                                                    "등록 일자: ${searchList![position].uploadDate ?? ""}", style: const TextStyle(fontSize: 10), overflow: TextOverflow.ellipsis),
                                                               ),
                                                             ],
                                                           ),
@@ -218,15 +195,8 @@ class _SearchPageState extends State<SearchPage>{
                                                                 child: Text(
                                                                     "가격: ${f
                                                                         .format(
-                                                                        searchList![searchList!
-                                                                            .length -
-                                                                            position -
-                                                                            1]
-                                                                            .sellingPrice!)}원",
-                                                                    style: const TextStyle(
-                                                                        fontSize: 10),
-                                                                    overflow: TextOverflow
-                                                                        .ellipsis),
+                                                                        searchList![position].sellingPrice!)}원",
+                                                                    style: const TextStyle(fontSize: 10), overflow: TextOverflow.ellipsis),
                                                               ),
                                                             ],
                                                           ),
@@ -237,11 +207,7 @@ class _SearchPageState extends State<SearchPage>{
                                                 ],
                                               ),
                                               //isQucikSell이 true라면 표시
-                                              searchList![searchList!.length -
-                                                  position -
-                                                  1]
-                                                  .itemStatus ==
-                                                  ItemStatus.FASTSELL ?
+                                              searchList![position].itemStatus == ItemStatus.FASTSELL ?
                                               Positioned(
                                                 right: 10,
                                                 bottom: 10,
@@ -277,10 +243,7 @@ class _SearchPageState extends State<SearchPage>{
                                           Navigator.push(
                                               context, MaterialPageRoute(
                                               builder: (context) =>
-                                                  SubHomePage(
-                                                      item: searchList![searchList!
-                                                          .length - position -
-                                                          1])));
+                                                  SubHomePage(item: searchList![position], user: fetchUserInfo(searchList![position]))));
                                         }
                                     );
                                   }
@@ -407,15 +370,14 @@ class _SearchPageState extends State<SearchPage>{
   void enterFunction(String value){
     debugPrint("enter Function");
     setState(() {
-      _futureResult = _performAsyncTask(value);
+      _futureResult = _fetchDataSearch(value);
     });
   }
 
-  Future<String> _performAsyncTask(String input) async {
+  Future<String> _fetchDataSearch(String input) async {
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-    print(token);
     Dio dio = Dio();
-    print('여긴가??');
+    print('fetch Searched Data');
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url = 'http://kdh.supomarket.com/items/search';
 
@@ -448,7 +410,7 @@ class _SearchPageState extends State<SearchPage>{
 
         // 시간 어떻게 받아올지 고민하기!!!!!!
         // 그리고 userId 는 현재 null 상태 해결해야함!!!
-        searchList.add(Item(sellingTitle: title, itemType: ItemType.REFRIGERATOR, itemQuality: ItemQuality.HIGH, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: ItemStatus.TRADING));
+        searchList.add(Item(sellingTitle: title, itemType: ItemType.REFRIGERATOR, itemQuality: ItemQuality.HIGH, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: ItemStatus.TRADING, itemID: id));
         searchCount++;
       }
 
@@ -462,20 +424,5 @@ class _SearchPageState extends State<SearchPage>{
   Future<void> requestMore() async {
     // 해당부분은 서버에서 가져오는 내용을 가상으로 만든 것이기 때문에 큰 의미는 없다.
     return await Future.delayed(Duration(milliseconds: 1000));
-  }
-}
-
-//(현재 Date) - (등록 Data) => 업로드 시간 표시
-String formatDate(DateTime date) {
-  final now = DateTime.now();
-  final difference = now.difference(date);
-  if (difference.inMinutes < 1) {
-    return '방금 전';
-  } else if (difference.inHours < 1) {
-    return '${difference.inMinutes} 분 전';
-  } else if (difference.inDays < 1) {
-    return '${difference.inHours} 시간 전';
-  } else {
-    return '${date.year}.${date.month}.${date.day}';
   }
 }

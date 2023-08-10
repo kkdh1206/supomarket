@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
 import '../../entity/item_entity.dart';
+import '../util_function.dart';
 
 
 /////////일단 안쓰는 page - 혹시모르니까 보류//////////////////
@@ -181,7 +182,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                     ),
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubHomePage(item: list![position])));
+                          builder: (context) => SubHomePage(item: list![position], user: fetchUserInfo(list![position]))));
                     }
                 );
               }
@@ -197,21 +198,6 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
   }
 }
 
-
-//(현재 Date) - (등록 Data) => 업로드 시간 표시
-String formatDate(DateTime date) {
-  final now = DateTime.now();
-  final difference = now.difference(date);
-  if (difference.inMinutes < 1) {
-    return '방금 전';
-  } else if (difference.inHours < 1) {
-    return '${difference.inMinutes} 분 전';
-  } else if (difference.inDays < 1) {
-    return '${difference.inHours} 시간 전';
-  } else {
-    return '${date.year}.${date.month}.${date.day}';
-  }
-}
 
 
 

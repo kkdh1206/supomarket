@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/firebase_options.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
+import 'package:supo_market/page/util_function.dart';
 import '../entity/user_entity.dart';
 import '../infra/my_info_data.dart';
 import '../infra/users_info_data.dart';
@@ -35,7 +36,7 @@ class SplashScreen extends StatelessWidget{
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset("assets/images/main_logo.jpg"),
+              Image.asset("assets/images/main_logo_2.png"),
               CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation(postechRed),
               ),
@@ -64,8 +65,8 @@ class MyAppState extends State<MyApp> {
   void initState() {
     //값 받아오기 전 초기값
     myUserInfo.imagePath = "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
-    myUserInfo.id = "";
-    myUserInfo.userSchoolNum = "";
+    myUserInfo.email = "";
+    myUserInfo.userStudentNumber = "";
     myUserInfo.password = "";
     myUserInfo.isUserLogin = false;
     myUserInfo.userName = "";
@@ -78,65 +79,13 @@ class MyAppState extends State<MyApp> {
     if (firebaseAuth.currentUser != null) {
       myUserInfo.isUserLogin = true;
       debugPrint("로그인 상태입니다");
-      getUserInfo();
+      fetchMyInfo();
     }
     else {
       debugPrint("로그아웃 상태입니다");
     }
   }
 
-  Future<void> getUserInfo() async{
-
-    //도형코드~
-    debugPrint("LogInPage : auth/userInfo : 유저 정보 Response 받아오기");
-    var token = await firebaseAuth.currentUser?.getIdToken();
-    Dio dio = Dio();
-    dio.options.headers['Authorization'] = 'Bearer $token';
-    // dio.options.responseType = ResponseType.plain; // responseType 설정
-    String url = 'http://kdh.supomarket.com/auth/userInfo'; // 수정요망 (https://) 일단 뺌  --> 앞에 http든 https 든 꼭 있어야되구나!!
-
-    try {
-      Response response = await dio.get(url);
-      dynamic jsonData = response.data;
-
-      print("Response는 ${response}");
-
-      setState(() {
-        String studentNumber = jsonData['studentNumber'] as String;
-        debugPrint("WelcomePage : 학번은 $studentNumber");
-        myUserInfo.userSchoolNum = studentNumber;
-      });
-
-      if (response.statusCode == 200){;
-      }
-      else {
-        print('Failed to get response. Status code: ${response.statusCode}');
-      }
-    }catch (e) {
-      print('Error sending GET request : $e');
-    }
-    //~도형코드
-
-    setState((){
-      myUserInfo.id = firebaseAuth.currentUser?.email;
-      myUserInfo.userName = firebaseAuth.currentUser?.displayName;
-    });
-
-
-    Reference ref = FirebaseStorage.instance.ref().child('users').child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
-    if(ref!=null) {
-      try{
-        String url = await ref.getDownloadURL();
-        setState(() {
-          myUserInfo.imagePath = url;
-          debugPrint("프로필 사진 가져오기");
-        });
-      } catch (e, stack) {
-        myUserInfo.imagePath = "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
-        debugPrint("업로드된 이미지가 아직 없습니다");
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +141,7 @@ class WelcomePage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 20),
-                child : Image.asset('assets/images/main_logo.jpg'),
+                child : Image.asset('assets/images/main_logo_2.png'),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 50),

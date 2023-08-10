@@ -9,6 +9,8 @@ import '../my_page/my_page.dart';
 import 'package:supo_market/constants.dart';
 import 'package:provider/provider.dart';
 
+import '../util_function.dart';
+
 class CategoryPage extends StatefulWidget{
 
   final List<Item>? list;
@@ -113,10 +115,10 @@ Widget CategoryButton(List<Item> list, BuildContext context, Color color, String
                     child : ListView.builder(itemBuilder: (context, position) {
                       //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
 
-                      list![list!.length-position-1].uploadDate = formatDate(list![list!.length-position-1].uploadDateForCompare??DateTime.now());
+                      list![position].uploadDate = formatDate(list![position].uploadDateForCompare??DateTime.now());
                       //uploadDate를 현재 시간 기준으로 계속 업데이트하기
 
-                      if(list?[list!.length-position-1]!.itemType.toString().contains(
+                      if(list?[position]!.itemType.toString().contains(
                           categoryName=="냉장고"?"REFRIGERATOR":
                           categoryName=="의류"?"CLOTHES":
                           categoryName=="자취방"?"ROOM":
@@ -136,9 +138,9 @@ Widget CategoryButton(List<Item> list, BuildContext context, Color color, String
                                           top: 10, bottom: 10, left: 10, right: 15),
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(8.0),
-                                          child: list![list!.length-position-1].imageListB.isEmpty?
+                                          child: list![position].imageListB.isEmpty?
                                           Image.asset("assets/images/main_logo.jpg", width: 100, height: 100, fit: BoxFit.cover) :
-                                          Image.network(list![list!.length-position-1].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
+                                          Image.network(list![position].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
                                         ),
                                       ),
                                       Expanded(
@@ -149,7 +151,7 @@ Widget CategoryButton(List<Item> list, BuildContext context, Color color, String
                                               Row(
                                                 children: [
                                                   Expanded(
-                                                    child: Text(list![list!.length-position-1].sellingTitle!,
+                                                    child: Text(list![position].sellingTitle!,
                                                         style: const TextStyle(fontSize: 20),
                                                         overflow: TextOverflow.ellipsis),
                                                   ),
@@ -160,7 +162,7 @@ Widget CategoryButton(List<Item> list, BuildContext context, Color color, String
                                                 children: [
                                                   Expanded(
                                                     child: Text(
-                                                        "등록 일자: ${list![list!.length-position-1].uploadDate ?? ""}",
+                                                        "등록 일자: ${list![position].uploadDate ?? ""}",
                                                         style: const TextStyle(fontSize: 10),
                                                         overflow: TextOverflow.ellipsis),
                                                   ),
@@ -171,7 +173,7 @@ Widget CategoryButton(List<Item> list, BuildContext context, Color color, String
                                                 children: [
                                                   Expanded(
                                                     child: Text("가격: ${f.format(
-                                                        list![list!.length-position-1].sellingPrice!)}원",
+                                                        list![position].sellingPrice!)}원",
                                                         style: const TextStyle(fontSize: 10),
                                                         overflow: TextOverflow.ellipsis),
                                                   ),
@@ -184,7 +186,7 @@ Widget CategoryButton(List<Item> list, BuildContext context, Color color, String
                                     ],
                                   ),
                                   //isQucikSell이 true라면 표시
-                                  list![list!.length-position-1].itemStatus == ItemStatus.FASTSELL?
+                                  list![position].itemStatus == ItemStatus.FASTSELL?
                                   Positioned(
                                     right: 10,
                                     bottom : 10,
@@ -209,7 +211,7 @@ Widget CategoryButton(List<Item> list, BuildContext context, Color color, String
                             ),
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => SubHomePage(item: list![list!.length-position-1])));
+                                  builder: (context) => SubHomePage(item: list![position], user: fetchUserInfo(list![position]))));
                             }
                         );
                       }

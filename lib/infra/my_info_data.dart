@@ -14,12 +14,15 @@ var mySetting = Setting(
 );
 
 var myUserInfo = AUser(
-    id: "",
+    id: 0,
+    email: "",
     password : "",
     userName: "",
     imagePath: "assets/images/user.png",
-    userSchoolNum: "",
+    userStudentNumber: "",
     userItemNum: 0,
     isUserLogin: false, //이걸로 초기 페이지 조절 가능
     userStatus: UserStatus.NORMAL,
+    userInterestedId: [],
+    userUid: "",
 );

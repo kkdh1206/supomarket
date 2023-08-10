@@ -52,6 +52,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
       imageListA : [],
       imageListB: [],
       itemStatus: ItemStatus.TRADING,
+      itemID: 4,
       );
 
 
@@ -143,7 +144,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 newItem.uploadDate = "방금 전";
                 newItem.uploadDateForCompare = DateTime.now();
                 newItem.sellerName = myUserInfo.userName;
-                newItem.sellerSchoolNum = myUserInfo.userSchoolNum;
+                newItem.sellerSchoolNum = myUserInfo.userStudentNumber;
 
                 myUserInfo.userItemNum = (myUserInfo.userItemNum! +1)!;
                 if(newItem.itemStatus == ItemStatus.FASTSELL){
@@ -155,10 +156,9 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
               //--도형 코드---
               String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-              print(token);
 
               Dio dio = Dio();
-              print('여긴가??');
+              print('add Item To Server');
               dio.options.headers['Authorization'] = 'Bearer $token';
               String url = 'http://kdh.supomarket.com/items';
 
@@ -450,17 +450,6 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
       );
     }
 
-    // //사진 권한 요청
-    // Future<bool> permission() async {
-    //   Map<Permission, PermissionStatus> status =
-    //   await [Permission.location].request(); // [] 권한배열에 권한을 작성
-    //
-    //   if (await Permission.location.isGranted) {
-    //     return Future.value(true);
-    //   } else {
-    //     return Future.value(false);
-    //   }
-    // }
 
     Widget LoadImageButton() {
     debugPrint(newItem.imageListA.length.toString());
@@ -625,7 +614,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
   void updateList(){
     debugPrint("update List");
     setState(() {
-      homePageBuilder = fetchData(1,SortType.DATEASCEND);
+      homePageBuilder = fetchItem(1,SortType.DATEASCEND);
     });
   }
 

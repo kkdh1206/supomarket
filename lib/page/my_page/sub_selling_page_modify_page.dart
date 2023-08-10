@@ -26,7 +26,7 @@ class SubSellingPageModifyPage extends StatefulWidget {
 class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
 
   late Item originalItem;
-  Item modifiedItem = Item(sellingTitle: "", itemType: ItemType.ETC, itemQuality: ItemQuality.HIGH, sellerName: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false, uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [], itemStatus: ItemStatus.TRADING);
+  Item modifiedItem = Item(sellingTitle: "", itemType: ItemType.ETC, itemQuality: ItemQuality.HIGH, sellerName: "", sellingPrice: 0, uploadDate: "", sellerImage: "", isLiked : false, uploadDateForCompare: DateTime(2000, 12, 31), sellerSchoolNum: "20000000", imageListA : [], imageListB: [], itemStatus: ItemStatus.TRADING, itemID: 1);
   FixedExtentScrollController? firstController;
   FixedExtentScrollController? secondController;
   bool isFastSellForToggle = false;

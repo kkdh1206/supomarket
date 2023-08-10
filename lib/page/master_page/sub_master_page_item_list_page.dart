@@ -11,6 +11,7 @@ import '../../infra/users_info_data.dart';
 import '../home_page/sub_home_page.dart';
 import '../log_in_page/log_in_page.dart';
 import '../my_page/sub_selling_page_modify_page.dart';
+import '../util_function.dart';
 
 Color postechRed = Color(0xffac145a);
 var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
@@ -243,7 +244,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(
                           builder: (context) =>
-                              SubHomePage(item: list![position])));
+                              SubHomePage(item: list![position], user: fetchUserInfo(list![position]))));
                     }
                 );
             },
