@@ -37,7 +37,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   TabController? controller;
   List<ChatRoom> chatRoomList = List.empty(growable: true);
   late AUser otherUser;
-  Color postechRed = Color(0xffac145a);
+
 
 
   @override
@@ -46,7 +46,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
     debugPrint("control_initiate");
     controller = TabController(length: 5, vsync: this);
     otherUser = AUser(userName: "정태형", isUserLogin: true, imagePath: "assets/images/user.png", userStudentNumber: "20210000", userItemNum: 0, email: '1234', password: '12345677', userStatus: UserStatus.NORMAL);
-    //itemList.add(Item(sellingTitle: "냉장고 싸게 팝니다", itemType: ItemType.REFRIGERATOR, itemQuality: ItemQuality.MID, sellerName: "정태형", sellingPrice: 10000, uploadDate: "10일 전", uploadDateForCompare: DateTime(2023, 7, 8, 18, 20), sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: [], itemStatus: ItemStatus.FASTSELL));
+    //itemList.add(Item(sellingTitle: "냉장고 싸게 팝니다", itemType: ItemType.REFRIGERATOR, itemQuality: ItemQuality.MID, sellerName: "정태형", sellingPrice: 10000, uploadDate: "10일 전", uploadDateForCompare: DateTime(2023, 7, 8, 18, 20), sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: [], itemStatus: ItemStatus.USERFASTSELL));
     //itemList.add(Item(sellingTitle: "컴퓨터구조 교재 가져가세요", itemType: ItemType.BOOK, itemQuality: ItemQuality.MID, sellerName: "김도형", sellingPrice: 20000, uploadDate : "방금 전", uploadDateForCompare: DateTime(2000, 12, 31), sellerImage : "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fseller_sample.png?alt=media&token=15dbc13b-5eb3-41f8-9c2a-d33d447d2e15", isLiked : true, itemDetail: "한 번밖에 안썼어요", sellerSchoolNum: "20211111", imageListA : [], imageListB : [], itemStatus: ItemStatus.TRADING));
     chatRoomList.add(ChatRoom(traderName: "채팅봇", traderImage: "assets/images/bot.png", itemName: "", lastChattingDay: "방금 전", lastChattingSentence: "안녕하세요, 슈포마켓에 오신 것을 환영합니다.", sellingTitle: '환영합니다'));
     setState(() {
@@ -75,12 +75,14 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       appBar: AppBar(
           elevation: 0.0,
           centerTitle: false,
+          toolbarHeight: 50,
           title: Stack(
             children: [
-              const Text("슈포마켓",
+              const Padding(padding: EdgeInsets.only(top:10),
+              child: Text("슈포마켓",
                   textAlign: TextAlign.left,
                   style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black)
-              ),
+              ),),
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
@@ -102,11 +104,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
             final newData = await Navigator.push(context, MaterialPageRoute(builder: (context) => SubAddItemPage(list: itemList)));
             setState(() {
               if(newData.returnType == "add"){
-
-                //추가했을 때는 10개가 넘어가도 괜찮음!
-                itemCount = itemCount + 1;
-                debugPrint("controlPage : 총 아이템 리스트는 ${itemCount+allQuicksellNum} 개입니다");
-                debugPrint("controlPage : 홈페이지에 표시되는 개수는 $itemCount 개입니다");
+                debugPrint("add return");
                 updateList();
               }
             });
@@ -134,7 +132,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   void updateList(){
     debugPrint("update List");
     setState(() {
-      homePageBuilder = fetchItem(1,SortType.DATEASCEND);
+      homePageBuilder = fetchItem(1,SortType.DATEASCEND,ItemStatus.TRADING);
     });
   }
 }

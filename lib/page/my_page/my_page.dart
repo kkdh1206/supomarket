@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/my_page/sub_my_info_page_change_password_page.dart';
+import 'package:supo_market/page/my_page/sub_my_page_qna_page.dart';
 import 'package:supo_market/page/my_page/sub_my_page_my_info_page.dart';
 import 'package:supo_market/page/my_page/sub_my_page_selling_page.dart';
 import 'package:supo_market/page/my_page/sub_my_page_settings_page.dart';
@@ -36,6 +37,7 @@ class _MyPageState extends State<MyPage>{
     list = widget.list;
     super.initState();
     debugPrint("학번은 ${myUserInfo.userStudentNumber.toString()}");
+    debugPrint("${myUserInfo!.userStatus}");
   }
 
   @override
@@ -127,10 +129,11 @@ class _MyPageState extends State<MyPage>{
               SizedBox(
                   height: 50,
                   child: MaterialButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
+                    onPressed: () async {
+                      await Navigator.push(context, MaterialPageRoute(
                           builder: (context) => SubMyPageMyInfoPage()));
-                    },
+                          setState(() {});
+                      },
                     child: const Align(
                       alignment: Alignment.centerLeft,
                       child: Row(
@@ -165,14 +168,17 @@ class _MyPageState extends State<MyPage>{
               SizedBox(
                   height: 50,
                   child: MaterialButton(
-                    onPressed: () {  },
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const SubMyPageQnAPage()));
+                    },
                     child: const Align(
                       alignment: Alignment.centerLeft,
                       child: Row(
                         children: [
                           Icon(Icons.message),
                           SizedBox(width:18),
-                          Text('고객 센터', style: TextStyle(fontSize: 15), textAlign: TextAlign.left),
+                          Text('Q&A 게시판', style: TextStyle(fontSize: 15), textAlign: TextAlign.left),
                         ],
                       ),
                     ),
@@ -199,7 +205,7 @@ class _MyPageState extends State<MyPage>{
 
 
               //관리자만 보이는 메뉴
-              myUserInfo!.userStatus == UserStatus.NORMAL?
+              myUserInfo!.userStatus == UserStatus.ADMIN?
               SizedBox(
                   height: 50,
                   child: MaterialButton(

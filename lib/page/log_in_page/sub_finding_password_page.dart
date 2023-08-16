@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import '../../entity/util_entity.dart';
 import 'log_in_page.dart';
 
-Color postechRed = Color(0xffac145a);
+
 
 class SubFindingPasswordPage extends StatefulWidget {
 

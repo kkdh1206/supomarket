@@ -1,9 +1,14 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:supo_market/page/category_page/sub_category_page.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
 import '../../entity/item_entity.dart';
+import '../../entity/util_entity.dart';
+import '../../infra/item_list_data.dart';
+import '../../infra/my_info_data.dart';
 import '../chatting_page/chatting_page.dart';
 import '../my_page/my_page.dart';
 import 'package:supo_market/constants.dart';
@@ -11,17 +16,16 @@ import 'package:provider/provider.dart';
 
 import '../util_function.dart';
 
-class CategoryPage extends StatefulWidget{
-
+class CategoryPage extends StatefulWidget {
   final List<Item>? list;
+
   const CategoryPage({Key? key, required this.list}) : super(key: key);
 
   @override
   _CategoryPageState createState() => _CategoryPageState();
 }
 
-class _CategoryPageState extends State<CategoryPage>{
-
+class _CategoryPageState extends State<CategoryPage> {
   List<Item>? list;
 
   @override
@@ -32,32 +36,67 @@ class _CategoryPageState extends State<CategoryPage>{
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
-         Row(
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            CategoryButton(
+                list: list!,
+                context: context,
+                color: Colors.greenAccent,
+                text: '냉장고',
+                icon: const Icon(
+                  Icons.kitchen_outlined,
+                  size: 40,
+                )),
+            const SizedBox(width: 20),
+            CategoryButton(
+                list: list!,
+                context: context,
+                color: Colors.blueGrey,
+                text: '의류',
+                icon: const Icon(Icons.checkroom_outlined, size: 40)),
+            const SizedBox(width: 20),
+            CategoryButton(
+                list: list!,
+                context: context,
+                color: Colors.pinkAccent,
+                text: '자취방',
+                icon: const Icon(Icons.maps_home_work_outlined, size: 40)),
+            const SizedBox(width: 20),
+            CategoryButton(
+                list: list!,
+                context: context,
+                color: Colors.yellow,
+                text: '모니터',
+                icon: const Icon(Icons.desktop_windows_outlined, size: 40)),
+          ]),
+          const SizedBox(height: 30.0),
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CategoryButton(list!, context, Colors.greenAccent, "냉장고", const Icon(Icons.kitchen_outlined, size: 40)),
+              CategoryButton(
+                  list: list!,
+                  context: context,
+                  color: Colors.brown,
+                  text: '책',
+                  icon: const Icon(Icons.menu_book_outlined, size: 40)),
               const SizedBox(width: 20),
-              CategoryButton(list!, context, Colors.blueGrey, "의류", const Icon(Icons.checkroom_outlined, size: 40)),
-              const SizedBox(width: 20),
-              CategoryButton(list!, context, Colors.pinkAccent, "자취방", const Icon(Icons.maps_home_work_outlined, size: 40)),
-              const SizedBox(width: 20),
-              CategoryButton(list!, context, Colors.yellow, "모니터", const Icon(Icons.desktop_windows_outlined, size: 40)),
-              ]
+              CategoryButton(
+                  list: list!,
+                  context: context,
+                  color: Colors.blueGrey,
+                  text: '기타',
+                  icon: const Icon(Icons.more_horiz_outlined, size: 40)),
+            ],
           ),
-           const SizedBox(height: 30.0),
-           Row(
-             mainAxisAlignment: MainAxisAlignment.center,
-             children: [
-               CategoryButton(list!, context, Colors.brown, "책", const Icon(Icons.menu_book_outlined, size: 40)),
-               const SizedBox(width: 20),
-               CategoryButton(list!, context, Colors.blueGrey, "기타", const Icon(Icons.more_horiz_outlined, size: 40)),
-             ],
-           ),
           const SizedBox(height: 30.0),
         ],
       ),
@@ -65,184 +104,117 @@ class _CategoryPageState extends State<CategoryPage>{
   }
 }
 
+class CategoryButton extends StatefulWidget {
+  final List<Item> list;
+  final BuildContext context;
+  final Color color;
+  final String text;
+  final Icon icon;
 
+  const CategoryButton({
+    Key? key,
+    required this.list,
+    required this.context,
+    required this.color,
+    required this.text,
+    required this.icon,
+  }) : super(key: key);
 
-Widget CategoryCard(Color color, String text){
-  return Card(
-    shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(30))
-    ),
-    color : color,
-    child: SizedBox(
-      width: 150, height: 150,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(text, textAlign: TextAlign.center, textScaleFactor: 2),
-        ],
-      ),
-    ),
-  );
+  @override
+  _CategoryButtonState createState() => _CategoryButtonState();
 }
 
+class _CategoryButtonState extends State<CategoryButton> {
+  Color? color;
+  String? categoryName;
+  List<Item>? list;
+  String? text;
+  Icon? icon;
+  String? url;
 
+  bool isMoreRequesting = false;
+  int page = 1;
+  int pageSize = 10;
+  ScrollController scrollController = ScrollController();
+  double scrollOffset = 0.0;
+  bool isListened = false;
+  bool isEnded = false;
+  Map<String,String>? data;
 
-Widget CategoryButton(List<Item> list, BuildContext context, Color color, String text, Icon icon){
+  int refreshNum = 0;
+  final options1 = [
+    SortType.DATEASCEND,
+    SortType.DATEDESCEND,
+    SortType.PRICEDESCEND,
+    SortType.PRICEASCEND
+  ];
 
-  Color temp = color;
-  String categoryName = text;
-  Color postechRed = Color(0xffac145a);
+  final options2 = [
+    ItemStatus.TRADING,
+    ItemStatus.SUPOFASTSELL,
+    ItemStatus.RESERVED,
+    ItemStatus.SOLDOUT,
+  ];
 
-  return Column(
-    children: [
-      Container(
-        width: 60, height: 60,
-        decoration: BoxDecoration(
-        shape: BoxShape.circle,
-          color: color,
-        ),
-        child: IconButton(
-          color: Colors.grey[200],
-          icon: icon,
-          onPressed: (){
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => SubCategoryPage(list: list, category : text)),);
-          //바텀시트 이용해서 카테고리 올림
-              showModalBottomSheet(context: context,
-                builder: (BuildContext context)
-                {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child : ListView.builder(itemBuilder: (context, position) {
-                      //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
+  SortType selectedOption1 = SortType.DATEASCEND;
+  ItemStatus selectedOption2 = ItemStatus.TRADING;
 
-                      list![position].uploadDate = formatDate(list![position].uploadDateForCompare??DateTime.now());
-                      //uploadDate를 현재 시간 기준으로 계속 업데이트하기
+  @override
+  void initState() {
+    super.initState();
+    color = widget.color;
+    categoryName = widget.text;
+    icon = widget.icon;
+    text = widget.text;
+    list = widget.list;
+    page = 1;
+    super.initState();
+    print(myUserInfo.userInterestedId.toString());
+    isMoreRequesting = false; //요청 중이면 circle progress
+    isListened = false; //progress가 돌아가고 있으면 추가로 요청하지 않기 (한번만)
+    selectedOption1 = options1[0];
+    selectedOption2 = options2[0];
+    debugPrint("$text category initiate");
+  }
 
-                      if(list?[position]!.itemType.toString().contains(
-                          categoryName=="냉장고"?"REFRIGERATOR":
-                          categoryName=="의류"?"CLOTHES":
-                          categoryName=="자취방"?"ROOM":
-                          categoryName=="모니터"?"MONITOR":
-                          categoryName=="책"?"BOOK": "ETC")??true){
-                        //만약 TextField 내용(searchName)이 제목 포함하고 있으면 보여주기
-                        return GestureDetector(
-                            child: Card(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
-                              elevation: 1,
-                              child: Stack(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Padding(padding: const EdgeInsets.only(
-                                          top: 10, bottom: 10, left: 10, right: 15),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(8.0),
-                                          child: list![position].imageListB.isEmpty?
-                                          Image.asset("assets/images/main_logo.jpg", width: 100, height: 100, fit: BoxFit.cover) :
-                                          Image.network(list![position].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(list![position].sellingTitle!,
-                                                        style: const TextStyle(fontSize: 20),
-                                                        overflow: TextOverflow.ellipsis),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                        "등록 일자: ${list![position].uploadDate ?? ""}",
-                                                        style: const TextStyle(fontSize: 10),
-                                                        overflow: TextOverflow.ellipsis),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Text("가격: ${f.format(
-                                                        list![position].sellingPrice!)}원",
-                                                        style: const TextStyle(fontSize: 10),
-                                                        overflow: TextOverflow.ellipsis),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  //isQucikSell이 true라면 표시
-                                  list![position].itemStatus == ItemStatus.FASTSELL?
-                                  Positioned(
-                                    right: 10,
-                                    bottom : 10,
-                                    child: Container(
-                                      width: 60,
-                                      height: 25,
-                                      decoration: BoxDecoration(
-                                        color: postechRed,
-                                        borderRadius : const BorderRadius.all(Radius.circular(10.0)),
-                                      ),
-                                      child: const Align(
-                                        alignment: Alignment.center,
-                                        child: Text("급처분",
-                                          style: TextStyle(color: Colors.white, fontSize : 10, fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-
-                                    ),
-                                  ) : const SizedBox(width:0, height:0),
-                                ],
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => SubHomePage(item: list![position], user: fetchUserInfo(list![position]))));
-                            }
-                        );
-                      }
-                      else{
-                        return const SizedBox(height: 0, width: 0);
-                      }
-                    },
-                      itemCount: list!.length, //아이템 개수만큼 스크롤 가능
-                    ),
-                  );
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+          ),
+          child: IconButton(
+            color: Colors.grey[200],
+            icon: icon!,
+            onPressed: () {
+              Navigator.push(context, PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) {
+                  return SubCategoryPage(list: list, type : text); // 화면을 반환하는 부분
                 },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  const begin = Offset(0.0, 1.0);
+                  const end = Offset(0.0, 0.0);
+                  const curve = Curves.easeInOut;
+                  var tween = Tween(begin: begin, end: end).chain(
+                      CurveTween(curve: curve));
+                  var offsetAnimation = animation.drive(tween);
 
-                enableDrag: true, //바텀시트 드래그 가능
-                isDismissible: true, //바텀시트 아닌 부분 클릭시 close
-                barrierColor: color.withOpacity(0.1), //바텀 시트 아닌 부분 색깔
-                constraints: const BoxConstraints( //크기 설정
-                  minWidth: 500,
-                  maxWidth: 500,
-                  minHeight: 100,
-                  maxHeight: 650,
-                ),
-                isScrollControlled: true, // false = 화면의 절반만 차지함, true = 전체 화면 차지 가능
-              );
+                  return SlideTransition(
+                      position: offsetAnimation, child: child);
+                },
+              ));
             },
+          ),
         ),
-      ),
-      const SizedBox(height: 5),
-      Text(text),
-    ],
-  );
+        const SizedBox(height: 5),
+        Text(text!),
+      ],
+    );
+  }
+
 }

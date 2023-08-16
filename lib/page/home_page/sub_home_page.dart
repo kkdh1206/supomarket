@@ -7,11 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:supo_market/entity/user_entity.dart';
 import 'package:supo_market/infra/my_info_data.dart';
+import 'package:supo_market/page/home_page/sub_picture_page.dart';
 import 'package:supo_market/page/util_function.dart';
 import '../../entity/item_entity.dart';
 import 'package:flutter/services.dart';
 
-Color postechRed = Color(0xffac145a);
+import '../../entity/util_entity.dart';
+
+
 
 class SubHomePage extends StatefulWidget {
 
@@ -110,7 +113,6 @@ class _SubHomePageState extends State<SubHomePage>{
                     Padding(padding: const EdgeInsets.only(top: 0),
                       child: Stack(
                         alignment: Alignment.bottomCenter, children: <Widget>[
-
                         widget.item.imageListB.isEmpty ?
                         Image.asset("assets/images/main_logo.jpg", width: 400,
                           height: 400, fit: BoxFit.fitHeight,)
@@ -128,7 +130,13 @@ class _SubHomePageState extends State<SubHomePage>{
                           itemCount: widget.item.imageListB?.length,
                           itemBuilder: (context, index, realIndex) {
                             final url = widget.item.imageListB?[index];
-                            return imageSlider(url, index);
+                              return GestureDetector(
+                                child: imageSlider(url, index),
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) => SubPicturePage(url : url)));
+                                }
+                            );
                           },
                         ),
 

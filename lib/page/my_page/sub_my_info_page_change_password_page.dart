@@ -2,12 +2,13 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:supo_market/page/util_function.dart';
 import '../../infra/my_info_data.dart';
 import '../../infra/users_info_data.dart';
 import '../control_page.dart';
 import '../log_in_page/log_in_page.dart';
 
-Color postechRed = Color(0xffac145a);
+
 
 class SubMyInfoPageChangePasswordPage extends StatefulWidget {
   const SubMyInfoPageChangePasswordPage({super.key});
@@ -33,8 +34,34 @@ class _SubMyInfoPageChangePasswordPageState extends State<SubMyInfoPageChangePas
     User? user = firebaseAuth.currentUser;
     if (user != null) {
       await user.updatePassword(newPassword);
+      setPasswordInDevice(newPassword);
       debugPrint("비밀번호 변경 완료");
     }
+  }
+
+  void popUp(String value){
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SingleChildScrollView(child: Text(value)),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -53,11 +80,6 @@ class _SubMyInfoPageChangePasswordPageState extends State<SubMyInfoPageChangePas
         backgroundColor: Colors.white70.withOpacity(0.9),
         body: Stack(
           children: [
-            isPressed == true?
-            const Align(
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(),
-            ) : const SizedBox(width: 0, height: 0),
             Container(
               padding: const EdgeInsets.only(left: 35, top: 130),
               child: const Text(
@@ -154,17 +176,14 @@ class _SubMyInfoPageChangePasswordPageState extends State<SubMyInfoPageChangePas
                                               setState((){
                                                 isPressed = false;
                                               });
-                                              Navigator.pop(context);
+                                              popUp("비밀번호가 변경되었습니다");
                                             }
                                             else{
-                                              //경고문
-                                              debugPrint("신규 비밀번호가 다릅니다");
+                                              popUp("신규 비밀번호가 다릅니다");
                                             }
                                           }
                                           else{
-                                            //경고문
-                                            debugPrint("기존 비밀번호가 다릅니다");
-                                            debugPrint(myUserInfo.password);
+                                            popUp("기존 비밀번호가 다릅니다");
                                           }
                                         },
                                         icon: const Icon(
@@ -185,6 +204,11 @@ class _SubMyInfoPageChangePasswordPageState extends State<SubMyInfoPageChangePas
                 ),
               ),
             ),
+            isPressed == true?
+            const Align(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            ) : const SizedBox(width: 0, height: 0),
           ],
         ),
       ),

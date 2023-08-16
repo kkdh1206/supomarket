@@ -9,7 +9,7 @@ import '../../entity/item_entity.dart';
 import '../../infra/my_info_data.dart';
 import '../../infra/users_info_data.dart';
 
-Color postechRed = Color(0xffac145a);
+
 
 class MasterPage extends StatefulWidget {
   final List<Item> list;
@@ -53,7 +53,7 @@ class _MasterPageState extends State<MasterPage> {
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMasterPageUserListPage(list: widget.list)));
+                          builder: (context) => SubMasterPageUserListPage()));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,
@@ -91,7 +91,7 @@ class _MasterPageState extends State<MasterPage> {
                   child: MaterialButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMasterPageQuicksellItemListPage(list: widget.list)));
+                          builder: (context) => SubMasterPageQuickSellItemListPage(list: widget.list)));
                     },
                     child: const Align(
                       alignment: Alignment.centerLeft,

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import '../../entity/util_entity.dart';
 import '../../infra/users_info_data.dart';
 import 'auth_email_page.dart';
 import 'log_in_page.dart';
@@ -12,7 +13,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Color postechRed = Color(0xffac145a);
+
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

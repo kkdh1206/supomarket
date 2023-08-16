@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supo_market/page/chatting_page/sub_chat_page.dart';
+import 'package:supo_market/page/chatting_page/sub_chatting_page_chatbot_page.dart';
 import '../../entity/chat_room_entity.dart';
-
-Color postechRed = Color(0xffac145a);
 
 class ChattingPage extends StatelessWidget{
   final List<ChatRoom>? list;
@@ -22,7 +21,11 @@ class ChattingPage extends StatelessWidget{
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(padding: const EdgeInsets.only(top:10, bottom:10,left:10, right:10),
-                            child: Image.asset(list![position].traderImage??"assets/images/user.png", width:80, height: 80, fit: BoxFit.contain),
+                            child: ClipRRect(
+                              borderRadius:
+                              BorderRadius.circular(8.0),
+                              child: Image.asset("assets/images/supi_logo.jpeg", width:80, height: 80, fit: BoxFit.contain),
+                            ),
                       ),
                       Expanded(
                         child: Align(
@@ -57,7 +60,7 @@ class ChattingPage extends StatelessWidget{
                   ),
                 ),
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SubChatPage(chatRoom: list![position])));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SubChattingPageChatbotPage()));
                 }
             );
           },

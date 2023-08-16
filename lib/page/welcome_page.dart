@@ -2,18 +2,19 @@ import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as Path;
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/firebase_options.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
 import 'package:supo_market/page/util_function.dart';
 import '../entity/user_entity.dart';
+import '../entity/util_entity.dart';
 import '../infra/my_info_data.dart';
 import '../infra/users_info_data.dart';
 import 'control_page.dart';
 import 'log_in_page/log_in_page.dart';
 
-Color postechRed = Color(0xffac145a);
+
 
 void main() async {
 
@@ -65,11 +66,8 @@ class MyAppState extends State<MyApp> {
   void initState() {
     //값 받아오기 전 초기값
     myUserInfo.imagePath = "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
-    myUserInfo.email = "";
-    myUserInfo.userStudentNumber = "";
     myUserInfo.password = "";
     myUserInfo.isUserLogin = false;
-    myUserInfo.userName = "";
 
     //firebase 유저 정보 불러오기
     super.initState();
@@ -109,18 +107,30 @@ class MyAppState extends State<MyApp> {
       },
     );
   }
-}
 
-Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot) {
-  if(snapshot.hasError) {
-    return const Text("Error!!");
-  } else if(snapshot.hasData) {
-    return (myUserInfo.isUserLogin == true) && (firebaseAuth.currentUser?.emailVerified == true)? ControlPage() : WelcomePage();
-  } else {
-    return SplashScreen();
+  Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot) {
+    if(snapshot.hasError) {
+      return const Text("Error!!");
+    }
+    else if(snapshot.hasData) {
+      if((myUserInfo.isUserLogin == true) && (firebaseAuth.currentUser?.emailVerified == true)){
+        if(myUserInfo.userStatus == UserStatus.BANNED){
+          return WelcomePage();
+        }
+        else{
+          return ControlPage();
+        }
+      }
+      else{
+        return WelcomePage();
+      }
+    }
+    else {
+      return SplashScreen();
+    }
   }
-}
 
+}
 
 
 class WelcomePage extends StatelessWidget {

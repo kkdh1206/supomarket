@@ -2,7 +2,7 @@ import 'package:image_picker/image_picker.dart';
 
 enum ItemQuality {HIGH, MID, LOW}
 enum ItemType{BOOK, CLOTHES, REFRIGERATOR, MONITOR, ROOM, ETC}
-enum ItemStatus {RESERVED, FASTSELL, SOLDOUT, TRADING}
+enum ItemStatus {RESERVED, USERFASTSELL, SUPOFASTSELL, SOLDOUT, TRADING, DELETED}
 
 class Item{
   int? itemID;

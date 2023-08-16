@@ -13,10 +13,12 @@ import 'package:supo_market/page/log_in_page/auth_email_page.dart';
 import 'package:supo_market/page/log_in_page/register_page.dart';
 import 'package:supo_market/page/util_function.dart';
 
+import '../../entity/user_entity.dart';
+import '../../entity/util_entity.dart';
 import '../control_page.dart';
 import 'finding_password_page.dart';
 
-Color postechRed = Color(0xffac145a);
+
 
 class LogInPage extends StatefulWidget {
 
@@ -216,8 +218,14 @@ class _LogInPageState extends State<LogInPage> {
 
                                                 if(firebaseAuth.currentUser?.emailVerified??false){
                                                   await fetchMyInfo();
-                                                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                                                      builder: (BuildContext context) => ControlPage()), (route) => false);
+                                                  if(myUserInfo.userStatus != UserStatus.BANNED){
+                                                    setPasswordInDevice(givenPassword);
+                                                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                                                        builder: (BuildContext context) => ControlPage()), (route) => false);
+                                                  }
+                                                  else{
+                                                    _bannedUserPopUp();
+                                                  }
                                                 }
                                                 else {
                                                   Navigator.push(context, MaterialPageRoute(
@@ -271,6 +279,31 @@ class _LogInPageState extends State<LogInPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: const SingleChildScrollView(child: Text("올바른 정보가 아닙니다")),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _bannedUserPopUp(){
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const SingleChildScrollView(child: Text("해당 유저는 접속할 수 없습니다")),
           actions: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

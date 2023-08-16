@@ -1,9 +1,9 @@
 
-
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../entity/item_entity.dart';
 import '../entity/user_entity.dart';
 import '../entity/util_entity.dart';
@@ -15,6 +15,52 @@ Future<bool>? homePageBuilder;
 Future<bool>? subHomePageBuilder;
 Future<bool>? favoritePageBuilder;
 Future<bool>? sellingPageBuilder;
+Future<bool>? searchPageBuilder;
+Future<bool>? categoryPageBuilder;
+Future<bool>? masterItemPageBuilder;
+Future<bool>? quickSellPageBuilder;
+Future<bool>? alarmPageBuilder;
+
+Future<bool> setAlarmInDevice (bool check) async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  debugPrint("set alarm in device");
+  pref.setBool('isAlarm', check);
+  mySetting.chattingAlarm = await getAlarmInDevice();
+  return true;
+}
+
+Future<bool> getAlarmInDevice() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+
+  try{
+    print("get isAlarm In device Complete => ${pref.getBool('isAlarm')}");
+    return pref.getBool('isAlarm')!;
+  }catch(e){
+    print("get isAlarm In device Error");
+    return false;
+  }
+}
+
+Future<bool> setPasswordInDevice (String password) async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  debugPrint("set password in device");
+  pref.setString('password', password);
+
+  myUserInfo.password = await getPasswordInDevice();
+  return true;
+}
+
+Future<String> getPasswordInDevice() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+
+  try{
+    print("get Password In device Complete => ${pref.getString('password')}");
+    return pref.getString('password')!;
+  }catch(e){
+    print("get Password In device Error");
+    return "error";
+  }
+}
 
 Future<bool> fetchMyInfo() async{
 
@@ -49,29 +95,8 @@ Future<bool> fetchMyInfo() async{
     String uid = jsonData['uid'] as String;
     myUserInfo.userUid = uid;
 
-    if (response.statusCode == 200){;
-    }
-    else {
-      print('Failed to get response. Status code: ${response.statusCode}');
-    }
   }catch (e) {
     print('Error sending GET request : $e');
-  }
-  //~도형코드
-
-
-  Reference ref = FirebaseStorage.instance.ref().child('users').child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
-  if(ref!=null) {
-    try{
-      String url = await ref.getDownloadURL();
-      //setState(() {
-        myUserInfo.imagePath = url;
-        debugPrint("프로필 사진 가져오기");
-      //});
-    } catch (e, stack) {
-      myUserInfo.imagePath = "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
-      debugPrint("업로드된 이미지가 아직 없습니다");
-    }
   }
 
   return true;
@@ -82,7 +107,7 @@ Future<AUser> fetchUserInfo(Item item) async {
   Dio dio = Dio();
   print('fetchUserData');
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/${item.itemID}';
+  String url = 'http://kdh.supomarket.com/items/itemId/${item.itemID}';
 
 
   try {
@@ -109,7 +134,7 @@ Future<AUser> fetchUserInfo(Item item) async {
   }
 }
 
-Future<bool> fetchItem(int page, SortType type) async{
+Future<bool> fetchItem(int page, SortType type, ItemStatus status) async{
 
   ItemType? tempItemType;
   ItemStatus? tempItemStatus;
@@ -122,7 +147,7 @@ Future<bool> fetchItem(int page, SortType type) async{
   Dio dio = Dio();
   print('fetchData');
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&pageSize=${pageSize}';
+  String url = 'http://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&status=${ConvertEnumToString(status)}&pageSize=${pageSize}';
 
   if(page == 1){
     itemList.clear();
@@ -133,64 +158,6 @@ Future<bool> fetchItem(int page, SortType type) async{
     // Map<String, dynamic> JsonData = json.decode(response.data);
     dynamic jsonData = response.data;
 
-    print("jsonData" + jsonData.toString());
-
-
-    for (var data in jsonData) {
-      int id = data['id'] as int;
-      String title = data['title'] as String;
-      String description = data['description'] as String;
-      int price = data['price'] as int;
-
-      String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
-      tempItemStatus = convertStringToEnum(status);
-
-      String quality = data['quality'] as String;
-      tempItemQuality = convertStringToEnum(quality);
-
-      String category = data['category'] as String;
-      tempItemType = convertStringToEnum(category);
-
-      String updatedAt = data['updatedAt'] as String;
-      List<String> imageUrl = List<String>.from(data['ImageUrls']);
-
-      // 사진도 받아야하는데
-      DateTime dateTime = DateTime.parse(updatedAt);
-
-      // 시간 어떻게 받아올지 고민하기!!!!!!
-      // 그리고 userId 는 현재 null 상태 해결해야함!!!
-      itemList.add(Item(sellingTitle: title, itemType:tempItemType, itemQuality: tempItemQuality!, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: tempItemStatus!, itemID: id));
-    }
-
-  } catch (e) {
-    print('Error sending GET request : $e');
-  }
-  return true;
-}
-
-Future<bool> fetchMyItem(int page, SortType type) async{
-
-  ItemType? tempItemType;
-  ItemStatus? tempItemStatus;
-  ItemQuality? tempItemQuality;
-  String? tempSellerName;
-  String? tempSellerSchoolNum;
-  int pageSize = 10;
-
-  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-  Dio dio = Dio();
-  print('fetchData');
-  dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/myItems';
-
-  if(page == 1){
-    itemList.clear();
-  }
-
-  try {
-    Response response = await dio.get(url);
-    // Map<String, dynamic> JsonData = json.decode(response.data);
-    dynamic jsonData = response.data;
 
     print("jsonData" + jsonData.toString());
 
@@ -252,8 +219,11 @@ dynamic convertStringToEnum(String string){
   else if(string == "SOLDOUT"){
     return ItemStatus.SOLDOUT;
   }
-  else if(string == "FASTSELL"){
-    return ItemStatus.FASTSELL;
+  else if(string == "USERFASTSELL"){
+    return ItemStatus.USERFASTSELL;
+  }
+  else if(string == "SUPOFASTSELL"){
+    return ItemStatus.SUPOFASTSELL;
   }
   else if(string == "RESERVED"){
     return ItemStatus.RESERVED;
@@ -316,8 +286,11 @@ dynamic ConvertEnumToString(dynamic ENUM){
   else if(ENUM == ItemStatus.SOLDOUT){
     return "SOLDOUT";
   }
-  else if(ENUM == ItemStatus.FASTSELL){
-    return "FASTSELL";
+  else if(ENUM == ItemStatus.USERFASTSELL){
+    return "USERFASTSELL";
+  }
+  else if(ENUM == ItemStatus.SUPOFASTSELL){
+    return "SUPOFASTSELL";
   }
   else if(ENUM == ItemStatus.RESERVED){
     return "RESERVED";
@@ -342,6 +315,15 @@ dynamic ConvertEnumToString(dynamic ENUM){
   }
   else if(ENUM == SortType.DATEDESCEND){
     return "DATEDESCEND";
+  }
+  else if(ENUM == UserStatus.NORMAL){
+    return "NORMAL";
+  }
+  else if(ENUM == UserStatus.BANNED){
+    return "BANNED";
+  }
+  else if(ENUM == UserStatus.ADMIN){
+    return "ADMIN";
   }
 }
 

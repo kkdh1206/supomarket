@@ -4,10 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/page/log_in_page/sub_finding_password_page.dart';
+import '../../entity/util_entity.dart';
 import '../../infra/users_info_data.dart';
 import 'log_in_page.dart';
 
-Color postechRed = Color(0xffac145a);
+
 
 class AuthEmailPage extends StatefulWidget {
 

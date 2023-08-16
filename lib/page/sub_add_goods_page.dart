@@ -17,7 +17,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 
-Color postechRed = Color(0xffac145a);
+
 String temp = "";
 Map<String, int> myData = Map();
 
@@ -143,15 +143,6 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
                 newItem.uploadDate = "방금 전";
                 newItem.uploadDateForCompare = DateTime.now();
-                newItem.sellerName = myUserInfo.userName;
-                newItem.sellerSchoolNum = myUserInfo.userStudentNumber;
-
-                myUserInfo.userItemNum = (myUserInfo.userItemNum! +1)!;
-                if(newItem.itemStatus == ItemStatus.FASTSELL){
-                  allQuicksellNum = allQuicksellNum + 1;
-                }
-                //A를 B로 변환해서 넣어주기!!!!!!!!!!!!!
-                newItem.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
               });
 
               //--도형 코드---
@@ -178,14 +169,13 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
               print(formData);
               try {
                 Response response = await dio.post(url, data: formData);
-              print(response);
+                print(response);
               } catch (e) {
                 print('Error sending POST request : $e');
               }
               //--도형 코드---
 
-              Navigator.pop(
-                  context, ReturnData(item: newItem, returnType: "add"));
+              Navigator.pop(context, ReturnData(item: newItem, returnType: "add"));
             },
             style: OutlinedButton.styleFrom(backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
@@ -382,7 +372,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                   onChanged: (bool? value) {
                     // 스위치가 토글될 때 실행될 코드
                     setState(() {
-                      newItem.itemStatus = (value==true ? ItemStatus.FASTSELL : ItemStatus.TRADING);
+                      newItem.itemStatus = (value==true ? ItemStatus.USERFASTSELL : ItemStatus.TRADING);
                       isFastSellForToggle = value??false;
                     });
                   },
@@ -453,8 +443,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
     Widget LoadImageButton() {
     debugPrint(newItem.imageListA.length.toString());
-      return newItem.imageListA.isEmpty ?
-        PlusMaterialButton()
+      return newItem.imageListA.isEmpty ? PlusMaterialButton()
         : Flexible(
           child: SizedBox(
             height: 100,
@@ -614,7 +603,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
   void updateList(){
     debugPrint("update List");
     setState(() {
-      homePageBuilder = fetchItem(1,SortType.DATEASCEND);
+      homePageBuilder = fetchItem(1,SortType.DATEASCEND, ItemStatus.TRADING);
     });
   }
 

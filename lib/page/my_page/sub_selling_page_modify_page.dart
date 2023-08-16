@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import '../../entity/item_entity.dart';
+import '../../entity/util_entity.dart';
+import '../util_function.dart';
 
-Color postechRed = Color(0xffac145a);
+
 String temp = "";
 
 class SubSellingPageModifyPage extends StatefulWidget {
@@ -45,11 +49,15 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
     modifiedItem.itemType = originalItem.itemType;
     modifiedItem.itemQuality = originalItem.itemQuality;
     modifiedItem.sellingPrice = originalItem.sellingPrice;
+    modifiedItem.imageListA = originalItem.imageListA;
     modifiedItem.imageListB = originalItem.imageListB;
     modifiedItem.itemDetail = originalItem.itemDetail;
     modifiedItem.itemStatus = originalItem.itemStatus;
     modifiedItem.itemType = originalItem.itemType;
-    isFastSellForToggle = (originalItem.itemStatus == ItemStatus.FASTSELL);
+    modifiedItem.itemID = originalItem.itemID;
+    isFastSellForToggle = (originalItem.itemStatus == ItemStatus.USERFASTSELL);
+    debugPrint("총 list수 ${modifiedItem.imageListA.length.toString() + modifiedItem.imageListB.length.toString()}");
+
   }
 
   @override
@@ -64,6 +72,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar : AppBar(
+        flexibleSpace: Container(color: Colors.white),
         backgroundColor: Colors.white,
         elevation: 0,
         toolbarHeight: 60,
@@ -77,7 +86,12 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                     itemQuality: modifiedItem.itemQuality??ItemQuality.MID,
                     sellingPrice: modifiedItem.sellingPrice??0,
                     itemDetail: modifiedItem.itemDetail??"",
-                    itemStatus: modifiedItem.itemStatus??ItemStatus.TRADING));
+                    itemStatus: modifiedItem.itemStatus??ItemStatus.TRADING,
+                    itemID: originalItem.itemID!,
+                    imageListA : modifiedItem.imageListA,
+                    imageListB : modifiedItem.imageListB,
+
+                ));
               },
                 icon: const Icon(Icons.clear, color: Colors.black45), iconSize: 30)
         ),
@@ -88,15 +102,20 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
               modifiedItem.uploadDate = "방금 전";
               modifiedItem.uploadDateForCompare = DateTime.now();
             });
-            Navigator.pop(context, ReturnData(returnType: 'modified',
+
+            debugPrint("modifiedItem 사진은 ${modifiedItem.imageListA}");
+            Navigator.pop(context, ReturnData(
+              returnType: 'modified',
                 sellingTitle: modifiedItem.sellingTitle??"",
                 itemType: modifiedItem.itemType??ItemType.BOOK,
                 itemQuality: modifiedItem.itemQuality??ItemQuality.MID,
                 sellingPrice: modifiedItem.sellingPrice??0,
-
                 itemDetail: modifiedItem.itemDetail??"",
                 imagePath: modifiedItem.imageListB??[],
                 itemStatus : modifiedItem.itemStatus??ItemStatus.TRADING,
+                itemID : originalItem.itemID!,
+                imageListA : modifiedItem.imageListA??originalItem.imageListA,
+                imageListB : modifiedItem.imageListB,
             )
             );
           },
@@ -245,26 +264,6 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
           ),
           const SizedBox(height: 10),
 
-          //급처분 버튼
-          Row(
-            children: [
-              const SizedBox(width: 20),
-              const Text("급처분 : ", style: TextStyle(fontSize:15)),
-              CupertinoSwitch(
-                // 급처분 여부
-                value: isFastSellForToggle,
-                activeColor: CupertinoColors.activeOrange,
-                onChanged: (bool? value) {
-                  // 스위치가 토글될 때 실행될 코드
-                  setState(() {
-                    modifiedItem.itemStatus = (value==true? ItemStatus.FASTSELL : ItemStatus.TRADING);
-                    isFastSellForToggle = value??false;
-                  });
-                },
-              ),
-            ],
-          ),
-
           //가격
           Flexible(
               child: Padding(
@@ -316,9 +315,8 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
   }
 
   Widget LoadImageButton() {
-    debugPrint(modifiedItem.imageListB.length.toString());
-    return modifiedItem.imageListB.isEmpty ?
-    PlusMaterialButton()
+
+    return modifiedItem.imageListB.isEmpty & modifiedItem.imageListA.isEmpty? PlusMaterialButton()
         : Flexible(
          child: SizedBox(
           height: 100,
@@ -330,8 +328,14 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
               Expanded(child:
               ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: modifiedItem.imageListB?.length,
+                itemCount: modifiedItem.imageListA!.length + modifiedItem.imageListB!.length,
                 itemBuilder: (BuildContext context, int index) {
+
+                  int countA = modifiedItem.imageListA.length;
+                  int countB = modifiedItem.imageListB.length;
+                  int allCount = countA + countB;
+                  debugPrint("총 list수 ${allCount.toString()}");
+
                   return Row(
                     children: [
                       Stack(
@@ -341,15 +345,23 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                               //편집 기능
                             });
                           },
-                              child: Image.network(
-                                  modifiedItem.imageListB![index], width: 100, height: 100, fit: BoxFit.fitHeight)),
+                              child: differentImage(countA, countB, index),
+                          ),
                           Positioned(
                             right: -20,
                             child: RawMaterialButton(
-                              onPressed: () {
-                                setState(() {
-                                  modifiedItem.imageListB!.removeAt(index);
-                                });
+                              onPressed: (){
+                                  if(index >= countB){
+                                    setState(() {
+                                      modifiedItem.imageListA!.removeAt(index-countB);
+                                    });
+                                  }
+                                  else{
+                                    removeUrlImage(modifiedItem, modifiedItem.imageListB[index]);
+                                    setState(() {
+                                      modifiedItem.imageListB!.removeAt(index);
+                                    });
+                                  }
                               },
                               shape: const CircleBorder(),
                               fillColor: Colors.white,
@@ -375,6 +387,42 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
           )
       ),
     );
+  }
+
+  Future<bool> removeUrlImage(Item item, String imageUrl) async {
+
+    String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+    Dio dio = Dio();
+    print('add Item To Server');
+    dio.options.headers['Authorization'] = 'Bearer $token';
+    String url = 'http://kdh.supomarket.com/items/myItems/patch/image/${item.itemID}';
+
+    var data = {
+      "image": imageUrl
+    };
+
+
+    try {
+    Response response = await dio.patch(url, data: data);
+    print(response);
+    } catch (e) {
+    print('Error sending POST request : $e');
+    }
+
+    return true;
+
+  }
+
+  Widget differentImage(int countA, int countB, int index){
+    if(index < countB){
+      return Image.network(modifiedItem.imageListB![index],width: 100, height: 100, fit: BoxFit.fitHeight);
+    }
+    else{
+      debugPrint("여기 옴?");
+      return Image.file(File(modifiedItem.imageListA[index-countB].path),width: 100, height: 100, fit: BoxFit.fitHeight);
+    }
+
   }
 
   Widget CameraGalleryButton(String text, Icon icon) {
@@ -405,6 +453,9 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
 
 
   final picker = ImagePicker();
+  XFile? _image;
+
+  // List<XFile>? _imagelist =[];
 
   Future getImage() async {
     final pickedFile = await picker.pickMultiImage(
@@ -413,15 +464,16 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
         maxWidth: 1000
     );
 
-    if(pickedFile.length + modifiedItem.imageListB.length> 5){
+    if(pickedFile.length + modifiedItem.imageListA.length> 5){
       _showDialog();
     }
     else if(pickedFile != null) {
-      setState(() {
-        modifiedItem.imageListA.addAll(pickedFile);
-        //B로 변환
-        for(int i = 0; i<pickedFile.length; i++){
-          modifiedItem.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
+      setState((){
+        int count = pickedFile.length;
+        for(int i=0; i<count; i++){
+          _image = XFile((pickedFile[i].path));
+          File file = File(_image!.path);
+          modifiedItem.imageListA.add(file);
         }
       });
     }
@@ -436,14 +488,14 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
     );
 
     if(pickedFile != null){
-      setState(() {
-        modifiedItem.imageListA.add(pickedFile);
-        //A를 B로 변환
-        modifiedItem.imageListB.add("https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Frefri_sample.png?alt=media&token=9133fb86-40a9-4b89-b54b-0883039cbb63");
-
+      setState(() async{
+        _image = XFile(pickedFile.path);
+        File file = File(_image!.path);
+        modifiedItem.imageListA.add(file);
       });
     }
   }
+
 
   //5장을 넘길 때 팝업 경고창
   void _showDialog() {
@@ -512,6 +564,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
       ),
     );
   }
+
 }
 
 class ReturnData {
@@ -523,6 +576,9 @@ class ReturnData {
   int sellingPrice;
   String itemDetail;
   String returnType;
+  int itemID;
+  List imageListA;
+  List<String> imageListB;
 
   ReturnData(
       {required this.sellingTitle,
@@ -532,5 +588,8 @@ class ReturnData {
         required this.sellingPrice,
         required this.itemDetail,
         required this.returnType,
-        required this.itemStatus,});
+        required this.itemStatus,
+        required this.itemID,
+        required this.imageListA,
+        required this.imageListB});
 }
