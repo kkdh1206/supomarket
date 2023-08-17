@@ -43,31 +43,6 @@ class _SubMyInfoPageChangeProfilePageState
     }
   }
 
-  void popUp(String value) {
-    showDialog(
-      context: context,
-      barrierDismissible: false, //여백을 눌러도 닫히지 않음
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: SingleChildScrollView(child: Text(value)),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextButton(
-                  child: const Text("확인"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();

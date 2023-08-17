@@ -36,6 +36,7 @@ class _SubHomePageState extends State<SubHomePage>{
   void initState(){
     debugPrint("Sub Home Page Initialize");
     activeIndex = 0;
+
     subHomePageBuilder = transferUserInfo();
     super.initState();
   }
@@ -50,6 +51,7 @@ class _SubHomePageState extends State<SubHomePage>{
     AUser itemUser = await widget.user;
     widget.item.sellerSchoolNum = itemUser.userStudentNumber;
     widget.item.sellerName = itemUser.userName;
+    widget.item.sellerImage = itemUser.imagePath;
     widget.item.isLiked = myUserInfo.userInterestedId.toString()?.contains(widget.item.itemID.toString());
     return true;
   }

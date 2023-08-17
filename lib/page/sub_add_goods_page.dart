@@ -43,7 +43,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
       itemType: ItemType.ETC,
       itemQuality: ItemQuality.MID,
       sellerName: "",
-      sellingPrice: 0,
+      sellingPrice: -1,
       uploadDate: "",
       sellerImage: myUserInfo.imagePath,
       isLiked: false,
@@ -58,8 +58,6 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
   final picker = ImagePicker();
   XFile? _image;
-
-  // List<XFile>? _imagelist =[];
 
   Future getImage() async {
     final pickedFile = await picker.pickMultiImage(
@@ -139,43 +137,59 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
           ),
           actions: <Widget>[TextButton(
             onPressed: () async {
-              setState(() {
-                //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
-                newItem.uploadDate = "방금 전";
-                newItem.uploadDateForCompare = DateTime.now();
-              });
 
-              //--도형 코드---
-              String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+              if(newItem.sellingTitle!.length < 5){
+                popUp("판매 제목은 5글자 이상이어야 합니다");
+              }
+              else if(newItem.imageListA.isEmpty){
+                popUp("최소 하나의 사진을 첨부 해야 합니다");
+              }
+              else if(newItem.sellingPrice.isNegative || newItem.sellingPrice.isNaN){
+                popUp("가격을 제시해 주세요");
+              }
+              else if(newItem.itemDetail == null || newItem.itemDetail!.length < 10){
+                popUp("세부 내용을 10글자 이상 작성해 주세요");
+              }
+              else{
+                setState(() {
+                  //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
+                  newItem.uploadDate = "방금 전";
+                  newItem.uploadDateForCompare = DateTime.now();
+                });
 
-              Dio dio = Dio();
-              print('add Item To Server');
-              dio.options.headers['Authorization'] = 'Bearer $token';
-              String url = 'http://kdh.supomarket.com/items';
+                //--도형 코드---
+                String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+                Dio dio = Dio();
+                print('add Item To Server');
+                dio.options.headers['Authorization'] = 'Bearer $token';
+                String url = 'http://kdh.supomarket.com/items';
 
 
-              FormData formData = FormData.fromMap({
-                'title': newItem.sellingTitle??"무제",
-                'description': newItem.itemDetail??"",
-                'price': newItem.sellingPrice??0,
-                'category' : ConvertEnumToString(newItem.itemType)??ItemType.ETC,
-                'status' : ConvertEnumToString(newItem.itemStatus)??ItemStatus.TRADING,
-                'quality' : ConvertEnumToString(newItem.itemQuality)??ItemQuality.MID,
-              });
-              for (int i = 0; i < newItem.imageListA.length; i++) {
-                formData.files.add(MapEntry('image' , await MultipartFile.fromFile(newItem.imageListA[i].path, filename:'image.jpg')));
+                FormData formData = FormData.fromMap({
+                  'title': newItem.sellingTitle??"무제",
+                  'description': newItem.itemDetail??"",
+                  'price': newItem.sellingPrice??-1,
+                  'category' : ConvertEnumToString(newItem.itemType)??ItemType.ETC,
+                  'status' : ConvertEnumToString(newItem.itemStatus)??ItemStatus.TRADING,
+                  'quality' : ConvertEnumToString(newItem.itemQuality)??ItemQuality.MID,
+                });
+                for (int i = 0; i < newItem.imageListA.length; i++) {
+                  formData.files.add(MapEntry('image' , await MultipartFile.fromFile(newItem.imageListA[i].path, filename:'image.jpg')));
+                }
+
+                print(formData);
+                try {
+                  Response response = await dio.post(url, data: formData);
+                  print(response);
+                } catch (e) {
+                  print('Error sending POST request : $e');
+                }
+                //--도형 코드---
+
+                Navigator.pop(context, ReturnData(item: newItem, returnType: "add"));
               }
 
-              print(formData);
-              try {
-                Response response = await dio.post(url, data: formData);
-                print(response);
-              } catch (e) {
-                print('Error sending POST request : $e');
-              }
-              //--도형 코드---
-
-              Navigator.pop(context, ReturnData(item: newItem, returnType: "add"));
             },
             style: OutlinedButton.styleFrom(backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
@@ -405,7 +419,13 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                     onChanged: (text) {
                       setState(() {
                         temp = text;
-                        newItem.sellingPrice = int.parse(temp);
+                        print(temp);
+                        if(temp!=""){
+                          newItem.sellingPrice = int.parse(temp);
+                        }
+                        else{
+                          newItem.sellingPrice = -1;
+                        }
                       });
                     },
                   ),
@@ -546,6 +566,31 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void popUp(String value) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SingleChildScrollView(child: Text(value)),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
             ),
           ],
         );

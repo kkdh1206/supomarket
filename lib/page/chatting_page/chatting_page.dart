@@ -3,9 +3,26 @@ import 'package:supo_market/page/chatting_page/sub_chat_page.dart';
 import 'package:supo_market/page/chatting_page/sub_chatting_page_chatbot_page.dart';
 import '../../entity/chat_room_entity.dart';
 
-class ChattingPage extends StatelessWidget{
+class ChattingPage extends StatefulWidget {
   final List<ChatRoom>? list;
+
   const ChattingPage({Key? key, this.list}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return ChattingPageState();
+  }
+}
+
+class ChattingPageState extends State<ChattingPage>{
+
+  List<ChatRoom> list = [];
+
+  @override
+  void initState() {
+    super.initState();
+    list.add(ChatRoom(traderName: "이지현", traderImage: "", itemName: "임시 채팅방", sellingTitle: ""));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +57,7 @@ class ChattingPage extends StatelessWidget{
                                        ),
                                       Expanded(
                                         flex: 3,
-                                        child: Text(list![position].lastChattingDay!, style: const TextStyle(fontSize:10),overflow: TextOverflow.ellipsis,),
+                                        child: Text(list![position].lastChattingDay??"방금 전", style: const TextStyle(fontSize:10),overflow: TextOverflow.ellipsis,),
                                       ),
                                     ],
                                   ),
@@ -48,7 +65,7 @@ class ChattingPage extends StatelessWidget{
                                   Row(
                                     children: [
                                       Expanded(
-                                        child: Text(list![position].lastChattingSentence!, style: const TextStyle(fontSize:10),overflow: TextOverflow.ellipsis),
+                                        child: Text(list![position].lastChattingSentence??"안녕하세요", style: const TextStyle(fontSize:10),overflow: TextOverflow.ellipsis),
                                       ),
                                     ],
                                   ),
@@ -60,7 +77,8 @@ class ChattingPage extends StatelessWidget{
                   ),
                 ),
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SubChattingPageChatbotPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SubChatPage(chatRoom: list[position])));
+                  //Navigator.push(context, MaterialPageRoute(builder: (context) => SubChattingPageChatbotPage()));
                 }
             );
           },

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../entity/board_entity.dart';
 import '../entity/item_entity.dart';
 import '../entity/user_entity.dart';
 import '../entity/util_entity.dart';
@@ -20,6 +21,11 @@ Future<bool>? categoryPageBuilder;
 Future<bool>? masterItemPageBuilder;
 Future<bool>? quickSellPageBuilder;
 Future<bool>? alarmPageBuilder;
+Future<bool>? qnaPageBuilder;
+Future<bool>? qnaSearchPageBuilder;
+Future<bool>? boardPageBuilder;
+
+
 
 Future<bool> setAlarmInDevice (bool check) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
@@ -108,6 +114,38 @@ Future<AUser> fetchUserInfo(Item item) async {
   print('fetchUserData');
   dio.options.headers['Authorization'] = 'Bearer $token';
   String url = 'http://kdh.supomarket.com/items/itemId/${item.itemID}';
+
+
+  try {
+    Response response = await dio.get(url);
+    // Map<String, dynamic> JsonData = json.decode(response.data);
+    dynamic jsonData = response.data;
+
+    int id = jsonData['id'] as int;
+    String Email = jsonData['Email'] as String;
+    String username = jsonData['username'] as String;
+    String userstatus = jsonData['userstatus'] as String;
+    String imageUrl = jsonData['imageUrl'] as String;
+    List<dynamic> interestedId = jsonData['interestedId'] as List<dynamic>;
+    String studentNumber = jsonData['studentNumber'] as String;
+    String uid = jsonData['uid'] as String;
+
+    return AUser(id: id, email: Email, userName: username, imagePath: imageUrl, isUserLogin: true, userStatus: convertStringToEnum(userstatus), userStudentNumber: studentNumber, userInterestedId: interestedId, userUid : uid);
+
+  } catch (e) {
+
+    print('Error sending GET request : $e');
+    return AUser(id: 0, email: "", userName : "", imagePath: "", isUserLogin: false, userStatus: UserStatus.NORMAL, userStudentNumber: "", userInterestedId: [], userUid : "");
+
+  }
+}
+
+Future<AUser> fetchUserInfo2(Board board) async {
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+  print('fetchUserData in Board');
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/boards/boardId/${board.id}';
 
 
   try {
@@ -258,6 +296,15 @@ dynamic convertStringToEnum(String string){
   else if(string == "BANNED"){
     return UserStatus.BANNED;
   }
+  else if(string == "PUBLIC"){
+    return BoardStatus.PUBLIC;
+  }
+  else if(string == "PRIVATE"){
+    return BoardStatus.PRIVATE;
+  }
+  else if(string == "DELETED"){
+    return BoardStatus.DELETED;
+  }
 }
 
 
@@ -324,6 +371,15 @@ dynamic ConvertEnumToString(dynamic ENUM){
   }
   else if(ENUM == UserStatus.ADMIN){
     return "ADMIN";
+  }
+  else if(ENUM == BoardStatus.PUBLIC){
+    return "PUBLIC";
+  }
+  else if(ENUM == BoardStatus.PRIVATE){
+    return "PRIVATE";
+  }
+  else if(ENUM == BoardStatus.DELETED){
+    return "DELETED";
   }
 }
 

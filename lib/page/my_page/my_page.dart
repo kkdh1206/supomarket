@@ -45,34 +45,6 @@ class _MyPageState extends State<MyPage>{
     super.dispose();
   }
 
-  void _storeImage() async{
-    final picker = ImagePicker();
-    var _pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    pickedImageFunction(_pickedImage);
-  }
-
-  Future<void> pickedImageFunction(var image) async {
-    final ref = FirebaseStorage.instance.ref().child("users").child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
-    if(image != null){
-      await ref.putFile(File(image.path));
-      debugPrint("이미지 저장소에 저장");
-      getProfileImage();
-    }
-  }
-
-  Future<void> getProfileImage() async{
-    final ref = FirebaseStorage.instance.ref().child('users').child(firebaseAuth.currentUser!.uid).child("profile"+".jpg");
-    if(ref!= null) {
-      String _url = await ref.getDownloadURL();
-      debugPrint("이미지 네트워크 url은 $_url 입니다");
-      setState(() {
-        myUserInfo.imagePath = _url;
-      });
-    }
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,16 +54,13 @@ class _MyPageState extends State<MyPage>{
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Padding(padding: const EdgeInsets.only(left:10, top:30),
+              Padding(padding: const EdgeInsets.only(top:30, left: 20),
                 child : Container(
-                  height: 120, width: 120,
-                  child: IconButton(
-                    onPressed: () { _storeImage(); },
-                      icon: ClipOval(child: Image.network(myUserInfo!.imagePath!, fit: BoxFit.cover, width: 120, height: 120,)),
+                  height: 100, width: 100,
+                  child: ClipOval(child: Image.network(myUserInfo!.imagePath!, fit: BoxFit.cover, width: 100, height: 100,)),
                   ),
                 ),
-              ),
-              Padding(padding: const EdgeInsets.only(top:30, left:10),
+              Padding(padding: const EdgeInsets.only(top:30, left:20),
                 child: Row(
                   children: [
                     Text(myUserInfo!.userStudentNumber??"", textScaleFactor: 1.2, style: const TextStyle(fontWeight: FontWeight.bold)),
