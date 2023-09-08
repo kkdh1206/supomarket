@@ -222,9 +222,9 @@ class _LogInPageState extends State<LogInPage> {
 
                                                 if(firebaseAuth.currentUser?.emailVerified??false){
                                                   await fetchMyInfo(); //유저정보 fetch
-                                                  //FirebaseMessaging fbMsg = FirebaseMessaging.instance;
-                                                  //String? fcmToken = await fbMsg.getToken();
-                                                  //await patchToken(fcmToken!); //fcm token 보내기
+                                                  FirebaseMessaging fbMsg = FirebaseMessaging.instance;
+                                                  String? fcmToken = await fbMsg.getToken();
+                                                  await patchToken(fcmToken!); //fcm token 보내기
 
                                                   if(myUserInfo.userStatus != UserStatus.BANNED){
                                                     setPasswordInDevice(givenPassword);

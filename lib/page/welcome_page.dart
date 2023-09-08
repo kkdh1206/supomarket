@@ -21,54 +21,51 @@ import '../provider/socket_provider.dart';
 import 'control_page.dart';
 import 'log_in_page/log_in_page.dart';
 
-//final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 void main() async {
   //firebase 사용을 위한 호출들
 
   WidgetsFlutterBinding.ensureInitialized();
   //안드로이드 권한 허용
-  //flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestPermission();
+  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestPermission();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  //FirebaseMessaging fbMsg = FirebaseMessaging.instance;
-  // String? fcmToken = await fbMsg.getToken();
-  // print("fcmToken : ${fcmToken}을 받았습니다");
-  // if(firebaseAuth.currentUser != null){
-  //   await patchToken(fcmToken!); //서버에 해당 토큰을 저장 및 수정하는 로직 구현
-  // }
+  FirebaseMessaging fbMsg = FirebaseMessaging.instance;
+  String? fcmToken = await fbMsg.getToken();
+  print("fcmToken : ${fcmToken}을 받았습니다");
+  if(firebaseAuth.currentUser != null){
+    await patchToken(fcmToken!); //서버에 해당 토큰을 저장 및 수정하는 로직 구현
+  }
 
   //IOS 알람 권한 요청
-  //await reqIOSPermission(fbMsg);
+  await reqIOSPermission(fbMsg);
 
   runApp(const MyApp());
 
-  // //알림 받기 설정
-  // FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-  //   if (message != null) {
-  //     if (message.notification != null) {
-  //       print(message.notification!.title);
-  //       print(message.notification!.body);
-  //       print(message.data["screen"]);
-  //       print(message.data["param"]);
-  //       flutterLocalNotificationsPlugin.show(
-  //         message.notification.hashCode,
-  //         message.notification?.title,
-  //         message.notification?.body,
-  //         const NotificationDetails(
-  //             android: AndroidNotificationDetails('channelId', 'channelName', icon: "ic_notification")
-  //         ),
-  //       );
-  //     }
-  //   }
-  // });
-
+  //알림 받기 설정
+  FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
+    if (message != null) {
+      if (message.notification != null) {
+        print(message.notification!.title);
+        print(message.notification!.body);
+        print(message.data["screen"]);
+        print(message.data["param"]);
+        flutterLocalNotificationsPlugin.show(
+          message.notification.hashCode,
+          message.notification?.title,
+          message.notification?.body,
+          const NotificationDetails(
+              android: AndroidNotificationDetails('channelId', 'channelName', icon: "ic_notification")
+          ),
+        );
+      }
+    }
+  });
 }
-
-
 
 
 class SplashScreen extends StatelessWidget{
