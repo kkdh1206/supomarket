@@ -17,34 +17,38 @@ import 'package:flutter/services.dart';
 import '../../entity/util_entity.dart';
 import '../../infra/users_info_data.dart';
 
-class SubQnAPageAddBoardPage extends StatefulWidget {
-  const SubQnAPageAddBoardPage({Key? key}) : super(key: key);
+class SubQnAPageModifyPage extends StatefulWidget {
+  final Board board;
+
+  const SubQnAPageModifyPage({Key? key, required this.board}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _SubQnAPageAddBoardPageState();
+    return _SubQnAPageModifyPageState();
   }
 }
 
-class _SubQnAPageAddBoardPageState extends State<SubQnAPageAddBoardPage> {
+class _SubQnAPageModifyPageState extends State<SubQnAPageModifyPage> {
   int activeIndex = 0;
-  Board board = Board(
+
+  Board newBoard = Board(
       id: 0,
       title: "",
       description: "",
       boardStatus: BoardStatus.PUBLIC,
       userName: "",
       userStudentNumber: "");
+
   String newTitle = "";
   String newDescription = "";
-  TextEditingController title = TextEditingController();
-  TextEditingController detail = TextEditingController();
   bool isPrivate = false;
 
   @override
   void initState() {
-    debugPrint("Sub Home Page Initialize");
+    debugPrint("Modify Page Initialize");
+    newBoard = widget.board;
     activeIndex = 0;
+    isPrivate = widget.board.boardStatus == BoardStatus.PRIVATE;
     super.initState();
   }
 
@@ -63,39 +67,44 @@ class _SubQnAPageAddBoardPageState extends State<SubQnAPageAddBoardPage> {
             padding: const EdgeInsets.only(top: 10, left: 10),
             child: IconButton(
                 onPressed: () async {
-                  Navigator.pop(context, ReturnType(newTitle: newTitle,
-                      newDescription: newDescription,
-                      returnType: "exit",
-                      newStatus: board.boardStatus!));
+                  Navigator.pop(
+                      context,
+                      ReturnType(
+                          newTitle: newTitle,
+                          newDescription: newDescription,
+                          returnType: "exit",
+                          newStatus: newBoard.boardStatus!));
                 },
                 icon: const Icon(Icons.arrow_back, color: Colors.black45),
                 iconSize: 30)),
         actions: [
-          Padding(padding: EdgeInsets.only(right: 5),
-            child: MaterialButton(onPressed: () {
-              if (newTitle.length < 5) {
-                popUp("제목은 5글자 이상이어야 합니다");
-              }
-              else if (newDescription.length < 10) {
-                popUp("내용은 10글자 이상이어야 합니다");
-              }
-
-              else {
-                Navigator.pop(context, ReturnType(
-                    newTitle: newTitle,
-                    newDescription: newDescription,
-                    newStatus: board.boardStatus!,
-                    returnType: "add"));
-              }
-            },
+          Padding(
+            padding: EdgeInsets.only(right: 5),
+            child: MaterialButton(
+              onPressed: () {
+                if (newTitle.length < 5) {
+                  popUp("제목은 5글자 이상이어야 합니다");
+                } else if (newDescription.length < 10) {
+                  popUp("내용은 10글자 이상이어야 합니다");
+                } else {
+                  Navigator.pop(
+                      context,
+                      ReturnType(
+                          newTitle: newTitle,
+                          newDescription: newDescription,
+                          newStatus: newBoard.boardStatus!,
+                          returnType: "modified"));
+                }
+              },
               child: Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
                     color: postechRed.withOpacity(1.0)),
                 child: const Padding(
                   padding: EdgeInsets.all(10.0),
-                  child: Text("등록하기", style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text("수정하기",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
@@ -106,8 +115,7 @@ class _SubQnAPageAddBoardPageState extends State<SubQnAPageAddBoardPage> {
         children: [
           Container(
               width: 500,
-              child:
-              const Divider(color: Colors.black45, thickness: 0.5)),
+              child: const Divider(color: Colors.black45, thickness: 0.5)),
           Row(
             children: [
               const Padding(
@@ -115,14 +123,14 @@ class _SubQnAPageAddBoardPageState extends State<SubQnAPageAddBoardPage> {
                 child: Text("제목", style: TextStyle(fontSize: 20)),
               ),
               Expanded(
-                child: TextField(
+                child: TextFormField(
+                  initialValue: widget.board.title,
                   onChanged: (text) {
                     setState(() {
                       newTitle = text;
                     });
                   },
                   textAlign: TextAlign.center,
-                  controller: title,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -145,7 +153,8 @@ class _SubQnAPageAddBoardPageState extends State<SubQnAPageAddBoardPage> {
                 child: Text("내용", style: TextStyle(fontSize: 20)),
               ),
               Expanded(
-                child: TextField(
+                child: TextFormField(
+                  initialValue: widget.board.description,
                   onChanged: (text) {
                     setState(() {
                       newDescription = text;
@@ -153,7 +162,6 @@ class _SubQnAPageAddBoardPageState extends State<SubQnAPageAddBoardPage> {
                   },
                   maxLines: 10,
                   textAlign: TextAlign.center,
-                  controller: detail,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -187,7 +195,9 @@ class _SubQnAPageAddBoardPageState extends State<SubQnAPageAddBoardPage> {
                 onChanged: (bool? value) {
                   // 스위치가 토글될 때 실행될 코드
                   setState(() {
-                    board.boardStatus = (value == false ? BoardStatus.PUBLIC : BoardStatus.PRIVATE);
+                    newBoard.boardStatus = (value == true
+                        ? BoardStatus.PUBLIC
+                        : BoardStatus.PRIVATE);
                     isPrivate = value ?? false;
                   });
                 },
@@ -199,8 +209,7 @@ class _SubQnAPageAddBoardPageState extends State<SubQnAPageAddBoardPage> {
     );
   }
 
-
-  void popUp(String value){
+  void popUp(String value) {
     showDialog(
       context: context,
       barrierDismissible: false, //여백을 눌러도 닫히지 않음
@@ -226,8 +235,7 @@ class _SubQnAPageAddBoardPageState extends State<SubQnAPageAddBoardPage> {
   }
 }
 
-
-class ReturnType{
+class ReturnType {
   String newTitle = "";
   String newDescription = "";
   BoardStatus newStatus = BoardStatus.PUBLIC;

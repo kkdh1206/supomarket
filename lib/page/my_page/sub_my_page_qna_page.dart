@@ -8,6 +8,7 @@ import 'package:supo_market/entity/item_entity.dart';
 import 'package:supo_market/entity/util_entity.dart';
 import 'package:supo_market/page/my_page/sub_qna_page_add_board_page.dart';
 import 'package:supo_market/page/my_page/sub_qna_page_board_page.dart';
+import 'package:supo_market/page/my_page/sub_qna_page_my_page.dart';
 import 'package:supo_market/page/my_page/sub_qna_page_search_page.dart';
 import 'package:supo_market/page/my_page/sub_setting_page_alarm_page.dart';
 import 'package:supo_market/page/util_function.dart';
@@ -56,6 +57,18 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
+                        builder: (context) => SubQnaPageMyPage()));
+              },
+              icon: const Text("My"),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(right: 0),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
                         builder: (context) =>
                             SubQnAPageSearchPage(list: list)));
               },
@@ -72,8 +85,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
                           builder: (context) => SubQnAPageAddBoardPage()));
                   if (data.returnType == "add") {
                     print("board add");
-                    await postBoard(
-                        data.newTitle, data.newDescription, data.newStatus);
+                    await postBoard(data.newTitle, data.newDescription, data.newStatus);
                     qnaPageBuilder = fetchBoard(_currentPage);
                   }
                 },
@@ -85,6 +97,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
         children: [
           Expanded(
             child: PageView.builder(
+              physics: const NeverScrollableScrollPhysics(),
               controller: _controller,
               itemCount: 10,
               onPageChanged: (index) async {
@@ -417,8 +430,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
     return true;
   }
 
-  Future<bool> postBoard(
-      String newTitle, String newDescription, BoardStatus newStatus) async {
+  Future<bool> postBoard(String newTitle, String newDescription, BoardStatus newStatus) async {
     String token = await firebaseAuth.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
 
@@ -440,4 +452,5 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
 
     return true;
   }
+
 }

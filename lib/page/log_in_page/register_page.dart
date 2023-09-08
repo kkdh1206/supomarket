@@ -11,9 +11,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -25,50 +22,22 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-
   bool isChecked = false;
   TextEditingController id = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController password2 = TextEditingController();
-  TextEditingController userName = TextEditingController();
+  TextEditingController realName = TextEditingController();
+  TextEditingController nickName = TextEditingController();
   TextEditingController userStudentNumber = TextEditingController();
 
   String newID = "";
   String newPassword = "";
   String newPassword2 = "";
-  String newUserName = "";
+  String newNickName = "";
+  String newRealName = "";
   String newUserSchoolNum = "";
   bool checkForArrive = false;
   bool isPressed = false;
-
-  Future<void> setUserInfo(UserCredential credential) async {
-    Reference ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("email"+".txt");
-    if(firebaseAuth.currentUser != null) {
-      await ref.putString(credential.user!.email.toString());
-    }
-
-    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("emailVerified"+".txt");
-    if(firebaseAuth.currentUser != null) {
-      await ref.putString(credential.user!.emailVerified.toString()??"");
-    }
-
-    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("userStudentNumber"+".txt");
-    if(firebaseAuth.currentUser != null) {
-      await ref.putString(newUserSchoolNum);
-    }
-
-    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("password"+".txt");
-    if(firebaseAuth.currentUser != null) {
-      await ref.putString(newPassword);
-    }
-
-    ref = FirebaseStorage.instance.ref().child("users").child(credential.user!.uid).child("userName"+".txt");
-    if(firebaseAuth.currentUser != null) {
-      await ref.putString(credential.user!.displayName.toString());
-    }
-
-    debugPrint("유저 정보 저장하기");
-  }
 
   @override
   void initState() {
@@ -76,23 +45,23 @@ class _RegisterPageState extends State<RegisterPage> {
     newID = "";
     newPassword = "";
     newPassword2 = "";
-    newUserName = "";
+    newNickName = "";
+    newRealName = "";
     newUserSchoolNum = "";
     checkForArrive = false;
   }
 
   //비밀번호 7자리 이상, 아이디는 이메일 폼
-  Future<void> createEmailAndPassword(String id, String password, String userName, String newUserSchoolNum) async {
+  Future<void> createEmailAndPassword(String id, String password,
+      String userName, String newUserSchoolNum) async {
     try {
       final credential = await firebaseAuth.createUserWithEmailAndPassword(
         email: id,
         password: password,
       );
-      if(credential.user != null){
+      if (credential.user != null) {
         allUserList.add(credential);
-        credential.user?.updateDisplayName(newUserName);
-        //학번 저장
-        setUserInfo(credential);
+        credential.user?.updateDisplayName(newNickName);
         checkForArrive = true;
         return;
       }
@@ -117,7 +86,8 @@ class _RegisterPageState extends State<RegisterPage> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-            image: AssetImage('assets/images/main_logo.jpg'), fit: BoxFit.cover),
+            image: AssetImage('assets/images/main_logo.jpg'),
+            fit: BoxFit.cover),
       ),
       child: Scaffold(
         backgroundColor: postechRed.withOpacity(0.9),
@@ -126,13 +96,14 @@ class _RegisterPageState extends State<RegisterPage> {
             Container(
               padding: const EdgeInsets.only(left: 35, top: 130),
               child: const Text(
-                '회원가입', style: TextStyle(color: Colors.white, fontSize: 33),
+                '회원가입',
+                style: TextStyle(color: Colors.white, fontSize: 33),
               ),
             ),
             SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.25),
+                    top: MediaQuery.of(context).size.height * 0.23),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -144,15 +115,15 @@ class _RegisterPageState extends State<RegisterPage> {
                             controller: id,
                             style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                hintText: "이메일",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                              fillColor: Colors.grey.shade100,
+                              filled: true,
+                              hintText: "이메일",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                               suffixText: "@postech.ac.kr",
                             ),
-                            onChanged: (text){
+                            onChanged: (text) {
                               setState(() {
                                 newID = "$text@postech.ac.kr";
                               });
@@ -164,7 +135,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           TextField(
                             controller: password,
                             style: const TextStyle(),
-                            obscureText: true, //패스워드 별표 처리
+                            obscureText: true,
+                            //패스워드 별표 처리
                             decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
                                 filled: true,
@@ -172,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 )),
-                            onChanged: (text){
+                            onChanged: (text) {
                               setState(() {
                                 newPassword = text;
                               });
@@ -184,7 +156,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           TextField(
                             controller: password2,
                             style: const TextStyle(),
-                            obscureText: true, //패스워드 별표 처리
+                            obscureText: true,
+                            //패스워드 별표 처리
                             decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
                                 filled: true,
@@ -192,7 +165,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 )),
-                            onChanged: (text){
+                            onChanged: (text) {
                               setState(() {
                                 newPassword2 = text;
                               });
@@ -202,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             height: 30,
                           ),
                           TextField(
-                            controller: userName,
+                            controller: realName,
                             style: const TextStyle(),
                             decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
@@ -211,11 +184,51 @@ class _RegisterPageState extends State<RegisterPage> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 )),
-                            onChanged: (text){
+                            onChanged: (text) {
                               setState(() {
-                                newUserName = text;
+                                newRealName = text;
                               });
                             },
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          Stack(
+                            alignment: Alignment.centerLeft,
+                            children: [
+                              TextField(
+                                controller: nickName,
+                                style: const TextStyle(),
+                                decoration: InputDecoration(
+                                    fillColor: Colors.grey.shade100,
+                                    filled: true,
+                                    hintText: "닉네임",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    )),
+                                onChanged: (text) {
+                                  setState(() {
+                                    newNickName = text;
+                                  });
+                                },
+                              ),
+                              Positioned(
+                                right: 15,
+                                child: MaterialButton(
+                                  color: Colors.grey,
+                                  child: const Text(
+                                    "중복 확인",
+                                    textScaleFactor: 0.9,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  onPressed: () {
+                                    checkDuplication(newNickName);
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(
                             height: 30,
@@ -230,7 +243,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 )),
-                            onChanged: (text){
+                            onChanged: (text) {
                               setState(() {
                                 newUserSchoolNum = text;
                               });
@@ -243,8 +256,11 @@ class _RegisterPageState extends State<RegisterPage> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               const Text(
-                                'Sign Up', style: TextStyle(
-                                    fontSize: 27, fontWeight: FontWeight.w700, color: Colors.black45),
+                                'Sign Up',
+                                style: TextStyle(
+                                    fontSize: 27,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black45),
                               ),
                               const SizedBox(width: 15),
                               CircleAvatar(
@@ -253,47 +269,58 @@ class _RegisterPageState extends State<RegisterPage> {
                                 child: IconButton(
                                     color: Colors.white,
                                     onPressed: () async {
+                                      if (newPassword.compareTo(newPassword2) == 0) {
 
-                                      if(newPassword.compareTo(newPassword2)==0) {
                                         setState(() {
                                           isPressed = true;
                                         });
 
-                                        await createEmailAndPassword(newID, newPassword, newUserName, newUserSchoolNum);
-                                        String token = await firebaseAuth.currentUser?.getIdToken() ?? '';
+                                        await createEmailAndPassword(
+                                            newID,
+                                            newPassword,
+                                            newRealName,
+                                            newUserSchoolNum);
+                                        String token = await firebaseAuth
+                                                .currentUser
+                                                ?.getIdToken() ??
+                                            '';
+
                                         Dio dio = Dio();
 
-                                        dio.options.headers['Authorization'] = 'Bearer $token';
-                                        String url = 'http://kdh.supomarket.com/auth/signup'; // 여기에 api 랑 endpoint 추가해야됨
-
-                                        Map<String, String> data = {
-                                          'Email': newID,
-                                          'username': newUserName,
-                                          'studentNumber': newUserSchoolNum
-                                        };
                                         try {
-                                          print('!!!!!!!!!!!!!!!!!1');
-                                          print(data);
+                                          dio.options.headers['Authorization'] = 'Bearer $token';
+                                          String url = 'http://kdh.supomarket.com/auth/signup'; // 여기에 api 랑 endpoint 추가해야됨
+
+                                          Map<String, String> data = {
+                                            'Email': newID,
+                                            'username': newNickName,
+                                            'realname': newRealName,
+                                            'studentNumber': newUserSchoolNum
+                                          };
                                           Response response = await dio.post(url, data: data);
-                                          print('???????????????????');
-                                          print(response);
+
+                                          setState(() {
+                                            isPressed = false;
+
+                                            if (checkForArrive) {
+                                              //로그인 되어있으면 넘어가기
+                                              //uploadInfo();
+                                              Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (BuildContext
+                                                              context) =>
+                                                          AuthEmailPage()),
+                                                  (route) => false);
+                                            }
+                                          });
                                         } catch (e) {
                                           print('Error sending POST request : $e');
                                         }
-
-                                      setState(() {
-                                        isPressed = false;
-
-                                        if (checkForArrive) {
-                                          //로그인 되어있으면 넘어가기
-                                          //uploadInfo();
-                                          Navigator.pushAndRemoveUntil(
-                                              context, MaterialPageRoute(builder: (BuildContext context) => AuthEmailPage()), (route) => false);
-                                          }
-                                        });
-                                      } else{
+                                      } else {
                                         _differentPasswordPopUp();
-                                      };
+                                      }
+                                      ;
                                     },
                                     icon: const Icon(
                                       Icons.arrow_forward,
@@ -312,14 +339,20 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
             Positioned(
-                left: 10, top : 30,
-                child: IconButton (onPressed: () {Navigator.pop(context);}, icon: Icon(Icons.arrow_back, color: Colors.white54), iconSize: 30)
-            ),
-            isPressed == true?
-            const Align(
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(),
-            ) : const SizedBox(width: 0, height: 0),
+                left: 10,
+                top: 30,
+                child: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.arrow_back, color: Colors.white54),
+                    iconSize: 30)),
+            isPressed == true
+                ? const Align(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  )
+                : const SizedBox(width: 0, height: 0),
           ],
         ),
       ),
@@ -351,7 +384,59 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _alreadyExistPopUp(){
+  Future<void> checkDuplication(String username) async {
+    String name = username ?? '';
+    if (await checkUsername(name) == true) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('사용 가능한 username 입니다')),
+        );
+    }
+    if (username == '') {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('username 을 넣어주세요')),
+        );
+    }
+
+    if (await checkUsername(name) == false) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text('이미 존재하는 username 입니다')));
+    }
+  }
+
+  Future<bool> checkUsername(String username) async {
+    Dio dio = Dio();
+    dio.options.responseType = ResponseType.plain; // responseType 설정
+    String url =
+        'http://kdh.supomarket.com/auth/username'; // 수정요망 (https://) 일단 뺌  --> 앞에 http든 https 든 꼭 있어야되구나!!
+
+    try {
+      Map<String, String> data = {'username': username};
+      Response response = await dio.get(url, data: data);
+
+      if (response.statusCode == 200) {
+        String exist = response.data.trim();
+
+        if (exist == 'true') {
+          return true;
+        } // 가능
+        if (exist == 'false') {
+          return false;
+        } // 불가능
+      } else {
+        print('Failed to get response. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error sending GET request : $e');
+    }
+    return false;
+  }
+
+  void _alreadyExistPopUp() {
     showDialog(
       context: context,
       barrierDismissible: false, //여백을 눌러도 닫히지 않음
@@ -376,7 +461,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _weakPasswordPopUp(){
+  void _weakPasswordPopUp() {
     showDialog(
       context: context,
       barrierDismissible: false, //여백을 눌러도 닫히지 않음

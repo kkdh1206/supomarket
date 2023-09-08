@@ -1,6 +1,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,6 +25,7 @@ Future<bool>? alarmPageBuilder;
 Future<bool>? qnaPageBuilder;
 Future<bool>? qnaSearchPageBuilder;
 Future<bool>? boardPageBuilder;
+Future<bool>? myQnaPageBuilder;
 
 
 
@@ -396,4 +398,39 @@ String formatDate(DateTime date) {
   } else {
     return '${date.year}.${date.month}.${date.day}';
   }
+}
+
+
+Future<void> patchToken(String fcmToken) async{
+
+  print("token 변경");
+  print("fcmToken : " + fcmToken);
+
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+  Dio dio = Dio();
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/auth/fcmToken';
+
+  var data = {'fcmToken' : fcmToken};
+
+  try {
+    Response response = await dio.patch(url, data:data);
+  } catch (e) {
+    print('Error sending PATCH request : $e');
+  }
+
+}
+
+
+Future reqIOSPermission(FirebaseMessaging fbMsg) async {
+  NotificationSettings settings = await fbMsg.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
 }

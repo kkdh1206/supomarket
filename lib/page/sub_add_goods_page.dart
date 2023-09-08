@@ -151,6 +151,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 popUp("세부 내용을 10글자 이상 작성해 주세요");
               }
               else{
+
                 setState(() {
                   //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
                   newItem.uploadDate = "방금 전";

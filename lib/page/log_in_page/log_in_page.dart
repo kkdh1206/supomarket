@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -56,6 +57,9 @@ class _LogInPageState extends State<LogInPage> {
       } else if (e.code == 'wrong-password') {
         _wrongPasswordPopUp();
         print('Wrong password provided for that user.');
+      }
+      else{
+        _wrongInfoPopUp();
       }
     }
 
@@ -217,7 +221,11 @@ class _LogInPageState extends State<LogInPage> {
                                                 debugPrint("현재 로그인된 유저 이메일 인증 여부는 ${firebaseAuth.currentUser?.emailVerified.toString()} 입니다");
 
                                                 if(firebaseAuth.currentUser?.emailVerified??false){
-                                                  await fetchMyInfo();
+                                                  await fetchMyInfo(); //유저정보 fetch
+                                                  //FirebaseMessaging fbMsg = FirebaseMessaging.instance;
+                                                  //String? fcmToken = await fbMsg.getToken();
+                                                  //await patchToken(fcmToken!); //fcm token 보내기
+
                                                   if(myUserInfo.userStatus != UserStatus.BANNED){
                                                     setPasswordInDevice(givenPassword);
                                                     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
@@ -329,6 +337,31 @@ class _LogInPageState extends State<LogInPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: const SingleChildScrollView(child: Text("유저 정보가 없습니다")),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _wrongInfoPopUp(){
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const SingleChildScrollView(child: Text("올바르지 않은 정보입니다")),
           actions: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

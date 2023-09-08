@@ -54,6 +54,6 @@ class DefaultFirebaseOptions {
     projectId: 'supomarket-b55d0',
     storageBucket: 'supomarket-b55d0.appspot.com',
     iosClientId: '120702951032-85pg7f8qd4ob8sd0os2l6vnfpgfj62tm.apps.googleusercontent.com',
-    iosBundleId: 'com.example.supoMarket',
+    iosBundleId: 'com.example.supo_market',
   );
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/category_page/category_page.dart';
@@ -15,6 +16,7 @@ import '../entity/user_entity.dart';
 import '../entity/util_entity.dart';
 import '../infra/item_list_data.dart';
 import '../infra/my_info_data.dart';
+import '../provider/socket_provider.dart';
 import 'chatting_page/chatting_page.dart';
 import 'favorite_page/favorite_page.dart';
 import 'home_page/home_page.dart';
@@ -71,6 +73,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context){
+
     return Scaffold(
       appBar: AppBar(
           elevation: 0.0,

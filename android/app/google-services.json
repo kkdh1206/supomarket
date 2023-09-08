@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "120702951032",
+    "firebase_url": "https://supomarket-b55d0-default-rtdb.firebaseio.com",
     "project_id": "supomarket-b55d0",
     "storage_bucket": "supomarket-b55d0.appspot.com"
   },
@@ -31,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "120702951032-d5m7kjpp6aet36vb3bdi9bhvsnkb60c2.apps.googleusercontent.com",
+              "client_id": "120702951032-85pg7f8qd4ob8sd0os2l6vnfpgfj62tm.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.wiwlee"
+                "bundle_id": "com.example.supoMarket"
               }
             }
           ]
@@ -67,10 +68,10 @@
               "client_type": 3
             },
             {
-              "client_id": "120702951032-d5m7kjpp6aet36vb3bdi9bhvsnkb60c2.apps.googleusercontent.com",
+              "client_id": "120702951032-85pg7f8qd4ob8sd0os2l6vnfpgfj62tm.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.wiwlee"
+                "bundle_id": "com.example.supoMarket"
               }
             }
           ]

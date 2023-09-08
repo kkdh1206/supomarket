@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/page/master_page/sub_master_page_item_list_page.dart';
 import 'package:supo_market/page/master_page/sub_master_page_quicksell_item_list_page.dart';
@@ -8,6 +9,7 @@ import 'package:supo_market/page/my_page/sub_my_info_page_change_password_page.d
 import '../../entity/item_entity.dart';
 import '../../infra/my_info_data.dart';
 import '../../infra/users_info_data.dart';
+import '../../provider/socket_provider.dart';
 
 
 
@@ -31,6 +33,9 @@ class _MasterPageState extends State<MasterPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final socketProvider = Provider.of<SocketProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar : AppBar(
@@ -51,7 +56,8 @@ class _MasterPageState extends State<MasterPage> {
               SizedBox(
                   height: 50,
                   child: MaterialButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await socketProvider.connectSocket();
                       Navigator.push(context, MaterialPageRoute(
                           builder: (context) => SubMasterPageUserListPage()));
                     },

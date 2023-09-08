@@ -9,10 +9,12 @@ import 'package:supo_market/entity/user_entity.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/home_page/sub_picture_page.dart';
 import 'package:supo_market/page/util_function.dart';
+import 'package:supo_market/retrofit/RestClient.dart';
 import '../../entity/item_entity.dart';
 import 'package:flutter/services.dart';
 
 import '../../entity/util_entity.dart';
+import '../chatting_page/sub_chat_page.dart';
 
 
 
@@ -29,16 +31,19 @@ class SubHomePage extends StatefulWidget {
 }
 
 class _SubHomePageState extends State<SubHomePage>{
-
+  RestClient? client;
   int activeIndex = 0;
+  AUser? itemUser;
+  String? roomID;
 
   @override
   void initState(){
     debugPrint("Sub Home Page Initialize");
     activeIndex = 0;
-
     subHomePageBuilder = transferUserInfo();
     super.initState();
+    Dio dio = Dio();
+    client = RestClient(dio);
   }
 
   @override
@@ -46,13 +51,28 @@ class _SubHomePageState extends State<SubHomePage>{
     super.dispose();
   }
 
+  void inputInfo(String buy, String sell, String item, String seller) async {
+    final roomData = RoomData(
+      buyerID: buy,
+      sellerID: sell,
+      goodsID: item,
+      id: roomID,
+      roomName: seller
+    );
+
+    await client!.postRoomDetail(roomData);
+  }
+
   Future<bool> transferUserInfo() async {
     debugPrint("transferInfo");
-    AUser itemUser = await widget.user;
-    widget.item.sellerSchoolNum = itemUser.userStudentNumber;
-    widget.item.sellerName = itemUser.userName;
-    widget.item.sellerImage = itemUser.imagePath;
+    itemUser = await widget.user;
+    widget.item.sellerSchoolNum = itemUser?.userStudentNumber;
+    widget.item.sellerName = itemUser?.userName;
+    widget.item.sellerImage = itemUser?.imagePath;
     widget.item.isLiked = myUserInfo.userInterestedId.toString()?.contains(widget.item.itemID.toString());
+
+    roomID = myUserInfo.userUid!+ itemUser!.userUid! + widget.item.itemID.toString();
+    print("room ID는 $roomID");
     return true;
   }
 
@@ -264,7 +284,6 @@ class _SubHomePageState extends State<SubHomePage>{
                     ),
                   ],
                 ),
-
                 //판매자 카드
                 Card(
                   color: Colors.grey[200],
@@ -355,7 +374,16 @@ class _SubHomePageState extends State<SubHomePage>{
                         child: const Text(
                           "채팅하기", textScaleFactor: 0.9, style: TextStyle(
                           color: Colors.white, fontWeight: FontWeight.bold),),
-                          onPressed: () {})
+                          onPressed: () async {
+                              //채팅 목록에 추가됨
+                              inputInfo(
+                                  myUserInfo.userUid!,
+                                  itemUser!.userUid!,
+                                  widget.item.itemID.toString(),
+                                  widget.item.sellerName!,
+                                  );
+                              await Navigator.push(context, MaterialPageRoute(builder: (context)=>SubChattingPage(roomID: roomID)));
+                          })
                         )
                       ),
                     ],

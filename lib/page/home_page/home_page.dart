@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
@@ -13,6 +15,8 @@ import 'package:intl/intl.dart';
 import '../../entity/user_entity.dart';
 import '../../entity/util_entity.dart';
 import '../../infra/item_list_data.dart';
+import '../../notification.dart';
+import '../../provider/socket_provider.dart';
 import '../util_function.dart';
 
 class HomePage extends StatefulWidget {
@@ -56,7 +60,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     debugPrint("Home Initiate");
+
     super.initState();
+    //showNotification();
     onePageUpdateList();
     isEnded = false; //리스트 끝에 도달함
     page = 1; //늘어난 page 리스트 수
@@ -88,6 +94,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -368,7 +375,10 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircularProgressIndicator(),
+                        CircularProgressIndicator(
+                          backgroundColor: Colors.black45,
+                          color: Colors.white,
+                        ),
                       ],
                     ),
                   ],
@@ -491,3 +501,47 @@ class _HomePageState extends State<HomePage> {
     return true;
   }
 }
+
+//일회성 알림
+void showNotification() async {
+
+  print("notiification");
+
+  var androidDetails = AndroidNotificationDetails(
+    '유니크한 알림 채널 ID',
+    '알림종류 설명',
+    priority: Priority.high,
+    importance: Importance.max,
+    color: Color.fromARGB(255, 255, 0, 0),
+  );
+
+  var iosDetails = DarwinNotificationDetails(
+    presentAlert: true,
+    presentBadge: true,
+    presentSound: true,
+  );
+
+  // 알림 id, 제목, 내용 맘대로 채우기
+  notifications.show(
+      1,
+      '제목1',
+      '내용1',
+      NotificationDetails(android: androidDetails, iOS: iosDetails),
+      payload:'부가정보' // 부가정보
+  );
+}
+
+
+// //서버 푸시 알림
+// Future<void> _listenerWithTerminated() async {
+//   FlutterLocalNotificationsPlugin _localNotification = FlutterLocalNotificationsPlugin();
+//
+//   NotificationAppLaunchDetails? details = await _localNotification.getNotificationAppLaunchDetails();
+//   if (details != null) {
+//     if (details.didNotificationLaunchApp) {
+//       if (details.payload != null) {
+//         _localNotificationRouter(details.payload!);
+//       }
+//     }
+//   }
+// }
