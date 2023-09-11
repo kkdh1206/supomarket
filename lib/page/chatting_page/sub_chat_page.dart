@@ -117,9 +117,11 @@ class _SubChattingPageState extends State<SubChattingPage> {
       }
     });
   }
-  void sendMessage(String message) {
+  void sendMessage(String message, String myImageUrl) {
+    sendData senddata = sendData(message: message, myImageUrl: myImageUrl, checkRead: 'false');
+    String? changeData = jsonEncode(senddata);
     if(socket!.connected) {
-      socket!.emit('sendMessage', message);
+      socket!.emit('sendMessage', changeData);
     }
     else {
       print('연결이 필요합니다.');
@@ -205,7 +207,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                       if (_userEnterMessage.isNotEmpty) {
                         _controller.clear();
                       }
-                      sendMessage(_userEnterMessage);
+                      sendMessage(_userEnterMessage, image!);
                       scrollToBottom();
                       // pastMsg.add(Records(message: myMessage['message'], userName: myMessage['nickname']));
                       // setState(() {

@@ -26,3 +26,22 @@ class userData {
     };
   }
 }
+
+class sendData {
+  String? message;
+  String? myImageUrl;
+  String? checkRead;
+
+  sendData({
+    this.message,
+    this.myImageUrl,
+    this.checkRead,
+  });
+  Map<String, dynamic> toJson() {
+    return{
+      'message': message,
+      'myImageUrl': myImageUrl,
+      'checkRead': checkRead,
+    };
+  }
+}

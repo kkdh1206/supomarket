@@ -18,7 +18,7 @@ class ChattingPage extends StatefulWidget {
   }
 }
 
-class ChattingPageState extends State<ChattingPage>{
+class ChattingPageState extends State<ChattingPage> {
   RestClient? client;
   List<Room> roomList = [];
   String? InputRoomName;
@@ -67,6 +67,7 @@ class ChattingPageState extends State<ChattingPage>{
 
   void getChatRoomId(String uid) async {
     var res = await client!.getRoomById(id: uid);
+    print("유저 아이디는: ${uid}");
     setState(() {
       roomList = res;
     });
