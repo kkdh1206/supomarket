@@ -338,8 +338,7 @@ class _HomePageState extends State<HomePage> {
                                         MaterialPageRoute(
                                             builder: (context) => SubHomePage(
                                                   item: list![position],
-                                                  user: fetchUserInfo(
-                                                      list![position]),
+                                                  user: fetchUserInfo(list![position]),
                                                 )));
                                   });
                             } else {

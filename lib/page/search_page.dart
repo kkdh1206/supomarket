@@ -96,6 +96,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void dispose() {
     debugPrint("control_dispose");
+    searchPageBuilder = null;
     super.dispose();
   }
 
@@ -441,7 +442,7 @@ class _SearchPageState extends State<SearchPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                         // Text("검색된 물품이 없습니다"),
+                          Text("검색된 물품이 없습니다"),
                         ],
                       ),
                     ],

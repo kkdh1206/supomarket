@@ -13,6 +13,7 @@ class Item{
   String? sellerImage;
   String? sellerSchoolNum;
   int sellingPrice;
+  String? sellerUid;
   String? itemDetail;
   String? uploadDate;
   DateTime? uploadDateForCompare;
@@ -36,7 +37,8 @@ class Item{
         required this.imageListA,
         required this.imageListB,
         required this.itemStatus,
-        required this.itemID}
+        required this.itemID,
+        this.sellerUid}
       );
 
 }

@@ -34,6 +34,7 @@ class ChattingPageState extends State<ChattingPage> {
     client = RestClient(dio);
     roomList.clear();
     getChatRoomId(myUserInfo.userUid!);
+    print("userUid" + myUserInfo.userUid!);
   }
 
   void inputInfo(String sss) async {

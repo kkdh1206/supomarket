@@ -36,6 +36,9 @@ RoomData _$RoomDataFromJson(Map<String, dynamic> json) => RoomData(
       sellerID: json['sellerID'] as String?,
       roomName: json['roomName'] as String?,
       goodsID: json['goodsID'] as String?,
+      buyerToken: json['buyerToken'] as String?,
+      sellerToken: json['sellerToken'] as String?,
+      resentTime: json['resentTime'] as String?,
     );
 
 Map<String, dynamic> _$RoomDataToJson(RoomData instance) => <String, dynamic>{
@@ -44,6 +47,9 @@ Map<String, dynamic> _$RoomDataToJson(RoomData instance) => <String, dynamic>{
       'sellerID': instance.sellerID,
       'roomName': instance.roomName,
       'goodsID': instance.goodsID,
+      'buyerToken': instance.buyerToken,
+      'sellerToken': instance.sellerToken,
+      'resentTime': instance.resentTime,
     };
 
 Room _$RoomFromJson(Map<String, dynamic> json) => Room(
@@ -52,6 +58,8 @@ Room _$RoomFromJson(Map<String, dynamic> json) => Room(
       sellerID: json['sellerID'] as String?,
       roomName: json['roomName'] as String?,
       goodsID: json['goodsID'] as String?,
+      buyerToken: json['buyerToken'] as String?,
+      sellerToken: json['sellerToken'] as String?,
     );
 
 Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{
@@ -60,17 +68,23 @@ Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{
       'sellerID': instance.sellerID,
       'roomName': instance.roomName,
       'goodsID': instance.goodsID,
+      'buyerToken': instance.buyerToken,
+      'sellerToken': instance.sellerToken,
     };
 
 Chat _$ChatFromJson(Map<String, dynamic> json) => Chat(
+      senderID: json['senderID'] as String?,
       message: json['message'] as String?,
       senderName: json['senderName'] as String?,
+      checkRead: json['checkRead'] as String?,
       createdAt: json['createdAt'] as String?,
     );
 
 Map<String, dynamic> _$ChatToJson(Chat instance) => <String, dynamic>{
+      'senderID': instance.senderID,
       'message': instance.message,
       'senderName': instance.senderName,
+      'checkRead': instance.checkRead,
       'createdAt': instance.createdAt,
     };
 
@@ -88,6 +102,39 @@ Time _$TimeFromJson(Map<String, dynamic> json) => Time(
 
 Map<String, dynamic> _$TimeToJson(Time instance) => <String, dynamic>{
       'created_at': instance.created_at,
+    };
+
+Check _$CheckFromJson(Map<String, dynamic> json) => Check(
+      checkRead: json['checkRead'] as String?,
+    );
+
+Map<String, dynamic> _$CheckToJson(Check instance) => <String, dynamic>{
+      'checkRead': instance.checkRead,
+    };
+
+Notificate _$NotificateFromJson(Map<String, dynamic> json) => Notificate(
+      token: json['token'] as String?,
+      title: json['title'] as String?,
+      sentence: json['sentence'] as String?,
+      roomId: json['roomId'] as String?,
+    );
+
+Map<String, dynamic> _$NotificateToJson(Notificate instance) =>
+    <String, dynamic>{
+      'token': instance.token,
+      'title': instance.title,
+      'sentence': instance.sentence,
+      'roomId': instance.roomId,
+    };
+
+Token _$TokenFromJson(Map<String, dynamic> json) => Token(
+      buyerToken: json['buyerToken'] as String?,
+      sellerToken: json['sellerToken'] as String?,
+    );
+
+Map<String, dynamic> _$TokenToJson(Token instance) => <String, dynamic>{
+      'buyerToken': instance.buyerToken,
+      'sellerToken': instance.sellerToken,
     };
 
 // **************************************************************************
@@ -298,6 +345,76 @@ class _RestClient implements RestClient {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Time.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<void> updateCheck(
+    message,
+    check,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(check.toJson());
+    await _dio.fetch<void>(_setStreamType<void>(Options(
+      method: 'PATCH',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/boards/${message}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+  }
+
+  @override
+  Future<void> postNotification(notificate) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(notificate.toJson());
+    await _dio.fetch<void>(_setStreamType<void>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/boards/push',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+  }
+
+  @override
+  Future<Token> getTokenById({roomId}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result =
+        await _dio.fetch<Map<String, dynamic>>(_setStreamType<Token>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/boards/token/${roomId}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = Token.fromJson(_result.data!);
     return value;
   }
 

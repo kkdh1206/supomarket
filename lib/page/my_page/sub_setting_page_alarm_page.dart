@@ -87,8 +87,7 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                     onChanged: (bool? value) {
                                       // 스위치가 토글될 때 실행될 코드
                                       setState(() {
-                                        mySetting.chattingAlarm =
-                                            value ?? false;
+                                        mySetting.chattingAlarm = value ?? false;
                                       });
                                       setAlarmInDevice(
                                           mySetting.chattingAlarm!);

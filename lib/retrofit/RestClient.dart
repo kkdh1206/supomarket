@@ -32,6 +32,15 @@ abstract class RestClient {
   @GET('/boards/{message}')
   Future<Time> getTimeByMessage({@Path() String? message});
 
+  @PATCH('/boards/{message}')
+  Future<void> updateCheck(@Path() String? message, @Body() Check check);
+
+  @POST('/boards/push')
+  Future<void> postNotification(@Body() Notificate notificate);
+
+  @GET('/boards/token/{roomId}')
+  Future<Token> getTokenById({@Path() String? roomId});
+
 }
 
 
@@ -81,13 +90,19 @@ class RoomData {
   String? sellerID;
   String? roomName;
   String? goodsID;
+  String? buyerToken;
+  String? sellerToken;
+  String? resentTime;
 
   RoomData({
     this.id,
     this.buyerID,
     this.sellerID,
     this.roomName,
-    this.goodsID
+    this.goodsID,
+    this.buyerToken,
+    this.sellerToken,
+    this.resentTime,
   });
   factory RoomData.fromJson(Map<String, dynamic> json) => _$RoomDataFromJson(json);
   Map<String, dynamic> toJson() => _$RoomDataToJson(this);
@@ -99,13 +114,17 @@ class Room {
   String? sellerID;
   String? roomName;
   String? goodsID;
+  String? buyerToken;
+  String? sellerToken;
 
   Room ({
     this.id,
     this.buyerID,
     this.sellerID,
     this.roomName,
-    this.goodsID
+    this.goodsID,
+    this.buyerToken,
+    this.sellerToken
   });
   factory Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);
   Map<String, dynamic> toJson() => _$RoomToJson(this);
@@ -113,15 +132,17 @@ class Room {
 
 @JsonSerializable()
 class Chat {
-  //String? id;
+  String? senderID;
   String? message;
   String? senderName;
+  String? checkRead;
   String? createdAt;
 
   Chat({
-    //this.id,
+    this.senderID,
     this.message,
     this.senderName,
+    this.checkRead,
     this.createdAt,
   });
   factory Chat.fromJson(Map<String, dynamic> json) => _$ChatFromJson(json);
@@ -148,4 +169,45 @@ class Time {
   });
   factory Time.fromJson(Map<String, dynamic> json) => _$TimeFromJson(json);
   Map<String, dynamic> toJson() => _$TimeToJson(this);
+}
+
+@JsonSerializable()
+class Check {
+  String? checkRead;
+
+  Check({
+    this.checkRead,
+  });
+  factory Check.fromJson(Map<String, dynamic> json) => _$CheckFromJson(json);
+  Map<String, dynamic> toJson() => _$CheckToJson(this);
+}
+
+@JsonSerializable()
+class Notificate {
+  String? token;
+  String? title;
+  String? sentence;
+  String? roomId;
+
+  Notificate({
+    this.token,
+    this.title,
+    this.sentence,
+    this.roomId
+  });
+  factory Notificate.fromJson(Map<String, dynamic> json) => _$NotificateFromJson(json);
+  Map<String, dynamic> toJson() => _$NotificateToJson(this);
+}
+
+@JsonSerializable()
+class Token {
+  String? buyerToken;
+  String? sellerToken;
+
+  Token({
+    this.buyerToken,
+    this.sellerToken
+  });
+  factory Token.fromJson(Map<String, dynamic> json) => _$TokenFromJson(json);
+  Map<String, dynamic> toJson() => _$TokenToJson(this);
 }

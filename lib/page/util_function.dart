@@ -26,8 +26,9 @@ Future<bool>? qnaPageBuilder;
 Future<bool>? qnaSearchPageBuilder;
 Future<bool>? boardPageBuilder;
 Future<bool>? myQnaPageBuilder;
+Future<bool>? subChattingPageBuilder;
 
-
+String? fcmToken;
 
 Future<bool> setAlarmInDevice (bool check) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
@@ -72,6 +73,7 @@ Future<String> getPasswordInDevice() async {
 
 Future<bool> fetchMyInfo() async{
 
+  print("fetch My Info");
   //도형코드~
   debugPrint("LogInPage : auth/userInfo : 유저 정보 Response 받아오기");
   var token = await firebaseAuth.currentUser?.getIdToken();
@@ -83,8 +85,6 @@ Future<bool> fetchMyInfo() async{
   try {
     Response response = await dio.get(url);
     dynamic jsonData = response.data;
-
-    print("Response는 ${response}");
 
     String studentNumber = jsonData['studentNumber'] as String;
     myUserInfo.userStudentNumber = studentNumber;
@@ -102,6 +102,7 @@ Future<bool> fetchMyInfo() async{
     myUserInfo.userInterestedId = interestedId;
     String uid = jsonData['uid'] as String;
     myUserInfo.userUid = uid;
+    print("uid : $uid");
 
   }catch (e) {
     print('Error sending GET request : $e');
@@ -274,7 +275,7 @@ dynamic convertStringToEnum(String string){
   else if(string == "MID"){
     return ItemQuality.MID;
   }
-  else if(string == "MID"){
+  else if(string == "LOW"){
     return ItemQuality.LOW;
   }
   else if(string == "DATEASCEND"){
@@ -419,6 +420,31 @@ Future<void> patchToken(String fcmToken) async{
   } catch (e) {
     print('Error sending PATCH request : $e');
   }
+
+}
+
+Future<String> getToken(String uid) async{
+
+  print("token 서버에서 가져오기 ");
+  String? userToken;
+
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/auth/fcmToken';
+
+  var data = {'uid' : uid};
+
+  try {
+    Response response = await dio.get(url, data:data);
+    dynamic jsonData = response.data;
+    userToken = jsonData as String;
+    print("fcmToken ${userToken}을 받았습니다");
+  } catch (e) {
+    print('Error sending GET request : $e');
+  }
+
+  return userToken??"";
 
 }
 

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io' show Platform;
@@ -34,8 +36,14 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  FirebaseMessaging.instance..requestPermission(
+    badge: true,
+    alert: true,
+    sound: true
+  );
+
   FirebaseMessaging fbMsg = FirebaseMessaging.instance;
-  String? fcmToken = await fbMsg.getToken();
+  fcmToken = await fbMsg.getToken();
   print("fcmToken : ${fcmToken}을 받았습니다");
   if(firebaseAuth.currentUser != null){
     await patchToken(fcmToken!); //서버에 해당 토큰을 저장 및 수정하는 로직 구현
@@ -46,8 +54,16 @@ void main() async {
 
   runApp(const MyApp());
 
+  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  if(initialMessage != null) {
+    _handleMessage(initialMessage);
+  }
   //알림 받기 설정
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
+
+    print("실행됨?");
+
     if (message != null) {
       if (message.notification != null) {
         print(message.notification!.title);
@@ -65,8 +81,29 @@ void main() async {
       }
     }
   });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) {
+    _handleMessage(message!);
+  });
+
+}
+void _handleMessage(RemoteMessage message) {
+  final String targetPage = message.data['screen'];
 }
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  flutterLocalNotificationsPlugin.show(
+      message.notification.hashCode,
+      message.notification!.title,
+      message.notification!.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'channelId', 'channelName', icon: "ic_notification")
+        ),
+      );
+}
 
 class SplashScreen extends StatelessWidget{
   @override

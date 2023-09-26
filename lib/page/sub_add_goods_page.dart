@@ -40,8 +40,8 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
   FixedExtentScrollController? firstController;
   FixedExtentScrollController? secondController;
   Item newItem = Item(sellingTitle: "",
-      itemType: ItemType.ETC,
-      itemQuality: ItemQuality.MID,
+      itemType: ItemType.REFRIGERATOR,
+      itemQuality: ItemQuality.HIGH,
       sellerName: "",
       sellingPrice: -1,
       uploadDate: "",
@@ -167,6 +167,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 String url = 'http://kdh.supomarket.com/items';
 
 
+                print("itemQauilty : ${newItem.itemQuality}");
                 FormData formData = FormData.fromMap({
                   'title': newItem.sellingTitle??"무제",
                   'description': newItem.itemDetail??"",
@@ -311,7 +312,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                   newItem.itemType == ItemType.MONITOR? "모니터":
                   newItem.itemType == ItemType.BOOK? "책":
                   newItem.itemType == ItemType.ROOM? "자취방":
-                  newItem.itemType == ItemType.CLOTHES? "옷": "기타"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
+                  newItem.itemType == ItemType.CLOTHES? "의류": "기타"}", textScaleFactor: 1.0, style: const TextStyle(fontWeight: FontWeight.w400), textAlign: TextAlign.start),
                 ),
                 const SizedBox(width: 10),
                 CupertinoButton(

@@ -35,6 +35,7 @@ class _SubHomePageState extends State<SubHomePage>{
   int activeIndex = 0;
   AUser? itemUser;
   String? roomID;
+  Future<String>? tempToken;
 
   @override
   void initState(){
@@ -52,12 +53,19 @@ class _SubHomePageState extends State<SubHomePage>{
   }
 
   void inputInfo(String buy, String sell, String item, String seller) async {
+
+    String buyToken = await getToken(buy);
+    String sellToken = await getToken(sell);
+
     final roomData = RoomData(
       buyerID: buy,
       sellerID: sell,
       goodsID: item,
       id: roomID,
-      roomName: seller
+      roomName: seller,
+      buyerToken: buyToken,
+      sellerToken: sellToken,
+      resentTime: '2023-09-12T10:27:44.074Z'
     );
 
     await client!.postRoomDetail(roomData);
@@ -69,6 +77,7 @@ class _SubHomePageState extends State<SubHomePage>{
     widget.item.sellerSchoolNum = itemUser?.userStudentNumber;
     widget.item.sellerName = itemUser?.userName;
     widget.item.sellerImage = itemUser?.imagePath;
+    widget.item.sellerUid = itemUser?.userUid;
     widget.item.isLiked = myUserInfo.userInterestedId.toString()?.contains(widget.item.itemID.toString());
 
     roomID = myUserInfo.userUid!+ itemUser!.userUid! + widget.item.itemID.toString();
@@ -375,7 +384,8 @@ class _SubHomePageState extends State<SubHomePage>{
                           "채팅하기", textScaleFactor: 0.9, style: TextStyle(
                           color: Colors.white, fontWeight: FontWeight.bold),),
                           onPressed: () async {
-                              //채팅 목록에 추가됨
+                              //채팅 목록에 추가됨기
+                             await getToken(widget.item.sellerUid!);
                               inputInfo(
                                   myUserInfo.userUid!,
                                   itemUser!.userUid!,

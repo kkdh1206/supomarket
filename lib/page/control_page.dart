@@ -118,15 +118,17 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
         controller: controller,
         children: <Widget>[HomePage(list: itemList), CategoryPage(list: itemList), ChattingPage(list: chatRoomList), FavoritePage(list: itemList), MyPage(list: itemList)],
       ),
-      bottomNavigationBar: TabBar(tabs: const <Tab>[
-        Tab(icon: Icon(Icons.home_filled, color: Color(0xffac145a)), child : Text("홈")),
-        Tab(icon: Icon(Icons.list, color: Color(0xffac145a)), child : Text("분류")),
-        Tab(icon: Icon(Icons.chat_bubble, color: Color(0xffac145a)), child : Text("채팅")),
-        Tab(icon: Icon(Icons.favorite, color: Color(0xffac145a)), child : Text("찜")),
-        Tab(icon: Icon(Icons.info, color: Color(0xffac145a)), child : Text("내 정보"))],
-        controller: controller,
-        unselectedLabelColor : Colors.grey, //선택 안된 라벨
-        labelColor: Colors.black, //선택된 라벨
+      bottomNavigationBar: SafeArea(
+        child: TabBar(tabs: const <Tab>[
+          Tab(icon: Icon(Icons.home_filled, color: Color(0xffac145a)), child : Text("홈")),
+          Tab(icon: Icon(Icons.list, color: Color(0xffac145a)), child : Text("분류")),
+          Tab(icon: Icon(Icons.chat_bubble, color: Color(0xffac145a)), child : Text("채팅")),
+          Tab(icon: Icon(Icons.favorite, color: Color(0xffac145a)), child : Text("찜")),
+          Tab(icon: Icon(Icons.info, color: Color(0xffac145a)), child : Text("내 정보"))],
+          controller: controller,
+          unselectedLabelColor : Colors.grey, //선택 안된 라벨
+          labelColor: Colors.black, //선택된 라벨
+        ),
       ),
       backgroundColor: Colors.white,
     );

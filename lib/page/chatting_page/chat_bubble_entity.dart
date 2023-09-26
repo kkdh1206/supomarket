@@ -3,21 +3,66 @@ import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_8.dart';
 
-class ChatBubbless extends StatelessWidget {
-  final String text;
-  final bool isUserMessage;
-  final String? userImage;
-  final String? username;
-  final String currentTime;
+class ChatBubbless extends StatefulWidget {
+  String text;
+  bool isUserMessage;
+  String? userImage;
+  String? username;
+  String currentTime;
+  String checkRead;
 
-  ChatBubbless( this.text, this.isUserMessage, this.userImage, this.username, this.currentTime, {Key? key});
+  ChatBubbless(this.text, this.isUserMessage, this.userImage, this.username,
+      this.currentTime, this.checkRead, {Key? key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return ChatBubblessState();
+  }
+
+}
+
+class ChatBubblessState extends State<ChatBubbless>{
+
+  String? checkRead;
+  String? text;
+  bool? isUserMessage;
+  String? userImage;
+  String? username;
+  String? currentTime;
+
+  @override
+  void initState() {
+    checkRead = widget.checkRead;
+    text = widget.text;
+    isUserMessage = widget.isUserMessage;
+    userImage = widget.userImage;
+    username = widget.username;
+    currentTime = widget.currentTime;
+    print("initState ChatBubble");
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatBubbless oldWidget) {
+    checkRead = widget.checkRead;
+    text = widget.text;
+    isUserMessage = widget.isUserMessage;
+    userImage = widget.userImage;
+    username = widget.username;
+    currentTime = widget.currentTime;
+    print("did Update Widget : $text + $checkRead");
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [ Row(
-      mainAxisAlignment: isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+    print("전달된 값은: $checkRead");
+    print("전달된 메시지는: $text");
+    return Stack(children: [
+      Row(
+      mainAxisAlignment: isUserMessage! ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        if(isUserMessage)
+        if(isUserMessage!)
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 10, 10, 0),
             child: ChatBubble(
@@ -30,7 +75,7 @@ class ChatBubbless extends StatelessWidget {
                   maxWidth: MediaQuery.of(context).size.width * 0.7,
                 ),
                 child: Column(
-                  crossAxisAlignment:isUserMessage
+                  crossAxisAlignment:isUserMessage!
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
@@ -40,7 +85,7 @@ class ChatBubbless extends StatelessWidget {
                     //       fontWeight: FontWeight.bold, color: Colors.white),
                     // ),
                     Text(
-                      text,
+                      text!,
                       style: TextStyle(color: Colors.white),
                     ),
                   ],
@@ -55,7 +100,7 @@ class ChatBubbless extends StatelessWidget {
         //     style: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey, fontSize: 10),
         //   ),
         // ),
-        if(!isUserMessage)
+        if(!isUserMessage!)
           Padding(
             padding: const EdgeInsets.fromLTRB(45, 10, 0, 0),
             child: ChatBubble(
@@ -67,7 +112,7 @@ class ChatBubbless extends StatelessWidget {
                   maxWidth: MediaQuery.of(context).size.width * 0.7,
                 ),
                 child: Column(
-                  crossAxisAlignment:isUserMessage
+                  crossAxisAlignment:isUserMessage!
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
@@ -77,7 +122,7 @@ class ChatBubbless extends StatelessWidget {
                     //       fontWeight: FontWeight.bold, color: Colors.white),
                     // ),
                     Text(
-                      text,
+                      text!,
                       style: TextStyle(color: Colors.white),
                     ),
                   ],
@@ -88,32 +133,52 @@ class ChatBubbless extends StatelessWidget {
         Container(
           padding: const EdgeInsets.only(top: 50, left: 8, right: 8),
           child: Text(
-            currentTime,
+            currentTime!,
             style: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey, fontSize: 10),
           ),
         ),
       ],
     ),
-      if(!isUserMessage)
+      if(!isUserMessage!)
         Positioned(
           top: 0,
-          right: isUserMessage ? 5 : null,
-          left: isUserMessage ? null : 5,
+          right: isUserMessage! ? 5 : null,
+          left: isUserMessage! ? null : 5,
           child: CircleAvatar(
             backgroundImage: NetworkImage(userImage ?? ""),
           ),
         ),
-      if(!isUserMessage)
+      if(!isUserMessage!)
         Positioned(
           top: 5,
-          right: isUserMessage ? 10 : null,
-          left: isUserMessage ? null : 50,
+          right: isUserMessage! ? 10 : null,
+          left: isUserMessage! ? null : 50,
           child: Row(
             children: [
               Text(
                 username!,
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 16),
               ),
+              if(!isUserMessage! && checkRead == 'false')
+                Icon(
+                  Icons.music_note,
+                  color: Colors.black,
+                ),
+            ],
+          ),
+        ),
+      if(isUserMessage!)
+        Positioned(
+          top: 5,
+          right: isUserMessage! ? null : 10,
+          left: isUserMessage! ? 300 : null,
+          child: Row(
+            children: [
+              if(isUserMessage! && checkRead == 'false')
+                Icon(
+                  Icons.music_note,
+                  color: Colors.black,
+                ),
             ],
           ),
         ),
