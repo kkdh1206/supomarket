@@ -168,15 +168,14 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SocketProvider()),
       ],
       child: MaterialApp(
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.black45),
-          fontFamily: 'Nanum',
+          colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFB70001)),
+          fontFamily: 'Tenada',
         ),
         home: FutureBuilder(
           future: Future.delayed(const Duration(seconds: 3), ()=> "completed"),
@@ -229,7 +228,7 @@ class WelcomePage extends StatelessWidget {
 
     return MaterialApp(
       theme: ThemeData(
-      fontFamily: 'Nanum'
+      fontFamily: 'KBO-M'
       ),
       home: Scaffold(
         backgroundColor: Colors.white,

@@ -100,7 +100,63 @@ flutter:
     - family: Nanum
       fonts:
         - asset: assets/fonts/NanumSquareNeo-Variable.ttf
-          weight : 100
+          weight: 300
+
+    - family: SB-B
+      fonts:
+        - asset: assets/fonts/SB_ugro_B.ttf
+
+    - family: SB-L
+      fonts:
+        - asset: assets/fonts/SB_ugro_L.ttf
+
+    - family: SB-M
+      fonts:
+        - asset: assets/fonts/SB_ugro_M.ttf
+
+    - family: Clover-B
+      fonts:
+        - asset: assets/fonts/YClover_TTF_Bold.ttf
+          weight: 100
+
+    - family: Tenada
+      fonts:
+        - asset: assets/fonts/Tenada.ttf
+          weight: 100
+
+    - family: Mobile-B
+      fonts:
+        - asset: assets/fonts/One Mobile POP.ttf
+          weight: 100
+
+    - family: Mobile-M
+      fonts:
+        - asset: assets/fonts/One Mobile POP 2.ttf
+          weight: 100
+
+    - family: Thangs-B
+      fonts:
+        - asset: assets/fonts/Thangs Bold.ttf
+
+    - family: Thangs-M
+      fonts:
+        - asset: assets/fonts/Thangs Medium.ttf
+
+    - family: Thangs-L
+      fonts:
+        - asset: assets/fonts/Thangs Light.ttf
+
+    - family: KBO-L
+      fonts:
+        - asset: assets/fonts/KBO Dia Gothic_light.ttf
+
+    - family: KBO-M
+      fonts:
+        - asset: assets/fonts/KBO Dia Gothic_medium.ttf
+
+    - family: KBO-B
+      fonts:
+        - asset: assets/fonts/KBO Dia Gothic_bold.ttf
 
   assets:
     - assets/images/main_logo.jpg
