@@ -243,7 +243,7 @@ class _SubMasterPageQuickSellItemListPageState extends State<SubMasterPageQuickS
                                                       onPressed: () async {
                                                         await delete(list![position]);
                                                         quickSellPageBuilder =
-                                                            fetchItemQuickSell(
+                                                            getItemQuickSell(
                                                                 1);
                                                       },
                                                     ),
@@ -301,7 +301,7 @@ class _SubMasterPageQuickSellItemListPageState extends State<SubMasterPageQuickS
                                                               itemDetail: newData
                                                                   .itemDetail));
 
-                                                          quickSellPageBuilder = fetchItemQuickSell(1);
+                                                          quickSellPageBuilder = getItemQuickSell(1);
                                                         }
                                                       },
                                                       child: const Text("수정하기",
@@ -390,7 +390,7 @@ class _SubMasterPageQuickSellItemListPageState extends State<SubMasterPageQuickS
                                           Navigator.push(context, MaterialPageRoute(
                                               builder: (context) =>
                                                   SubHomePage(item: list![position],
-                                                      user: fetchUserInfo(
+                                                      user: getUserInfo(
                                                           list![position]))));
                                         });
                                 },
@@ -450,18 +450,18 @@ class _SubMasterPageQuickSellItemListPageState extends State<SubMasterPageQuickS
 
   void updateList() async {
     debugPrint("update List 함수 호출");
-    await fetchItemQuickSell(page);
+    await getItemQuickSell(page);
     isListened = false;
   }
 
   void onePageUpdateList() {
     setState(() {
-      quickSellPageBuilder = fetchItemQuickSell(1);
+      quickSellPageBuilder = getItemQuickSell(1);
     });
   }
 
-  //homePage에서의 fetch (나머지는 page 1 로딩을 위한 fetchData in Control/Add)
-  Future<bool> fetchItemQuickSell(int page) async {
+  //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
+  Future<bool> getItemQuickSell(int page) async {
 
     debugPrint("요청");
 

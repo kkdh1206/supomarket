@@ -9,6 +9,7 @@ import '../../entity/item_entity.dart';
 import '../../entity/util_entity.dart';
 import '../../infra/item_list_data.dart';
 import '../../infra/my_info_data.dart';
+import '../home_page/widgets/home_page_widgets.dart';
 import '../util_function.dart';
 
 
@@ -72,14 +73,14 @@ class _FavoritePageState extends State<FavoritePage>{
 
   void updateList() async {
     debugPrint("update List 함수 호출");
-    await fetchItemFavorite(page, SortType.DATEASCEND);
+    await getItemFavorite(page, SortType.DATEASCEND);
     isListened = false;
   }
 
   void onePageUpdateList() {
     debugPrint("One Page 불러오기");
     setState(() {
-      favoritePageBuilder = fetchItemFavorite(page, SortType.DATEASCEND);
+      favoritePageBuilder = getItemFavorite(page, SortType.DATEASCEND);
     });
   }
 
@@ -111,84 +112,33 @@ class _FavoritePageState extends State<FavoritePage>{
                 controller: scrollController,
                 itemBuilder: (context, position) {
                 //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
-                  return GestureDetector(
-                      child: Card(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10),
-                        elevation: 1,
-                        child: Row(
-                          children: [
-                            Padding(padding: const EdgeInsets.only(
-                                top: 10, bottom: 10, left: 10, right: 15),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: list![position].imageListB.isEmpty ?
-                                Image.asset(
-                                    "assets/images/main_logo.jpg", width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover) :
-                                Image.network(
-                                    list![position].imageListB[0], width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover),
-                              ),
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                              list![position].sellingTitle!,
-                                              style: const TextStyle(
-                                                  fontSize: 20),
-                                              overflow: TextOverflow.ellipsis),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                              "등록 일자: ${list![position]
-                                                  .uploadDate ??
-                                                  ""}",
-                                              style: const TextStyle(
-                                                  fontSize: 10),
-                                              overflow: TextOverflow.ellipsis),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text("가격: ${f.format(
-                                              list![position].sellingPrice!)}원",
-                                              style: const TextStyle(
-                                                  fontSize: 10),
-                                              overflow: TextOverflow.ellipsis),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      onTap: () async {
-                         await Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => SubHomePage(item: list![position], user: fetchUserInfo(list![position]))));
-                          setState(() {
-                            favoritePageBuilder = fetchItemFavorite(1, SortType.DATEASCEND);
-                          });
-                      }
+                  return ItemCard(
+                    image: list![position].imageListB.isEmpty
+                        ? Image.asset("assets/images/main_logo.jpg",
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover)
+                        : Image.network(
+                        list![position].imageListB[0],
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover),
+                    title: list![position].sellingTitle!,
+                    date: list![position].uploadDate ?? "",
+                    price: list![position].sellingPrice!,
+                    onTap: () {
+                      debugPrint(list![position].sellerSchoolNum);
+                      debugPrint(list![position].sellerName);
+
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SubHomePage(
+                                item: list![position],
+                                user: getUserInfo(
+                                    list![position]),
+                              )));
+                    },
                   );
                 },
                 itemCount: list!.length, //아이템 개수만큼 스크롤 가능
@@ -213,7 +163,7 @@ class _FavoritePageState extends State<FavoritePage>{
     );
   }
 
-  Future<bool> fetchItemFavorite(int page, SortType type) async{
+  Future<bool> getItemFavorite(int page, SortType type) async{
 
     ItemType? tempItemType;
     ItemStatus? tempItemStatus;
@@ -224,7 +174,7 @@ class _FavoritePageState extends State<FavoritePage>{
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
-    print('fetchItemFavorite');
+    print('getItemFavorite');
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url = 'http://kdh.supomarket.com/items/myInterestedItem?sort=${ConvertEnumToString(type)}&page=${page}&pageSize=${pageSize}';
     if (page == 1) {

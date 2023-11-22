@@ -19,6 +19,7 @@ import 'chatting_page/chatting_page.dart';
 import 'favorite_page/favorite_page.dart';
 import 'home_page/home_page.dart';
 import 'home_page/sub_home_page.dart';
+import 'home_page/widgets/home_page_widgets.dart';
 import 'my_page/my_page.dart';
 
 Item emptyItem = Item(
@@ -114,7 +115,7 @@ class _SearchPageState extends State<SearchPage> {
     debugPrint("enter Function");
     setState(() {
       searchText = value;
-      searchPageBuilder = fetchItemSearch(value, 1, selectedOption1, selectedOption2);
+      searchPageBuilder = getItemSearch(value, 1, selectedOption1, selectedOption2);
     });
     debugPrint(searchList.length.toString());
   }
@@ -124,7 +125,7 @@ class _SearchPageState extends State<SearchPage> {
     if (scrollController.hasClients) {
       scrollOffset = scrollController!.position.pixels;
     }
-    fetchItemSearch(searchText, page, selectedOption1, selectedOption2);
+    getItemSearch(searchText, page, selectedOption1, selectedOption2);
     isListened = false;
   }
 
@@ -133,38 +134,42 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+          automaticallyImplyLeading: false,
+          titleSpacing: 0,
+          leading : Padding(padding: EdgeInsets.only(bottom : 50),
+          child: IconButton(icon : Icon(Icons.arrow_back_ios), color: Colors.black, onPressed: () { Navigator.pop(context);},)),
           flexibleSpace: Container(color: Colors.white),
           elevation: 0.0,
           toolbarHeight: 100.0,
           centerTitle: false,
           title: Padding(
-            padding: const EdgeInsets.only(left: 0, right: 0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Flexible(
-                      child: TextField(
-                        textInputAction: TextInputAction.go,
-                        onSubmitted: enterFunction,
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 16,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8),
-                            ),
-                          ),
-                          hintText: '제목 검색',
-                        ),
+      padding: const EdgeInsets.only(left: 0, right: 10),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Flexible(
+                child: TextField(
+                  textInputAction: TextInputAction.go,
+                  onSubmitted: enterFunction,
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 16,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(20),
                       ),
                     ),
-                  ],
+                    hintText: '제목 검색',
+                  ),
                 ),
+              ),
+            ],
+          ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -268,150 +273,32 @@ class _SearchPageState extends State<SearchPage> {
                               if (searchList![position].itemStatus !=
                                   ItemStatus.USERFASTSELL) {
                                 //급처분 아이템은 보여주지 않기
-                                return GestureDetector(
-                                    child: Card(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 10),
-                                      elevation: 1,
-                                      child: Stack(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 10,
-                                                    bottom: 10,
-                                                    left: 10,
-                                                    right: 15),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  child: searchList![position]
-                                                          .imageListB
-                                                          .isEmpty
-                                                      ? Image.asset(
-                                                          "assets/images/main_logo.jpg",
-                                                          width: 100,
-                                                          height: 100,
-                                                          fit: BoxFit.cover)
-                                                      : Image.network(
-                                                          searchList![position]
-                                                              .imageListB[0],
-                                                          width: 100,
-                                                          height: 100,
-                                                          fit: BoxFit.cover),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Align(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  child: Column(
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                                searchList![
-                                                                        position]
-                                                                    .sellingTitle!,
-                                                                style:
-                                                                    const TextStyle(
-                                                                        fontSize:
-                                                                            20),
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(
-                                                          height: 10),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                                "등록 일자: ${searchList![position].uploadDate ?? ""}",
-                                                                style:
-                                                                    const TextStyle(
-                                                                        fontSize:
-                                                                            10),
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(
-                                                          height: 10),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                                "가격: ${f.format(searchList![position].sellingPrice!)}원",
-                                                                style:
-                                                                    const TextStyle(
-                                                                        fontSize:
-                                                                            10),
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          //isQucikSell이 true라면 표시
-                                          searchList![position].itemStatus ==
-                                                  ItemStatus.USERFASTSELL
-                                              ? Positioned(
-                                                  right: 10,
-                                                  bottom: 10,
-                                                  child: Container(
-                                                    width: 60,
-                                                    height: 25,
-                                                    decoration: BoxDecoration(
-                                                      color: postechRed,
-                                                      borderRadius:
-                                                          const BorderRadius
-                                                              .all(
-                                                              Radius.circular(
-                                                                  10.0)),
-                                                    ),
-                                                    child: const Align(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child: Text(
-                                                        "급처분",
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 10,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              : const SizedBox(
-                                                  width: 0, height: 0),
-                                        ],
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => SubHomePage(
-                                                  item: searchList![position],
-                                                  user: fetchUserInfo(
-                                                      searchList![position]))));
-                                    });
+                                return ItemCard(
+                                  image: searchList![position].imageListB.isEmpty
+                                      ? Image.asset("assets/images/main_logo.jpg",
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover)
+                                      : Image.network(
+                                      searchList![position].imageListB[0],
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover),
+                                  title: searchList![position].sellingTitle!,
+                                  date: searchList![position].uploadDate ?? "",
+                                  price: searchList![position].sellingPrice!,
+                                  onTap: () {
+
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => SubHomePage(
+                                              item: searchList![position],
+                                              user: getUserInfo(
+                                                  searchList![position]),
+                                            )));
+                                  },
+                                );
                               } else {
                                 return const SizedBox(height: 0, width: 0);
                               }
@@ -482,7 +369,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Future<bool> fetchItemSearch(String input, int page, SortType type, ItemStatus status) async {
+  Future<bool> getItemSearch(String input, int page, SortType type, ItemStatus status) async {
 
     ItemType? tempItemType;
     ItemStatus? tempItemStatus;
@@ -494,7 +381,7 @@ class _SearchPageState extends State<SearchPage> {
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
 
-    print('fetch Searched Data');
+    print('get Searched Data');
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url = 'http://kdh.supomarket.com/items/search?title=${input}&sort=${ConvertEnumToString(type)}&status=${ConvertEnumToString(status)}&page=${page}&pageSize=${pageSize}';
 

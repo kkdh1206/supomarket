@@ -9,6 +9,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:supo_market/entity/user_entity.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/home_page/sub_picture_page.dart';
+import 'package:supo_market/page/my_page/widgets/board_page_widgets.dart';
 import 'package:supo_market/page/util_function.dart';
 import '../../entity/board_entity.dart';
 import '../../entity/item_entity.dart';
@@ -50,6 +51,8 @@ class _SubQnAPageModifyPageState extends State<SubQnAPageModifyPage> {
     activeIndex = 0;
     isPrivate = widget.board.boardStatus == BoardStatus.PRIVATE;
     super.initState();
+    newTitle = widget.board.title!;
+    newDescription = widget.board.description!;
   }
 
   @override
@@ -60,153 +63,291 @@ class _SubQnAPageModifyPageState extends State<SubQnAPageModifyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        flexibleSpace: Container(color: Colors.white),
-        leading: Padding(
-            padding: const EdgeInsets.only(top: 10, left: 10),
-            child: IconButton(
-                onPressed: () async {
-                  Navigator.pop(
-                      context,
-                      ReturnType(
-                          newTitle: newTitle,
-                          newDescription: newDescription,
-                          returnType: "exit",
-                          newStatus: newBoard.boardStatus!));
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          elevation: 0,
+          flexibleSpace: Container(color: Colors.white),
+          leading: Padding(
+              padding: const EdgeInsets.only(top: 0, left: 10),
+              child: IconButton(
+                  onPressed: () async {
+                    Navigator.pop(
+                        context,
+                        ReturnType(
+                            newTitle: newTitle,
+                            newDescription: newDescription,
+                            returnType: "exit",
+                            newStatus: newBoard.boardStatus!));
+                  },
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+                  iconSize: 30)),
+          actions: [
+            Padding(
+              padding: EdgeInsets.only(right: 5),
+              child: MaterialButton(
+                onPressed: () {
+                  if (newTitle.length < 5) {
+                    popUp("제목은 5글자 이상이어야 합니다");
+                  } else if (newDescription.length < 10) {
+                    popUp("내용은 10글자 이상이어야 합니다");
+                  } else {
+                    print("modified request");
+                    Navigator.pop(
+                        context,
+                        ReturnType(
+                            newTitle: newTitle,
+                            newDescription: newDescription,
+                            newStatus: newBoard.boardStatus!,
+                            returnType: "modified"));
+                  }
                 },
-                icon: const Icon(Icons.arrow_back, color: Colors.black45),
-                iconSize: 30)),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 5),
-            child: MaterialButton(
-              onPressed: () {
-                if (newTitle.length < 5) {
-                  popUp("제목은 5글자 이상이어야 합니다");
-                } else if (newDescription.length < 10) {
-                  popUp("내용은 10글자 이상이어야 합니다");
-                } else {
-                  Navigator.pop(
-                      context,
-                      ReturnType(
-                          newTitle: newTitle,
-                          newDescription: newDescription,
-                          newStatus: newBoard.boardStatus!,
-                          returnType: "modified"));
-                }
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: postechRed.withOpacity(1.0)),
-                child: const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text("수정하기",
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      color: postechRed.withOpacity(1.0)),
+                  child: const Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Text("수정하기",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: ListView(
-        children: [
-          Container(
-              width: 500,
-              child: const Divider(color: Colors.black45, thickness: 0.5)),
-          Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 10, right: 10, top: 25),
-                child: Text("제목", style: TextStyle(fontSize: 20)),
-              ),
-              Expanded(
-                child: TextFormField(
-                  initialValue: widget.board.title,
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 0),
+                EachTextFieldModified(
+                  text: '제목',
                   onChanged: (text) {
                     setState(() {
                       newTitle = text;
                     });
                   },
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    alignLabelWithHint: true,
-                    label: Center(
-                      child: Text(
-                        '제목을 입력하세요',
-                        textAlign: TextAlign.start,
-                      ),
-                    ),
-                  ),
+                  initialValue: widget.board.title!,
                 ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 10, right: 10, bottom: 200),
-                child: Text("내용", style: TextStyle(fontSize: 20)),
-              ),
-              Expanded(
-                child: TextFormField(
-                  initialValue: widget.board.description,
+                const SizedBox(height: 20),
+                Stack(
+                  children: [
+                    EachTextField(
+                      text: '작성자',
+                      onChanged: (text) {},
+                    ),
+                    Container(
+                      color: Colors.transparent,
+                      width: 1000,
+                      height: 80,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Stack(
+                  children: [
+                    EachTextField(
+                      text: '작성 일시',
+                      onChanged: (text) {},
+                    ),
+                    Container(
+                      color: Colors.transparent,
+                      width: 1000,
+                      height: 80,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                EachTextFieldModified(
+                  text: '문의 내용',
                   onChanged: (text) {
                     setState(() {
                       newDescription = text;
                     });
                   },
-                  maxLines: 10,
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    alignLabelWithHint: true,
-                    label: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '내용을 입력하세요',
-                              ),
-                            ]),
-                      ],
-                    ),
-                  ),
+                  initialValue: widget.board.description!,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              const SizedBox(width: 20),
-              const Text("비밀글 ", style: TextStyle(fontSize: 20)),
-              CupertinoSwitch(
-                // 급처분 여부
-                value: isPrivate,
-                activeColor: CupertinoColors.activeOrange,
-                onChanged: (bool? value) {
-                  // 스위치가 토글될 때 실행될 코드
-                  setState(() {
-                    newBoard.boardStatus = (value == true
-                        ? BoardStatus.PUBLIC
-                        : BoardStatus.PRIVATE);
-                    isPrivate = value ?? false;
-                  });
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    const SizedBox(width: 30),
+                    const Text(
+                      "비밀글 ",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'KBO-B'),
+                    ),
+                    CupertinoSwitch(
+                      // 급처분 여부
+                      value: isPrivate,
+                      activeColor: mainColor,
+                      onChanged: (bool? value) {
+                        // 스위치가 토글될 때 실행될 코드
+                        setState(() {
+                          newBoard.boardStatus = (value == false
+                              ? BoardStatus.PUBLIC
+                              : BoardStatus.PRIVATE);
+                          isPrivate = value ?? false;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ]),
+        ));
+    // Scaffold(
+    //   backgroundColor: Colors.white,
+    //   appBar: AppBar(
+    //     elevation: 0,
+    //     flexibleSpace: Container(color: Colors.white),
+    //     leading: Padding(
+    //         padding: const EdgeInsets.only(top: 10, left: 10),
+    //         child: IconButton(
+    //             onPressed: () async {
+    //               Navigator.pop(
+    //                   context,
+    //                   ReturnType(
+    //                       newTitle: newTitle,
+    //                       newDescription: newDescription,
+    //                       returnType: "exit",
+    //                       newStatus: newBoard.boardStatus!));
+    //             },
+    //             icon: const Icon(Icons.arrow_back, color: Colors.black45),
+    //             iconSize: 30)),
+    //     actions: [
+    //       Padding(
+    //         padding: EdgeInsets.only(right: 5),
+    //         child: MaterialButton(
+    //           onPressed: () {
+    //             if (newTitle.length < 5) {
+    //               popUp("제목은 5글자 이상이어야 합니다");
+    //             } else if (newDescription.length < 10) {
+    //               popUp("내용은 10글자 이상이어야 합니다");
+    //             } else {
+    //               Navigator.pop(
+    //                   context,
+    //                   ReturnType(
+    //                       newTitle: newTitle,
+    //                       newDescription: newDescription,
+    //                       newStatus: newBoard.boardStatus!,
+    //                       returnType: "modified"));
+    //             }
+    //           },
+    //           child: Container(
+    //             decoration: BoxDecoration(
+    //                 borderRadius: BorderRadius.circular(20.0),
+    //                 color: postechRed.withOpacity(1.0)),
+    //             child: const Padding(
+    //               padding: EdgeInsets.all(10.0),
+    //               child: Text("수정하기",
+    //                   style: TextStyle(
+    //                       color: Colors.white, fontWeight: FontWeight.bold)),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    //   body: ListView(
+    //     children: [
+    //       Container(
+    //           width: 500,
+    //           child: const Divider(color: Colors.black45, thickness: 0.5)),
+    //       Row(
+    //         children: [
+    //           const Padding(
+    //             padding: EdgeInsets.only(left: 10, right: 10, top: 25),
+    //             child: Text("제목", style: TextStyle(fontSize: 20)),
+    //           ),
+    //           Expanded(
+    //             child: TextFormField(
+    //               initialValue: widget.board.title,
+    //               onChanged: (text) {
+    //                 setState(() {
+    //                   newTitle = text;
+    //                 });
+    //               },
+    //               textAlign: TextAlign.center,
+    //               decoration: const InputDecoration(
+    //                 border: UnderlineInputBorder(),
+    //                 floatingLabelBehavior: FloatingLabelBehavior.never,
+    //                 alignLabelWithHint: true,
+    //                 label: Center(
+    //                   child: Text(
+    //                     '제목을 입력하세요',
+    //                     textAlign: TextAlign.start,
+    //                   ),
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //       Row(
+    //         children: [
+    //           const Padding(
+    //             padding: EdgeInsets.only(left: 10, right: 10, bottom: 200),
+    //             child: Text("내용", style: TextStyle(fontSize: 20)),
+    //           ),
+    //           Expanded(
+    //             child: TextFormField(
+    //               initialValue: widget.board.description,
+    //               onChanged: (text) {
+    //                 setState(() {
+    //                   newDescription = text;
+    //                 });
+    //               },
+    //               maxLines: 10,
+    //               textAlign: TextAlign.center,
+    //               decoration: const InputDecoration(
+    //                 border: UnderlineInputBorder(),
+    //                 floatingLabelBehavior: FloatingLabelBehavior.never,
+    //                 alignLabelWithHint: true,
+    //                 label: Column(
+    //                   mainAxisAlignment: MainAxisAlignment.center,
+    //                   children: [
+    //                     Row(
+    //                         mainAxisAlignment: MainAxisAlignment.center,
+    //                         children: [
+    //                           Text(
+    //                             '내용을 입력하세요',
+    //                           ),
+    //                         ]),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //       const SizedBox(height: 10),
+    //       Row(
+    //         children: [
+    //           const SizedBox(width: 20),
+    //           const Text("비밀글 ", style: TextStyle(fontSize: 20)),
+    //           CupertinoSwitch(
+    //             // 급처분 여부
+    //             value: isPrivate,
+    //             activeColor: CupertinoColors.activeOrange,
+    //             onChanged: (bool? value) {
+    //               // 스위치가 토글될 때 실행될 코드
+    //               setState(() {
+    //                 newBoard.boardStatus = (value == true
+    //                     ? BoardStatus.PUBLIC
+    //                     : BoardStatus.PRIVATE);
+    //                 isPrivate = value ?? false;
+    //               });
+    //             },
+    //           ),
+    //         ],
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   void popUp(String value) {

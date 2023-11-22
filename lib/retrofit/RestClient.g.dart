@@ -39,6 +39,8 @@ RoomData _$RoomDataFromJson(Map<String, dynamic> json) => RoomData(
       buyerToken: json['buyerToken'] as String?,
       sellerToken: json['sellerToken'] as String?,
       resentTime: json['resentTime'] as String?,
+      resentMessage: json['resentMessage'] as String?,
+      resentCheck: json['resentCheck'] as String?,
     );
 
 Map<String, dynamic> _$RoomDataToJson(RoomData instance) => <String, dynamic>{
@@ -50,6 +52,8 @@ Map<String, dynamic> _$RoomDataToJson(RoomData instance) => <String, dynamic>{
       'buyerToken': instance.buyerToken,
       'sellerToken': instance.sellerToken,
       'resentTime': instance.resentTime,
+      'resentMessage': instance.resentMessage,
+      'resentCheck': instance.resentCheck,
     };
 
 Room _$RoomFromJson(Map<String, dynamic> json) => Room(
@@ -60,6 +64,8 @@ Room _$RoomFromJson(Map<String, dynamic> json) => Room(
       goodsID: json['goodsID'] as String?,
       buyerToken: json['buyerToken'] as String?,
       sellerToken: json['sellerToken'] as String?,
+      resentTime: json['resentTime'] as String?,
+      resentMessage: json['resentMessage'] as String?,
     );
 
 Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{
@@ -70,6 +76,8 @@ Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{
       'goodsID': instance.goodsID,
       'buyerToken': instance.buyerToken,
       'sellerToken': instance.sellerToken,
+      'resentTime': instance.resentTime,
+      'resentMessage': instance.resentMessage,
     };
 
 Chat _$ChatFromJson(Map<String, dynamic> json) => Chat(
@@ -135,6 +143,26 @@ Token _$TokenFromJson(Map<String, dynamic> json) => Token(
 Map<String, dynamic> _$TokenToJson(Token instance) => <String, dynamic>{
       'buyerToken': instance.buyerToken,
       'sellerToken': instance.sellerToken,
+    };
+
+Resent _$ResentFromJson(Map<String, dynamic> json) => Resent(
+      resentMessage: json['resentMessage'] as String?,
+      messageTime: json['messageTime'] as String?,
+    );
+
+Map<String, dynamic> _$ResentToJson(Resent instance) => <String, dynamic>{
+      'resentMessage': instance.resentMessage,
+      'messageTime': instance.messageTime,
+    };
+
+SellGoods _$SellGoodsFromJson(Map<String, dynamic> json) => SellGoods(
+      sellerId: json['sellerId'] as String?,
+      goodsId: json['goodsId'] as String?,
+    );
+
+Map<String, dynamic> _$SellGoodsToJson(SellGoods instance) => <String, dynamic>{
+      'sellerId': instance.sellerId,
+      'goodsId': instance.goodsId,
     };
 
 // **************************************************************************
@@ -415,6 +443,62 @@ class _RestClient implements RestClient {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Token.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<void> updateResent(
+    roomId,
+    resent,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(resent.toJson());
+    await _dio.fetch<void>(_setStreamType<void>(Options(
+      method: 'PATCH',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/boards/roomr/${roomId}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+  }
+
+  @override
+  Future<List<SellGoods>> getReqRoomNum(
+    sellerId,
+    goodsId,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'sellerId': sellerId,
+      r'goodsId': goodsId,
+    };
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result =
+        await _dio.fetch<List<dynamic>>(_setStreamType<List<SellGoods>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/boards/getNum',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    var value = _result.data!
+        .map((dynamic i) => SellGoods.fromJson(i as Map<String, dynamic>))
+        .toList();
     return value;
   }
 

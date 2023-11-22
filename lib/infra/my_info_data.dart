@@ -18,6 +18,7 @@ var myUserInfo = AUser(
     email: "",
     password : "",
     userName: "",
+    realName : "",
     imagePath: "assets/images/user.png",
     userStudentNumber: "",
     userItemNum: 0,
@@ -25,4 +26,7 @@ var myUserInfo = AUser(
     userStatus: UserStatus.NORMAL,
     userInterestedId: [],
     userUid: "",
+    userScore: 0,
+    userGrade: "C0",
+    requestList : [],
 );

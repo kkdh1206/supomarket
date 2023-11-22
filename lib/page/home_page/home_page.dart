@@ -10,6 +10,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
+import 'package:supo_market/page/home_page/widgets/home_page_widgets.dart';
 import '../../entity/item_entity.dart';
 import 'package:intl/intl.dart';
 import '../../entity/user_entity.dart';
@@ -83,8 +84,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _scrollListener() {
-    if (scrollController!.offset + 500 >= scrollController!.position.maxScrollExtent &&
-        !scrollController!.position.outOfRange && !isListened && !isEnded) {
+    if (scrollController!.offset + 500 >=
+            scrollController!.position.maxScrollExtent &&
+        !scrollController!.position.outOfRange &&
+        !isListened &&
+        !isEnded) {
       // 리스트의 마지막에 도달하면 새로운 리스트 아이템을 가져오는 함수 호출
       page++;
       isListened = true;
@@ -94,7 +98,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -110,66 +113,122 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
-                      child: DropdownButton(
-                        value: selectedOption1,
-                        items: options1
-                            .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(
-                              e == SortType.PRICEASCEND
-                                  ? "가격 낮은 순"
-                                  : e == SortType.PRICEDESCEND
-                                  ? "가격 높은 순"
-                                  : e == SortType.DATEASCEND
-                                  ? "최신 순"
-                                  : "오래된 순",
-                              textScaleFactor: 0.8,
-                            )))
-                            .toList(),
-                        onChanged: (value) async {
-                          setState(() {
-                            selectedOption1 = value!;
-                            page = 1;
-                            isListened = false;
-                            isEnded = false;
-                          });
-                          updateList();
-                        },
-                        itemHeight: 50.0,
-                        elevation: 0,
+                      child: Container(
+                        //alignment: Alignment.center,
+                        height: 25,
+                        width: 110,
+                        decoration: BoxDecoration(
+                            color: Color(0xffB70001),
+                            border: Border.all(color: Color(0xffB70001)),
+                            borderRadius: BorderRadius.circular(20.0)),
+                        padding: const EdgeInsets.only(left: 10, bottom: 2),
+                        child: DropdownButton(
+                          dropdownColor: Color(0xffB70001),
+                          icon: const SizedBox.shrink(),
+                          underline: const SizedBox.shrink(),
+                          value: selectedOption1,
+                          items: options1
+                              .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Align(
+                                      alignment: Alignment.center,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            e == SortType.PRICEASCEND
+                                                ? "가격 낮은 순"
+                                                : e == SortType.PRICEDESCEND
+                                                    ? "가격 높은 순"
+                                                    : e == SortType.DATEASCEND
+                                                        ? "      최신 순"
+                                                        : "    오래된 순",
+                                            textScaleFactor: 0.8,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(width: 3),
+                                          Icon(
+                                            Icons.arrow_drop_down_sharp,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ))))
+                              .toList(),
+                          onChanged: (value) async {
+                            setState(() {
+                              selectedOption1 = value!;
+                              page = 1;
+                              isListened = false;
+                              isEnded = false;
+                            });
+                            updateList();
+                          },
+                          itemHeight: 50.0,
+                        ),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
-                      child: DropdownButton(
-                        value: selectedOption2,
-                        items: options2
-                            .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(
-                              e == ItemStatus.TRADING
-                                  ? "거래 중"
-                                  : e == ItemStatus.SUPOFASTSELL
-                                  ? "급처분 중"
-                                  : e == ItemStatus.RESERVED
-                                  ? "예약 중"
-                                  : "판매 완료",
-                              textScaleFactor: 0.8,
-                            )))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedOption2 = value!;
-                            page = 1;
-                            isListened = false;
-                            isEnded = false;
-                          });
-                          updateList();
-                        },
-                        itemHeight: 50.0,
-                        elevation: 0,
+                      child: Container(
+                        //alignment: Alignment.center,
+                        height: 25,
+                        width: 110,
+                        decoration: BoxDecoration(
+                            color: Color(0xffB70001),
+                            border: Border.all(color: Color(0xffB70001)),
+                            borderRadius: BorderRadius.circular(20.0)),
+                        padding: const EdgeInsets.only(left: 10, bottom: 2),
+                        child: DropdownButton(
+                          dropdownColor: Color(0xffB70001),
+                          icon: const SizedBox.shrink(),
+                          underline: const SizedBox.shrink(),
+                          value: selectedOption2,
+                          items: options2
+                              .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Align(
+                                      alignment: Alignment.center,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            e == ItemStatus.TRADING
+                                                ? "      거래 중"
+                                                : e == ItemStatus.SUPOFASTSELL
+                                                    ? "     급처분 중"
+                                                    : e == ItemStatus.RESERVED
+                                                        ? "       예약 중"
+                                                        : "    판매 완료",
+                                            textScaleFactor: 0.8,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(width: 3),
+                                          Icon(
+                                            Icons.arrow_drop_down_sharp,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ))))
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedOption2 = value!;
+                              page = 1;
+                              isListened = false;
+                              isEnded = false;
+                            });
+                            updateList();
+                          },
+                          itemHeight: 50.0,
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],
@@ -201,146 +260,34 @@ class _HomePageState extends State<HomePage> {
                             if (list![position].itemStatus !=
                                 ItemStatus.USERFASTSELL) {
                               //급처분 아이템은 보여주지 않기
-                              return GestureDetector(
-                                  child: Card(
-                                    color: Colors.white,
-                                    margin: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 10),
-                                    elevation: 1,
-                                    child: Stack(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  bottom: 10,
-                                                  left: 10,
-                                                  right: 15),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: list![position]
-                                                        .imageListB
-                                                        .isEmpty
-                                                    ? Image.asset(
-                                                        "assets/images/main_logo.jpg",
-                                                        width: 100,
-                                                        height: 100,
-                                                        fit: BoxFit.cover)
-                                                    : Image.network(
-                                                        list![position]
-                                                            .imageListB[0],
-                                                        width: 100,
-                                                        height: 100,
-                                                        fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                              list![position]
-                                                                  .sellingTitle!,
-                                                              style:
-                                                                  const TextStyle(
-                                                                      fontSize:
-                                                                          20),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                              "등록 일자: ${list![position].uploadDate ?? ""}",
-                                                              style:
-                                                                  const TextStyle(
-                                                                      fontSize:
-                                                                          10),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                              "가격: ${f.format(list![position].sellingPrice!)}원",
-                                                              style:
-                                                                  const TextStyle(
-                                                                      fontSize:
-                                                                          10),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        //isQucikSell이 true라면 표시
-                                        list![position].itemStatus ==
-                                                ItemStatus.USERFASTSELL
-                                            ? Positioned(
-                                                right: 10,
-                                                bottom: 10,
-                                                child: Container(
-                                                  width: 60,
-                                                  height: 25,
-                                                  decoration: BoxDecoration(
-                                                    color: postechRed,
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(
-                                                                10.0)),
-                                                  ),
-                                                  child: const Align(
-                                                    alignment: Alignment.center,
-                                                    child: Text(
-                                                      "급처분",
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 10,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox(
-                                                width: 0, height: 0),
-                                      ],
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    debugPrint(list![position].sellerSchoolNum);
-                                    debugPrint(list![position].sellerName);
+                              return ItemCard(
+                                image: list![position].imageListB.isEmpty
+                                    ? Image.asset("assets/images/main_logo.jpg",
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover)
+                                    : Image.network(
+                                        list![position].imageListB[0],
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover),
+                                title: list![position].sellingTitle!,
+                                date: list![position].uploadDate ?? "",
+                                price: list![position].sellingPrice!,
+                                onTap: () {
+                                  debugPrint(list![position].sellerSchoolNum);
+                                  debugPrint(list![position].sellerName);
 
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SubHomePage(
-                                                  item: list![position],
-                                                  user: fetchUserInfo(list![position]),
-                                                )));
-                                  });
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SubHomePage(
+                                                item: list![position],
+                                                user: getUserInfo(
+                                                    list![position]),
+                                              )));
+                                },
+                              );
                             } else {
                               return const SizedBox(height: 0, width: 0);
                             }
@@ -390,7 +337,7 @@ class _HomePageState extends State<HomePage> {
 
   void updateList() async {
     debugPrint("update List 함수 호출");
-    await fetchItemMain(page, selectedOption1, selectedOption2);
+    await getItemMain(page, selectedOption1, selectedOption2);
     isListened = false;
   }
 
@@ -404,13 +351,12 @@ class _HomePageState extends State<HomePage> {
 
   void onePageUpdateList() {
     setState(() {
-      homePageBuilder = fetchItem(1, selectedOption1, selectedOption2);
+      homePageBuilder = getItem(1, selectedOption1, selectedOption2);
     });
   }
 
-  //homePage에서의 fetch (나머지는 page 1 로딩을 위한 fetchData in Control/Add)
-  Future<bool> fetchItemMain(int page, SortType type, ItemStatus status) async {
-
+  //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
+  Future<bool> getItemMain(int page, SortType type, ItemStatus status) async {
     ItemType? tempItemType;
     ItemStatus? tempItemStatus;
     ItemQuality? tempItemQuality;
@@ -503,7 +449,6 @@ class _HomePageState extends State<HomePage> {
 
 //일회성 알림
 void showNotification() async {
-
   print("notiification");
 
   var androidDetails = AndroidNotificationDetails(
@@ -521,15 +466,11 @@ void showNotification() async {
   );
 
   // 알림 id, 제목, 내용 맘대로 채우기
-  notifications.show(
-      1,
-      '제목1',
-      '내용1',
+  notifications.show(1, '제목1', '내용1',
       NotificationDetails(android: androidDetails, iOS: iosDetails),
-      payload:'부가정보' // 부가정보
-  );
+      payload: '부가정보' // 부가정보
+      );
 }
-
 
 // //서버 푸시 알림
 // Future<void> _listenerWithTerminated() async {

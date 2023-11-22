@@ -3,7 +3,7 @@ import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_8.dart';
 
-class ChatBubbless extends StatefulWidget {
+class ChatBubbless_old extends StatefulWidget {
   String text;
   bool isUserMessage;
   String? userImage;
@@ -11,7 +11,7 @@ class ChatBubbless extends StatefulWidget {
   String currentTime;
   String checkRead;
 
-  ChatBubbless(this.text, this.isUserMessage, this.userImage, this.username,
+  ChatBubbless_old(this.text, this.isUserMessage, this.userImage, this.username,
       this.currentTime, this.checkRead, {Key? key});
 
   @override
@@ -21,7 +21,7 @@ class ChatBubbless extends StatefulWidget {
 
 }
 
-class ChatBubblessState extends State<ChatBubbless>{
+class ChatBubblessState extends State<ChatBubbless_old>{
 
   String? checkRead;
   String? text;
@@ -43,7 +43,7 @@ class ChatBubblessState extends State<ChatBubbless>{
   }
 
   @override
-  void didUpdateWidget(covariant ChatBubbless oldWidget) {
+  void didUpdateWidget(covariant ChatBubbless_old oldWidget) {
     checkRead = widget.checkRead;
     text = widget.text;
     isUserMessage = widget.isUserMessage;

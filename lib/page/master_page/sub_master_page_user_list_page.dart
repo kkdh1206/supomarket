@@ -185,17 +185,17 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageUserListPage> {
 
   void updateList() async {
     debugPrint("update List 함수 호출");
-    await fetchInfoAllUser(page, list);
+    await getInfoAllUser(page, list);
     isListened = false;
   }
 
   void onePageUpdateList() {
     setState(() {
-      homePageBuilder = fetchInfoAllUser(1, list);
+      homePageBuilder = getInfoAllUser(1, list);
     });
   }
 
-  Future<bool> fetchInfoAllUser(int page, List<AUser> list) async {
+  Future<bool> getInfoAllUser(int page, List<AUser> list) async {
     debugPrint("요청");
     int pageSize = 10;
 

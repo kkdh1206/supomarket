@@ -13,13 +13,15 @@ import 'package:intl/intl.dart';
 import '../../entity/user_entity.dart';
 import '../../entity/util_entity.dart';
 import '../../infra/item_list_data.dart';
+import '../home_page/widgets/home_page_widgets.dart';
 import '../util_function.dart';
 
 class SubCategoryPage extends StatefulWidget {
   final List<Item>? list;
   final String? type;
 
-  const SubCategoryPage({Key? key, required this.list, required this.type}) : super(key: key);
+  const SubCategoryPage({Key? key, required this.list, required this.type})
+      : super(key: key);
 
   @override
   _SubCategoryPageState createState() => _SubCategoryPageState();
@@ -56,8 +58,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
 
   String? type;
   String? url;
-  Map<String,String>? data;
-
+  Map<String, String>? data;
 
   @override
   void initState() {
@@ -86,7 +87,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
 
   void _scrollListener() {
     if (scrollController!.offset + 500 >=
-        scrollController!.position.maxScrollExtent &&
+            scrollController!.position.maxScrollExtent &&
         !scrollController!.position.outOfRange &&
         !isListened &&
         !isEnded) {
@@ -103,6 +104,15 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         toolbarHeight: 60,
+        leading: Padding(
+          padding: const EdgeInsets.only(left : 10, top : 0),
+          child: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+              iconSize: 30),
+        ),
         flexibleSpace: Container(color: Colors.white),
         backgroundColor: Colors.white,
         elevation: 0.0,
@@ -110,10 +120,6 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
             color: Colors.white,
             child: Stack(
               children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 0, top: 10),
-                  child: Text(type!),
-                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -123,17 +129,17 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                         value: selectedOption1,
                         items: options1
                             .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(
-                              e == SortType.PRICEASCEND
-                                  ? "가격 낮은 순"
-                                  : e == SortType.PRICEDESCEND
-                                  ? "가격 높은 순"
-                                  : e == SortType.DATEASCEND
-                                  ? "최신 순"
-                                  : "오래된 순",
-                              textScaleFactor: 0.8,
-                            )))
+                                value: e,
+                                child: Text(
+                                  e == SortType.PRICEASCEND
+                                      ? "가격 낮은 순"
+                                      : e == SortType.PRICEDESCEND
+                                          ? "가격 높은 순"
+                                          : e == SortType.DATEASCEND
+                                              ? "최신 순"
+                                              : "오래된 순",
+                                  textScaleFactor: 0.8,
+                                )))
                             .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -152,17 +158,17 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                         value: selectedOption2,
                         items: options2
                             .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(
-                              e == ItemStatus.TRADING
-                                  ? "거래 중"
-                                  : e == ItemStatus.SUPOFASTSELL
-                                  ? "급처분 중"
-                                  : e == ItemStatus.RESERVED
-                                  ? "예약 중"
-                                  : "판매 완료",
-                              textScaleFactor: 0.8,
-                            )))
+                                value: e,
+                                child: Text(
+                                  e == ItemStatus.TRADING
+                                      ? "거래 중"
+                                      : e == ItemStatus.SUPOFASTSELL
+                                          ? "급처분 중"
+                                          : e == ItemStatus.RESERVED
+                                              ? "예약 중"
+                                              : "판매 완료",
+                                  textScaleFactor: 0.8,
+                                )))
                             .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -184,6 +190,22 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
           future: favoritePageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
+
+              if(list!.isEmpty){
+                print("물품이 없습니다");
+                return const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("물품이 없습니다"),
+                      ],
+                    )
+                  ],
+                );
+              }
+
               return Center(
                 //위로 드래그하면 새로고침 -> 업데이트 되는 위젯 (Refresh Indicator)
                 child: Column(
@@ -202,151 +224,39 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                             list![position].uploadDate = formatDate(
                                 list![position].uploadDateForCompare ??
                                     DateTime.now());
+
                             //uploadDate를 현재 시간 기준으로 계속 업데이트하기
                             if (list![position].itemStatus !=
                                 ItemStatus.USERFASTSELL) {
                               //급처분 아이템은 보여주지 않기
-                              return GestureDetector(
-                                  child: Card(
-                                    color: Colors.white,
-                                    margin: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 10),
-                                    elevation: 1,
-                                    child: Stack(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  bottom: 10,
-                                                  left: 10,
-                                                  right: 15),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                BorderRadius.circular(8.0),
-                                                child: list![position]
-                                                    .imageListB
-                                                    .isEmpty
-                                                    ? Image.asset(
-                                                    "assets/images/main_logo.jpg",
-                                                    width: 100,
-                                                    height: 100,
-                                                    fit: BoxFit.cover)
-                                                    : Image.network(
-                                                    list![position]
-                                                        .imageListB[0],
-                                                    width: 100,
-                                                    height: 100,
-                                                    fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                              list![position]
-                                                                  .sellingTitle!,
-                                                              style:
-                                                              const TextStyle(
-                                                                  fontSize:
-                                                                  20),
-                                                              overflow:
-                                                              TextOverflow
-                                                                  .ellipsis),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                              "등록 일자: ${list![position].uploadDate ?? ""}",
-                                                              style:
-                                                              const TextStyle(
-                                                                  fontSize:
-                                                                  10),
-                                                              overflow:
-                                                              TextOverflow
-                                                                  .ellipsis),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                              "가격: ${f.format(list![position].sellingPrice!)}원",
-                                                              style:
-                                                              const TextStyle(
-                                                                  fontSize:
-                                                                  10),
-                                                              overflow:
-                                                              TextOverflow
-                                                                  .ellipsis),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        //isQucikSell이 true라면 표시
-                                        list![position].itemStatus ==
-                                            ItemStatus.USERFASTSELL
-                                            ? Positioned(
-                                          right: 10,
-                                          bottom: 10,
-                                          child: Container(
-                                            width: 60,
-                                            height: 25,
-                                            decoration: BoxDecoration(
-                                              color: postechRed,
-                                              borderRadius:
-                                              const BorderRadius.all(
-                                                  Radius.circular(
-                                                      10.0)),
-                                            ),
-                                            child: const Align(
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "급처분",
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 10,
-                                                    fontWeight:
-                                                    FontWeight.bold),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                            : const SizedBox(
-                                            width: 0, height: 0),
-                                      ],
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    debugPrint(list![position].sellerSchoolNum);
-                                    debugPrint(list![position].sellerName);
+                              return ItemCard(
+                                image: list![position].imageListB.isEmpty
+                                    ? Image.asset("assets/images/main_logo.jpg",
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover)
+                                    : Image.network(
+                                        list![position].imageListB[0],
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover),
+                                title: list![position].sellingTitle!,
+                                date: list![position].uploadDate ?? "",
+                                price: list![position].sellingPrice!,
+                                onTap: () {
+                                  debugPrint(list![position].sellerSchoolNum);
+                                  debugPrint(list![position].sellerName);
 
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SubHomePage(
-                                              item: list![position],
-                                              user: fetchUserInfo(
-                                                  list![position]),
-                                            )));
-                                  });
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SubHomePage(
+                                                item: list![position],
+                                                user: getUserInfo(
+                                                    list![position]),
+                                              )));
+                                },
+                              );
                             } else {
                               return const SizedBox(height: 0, width: 0);
                             }
@@ -359,14 +269,18 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                       children: [
                         isMoreRequesting
                             ? Container(
-                          height: 20.0,
-                          width: 20.0,
-                          color: Colors.transparent,
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
+                                height: 20.0,
+                                width: 20.0,
+                                color: Colors.transparent,
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
                             : const SizedBox(width: 0, height: 0),
+                        Padding(
+                          padding: EdgeInsets.only(left: 0, top: 10),
+                          child: Text(type!),
+                        ),
                       ],
                     ),
                   ],
@@ -397,39 +311,38 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
       scrollOffset = scrollController!.position.pixels;
     }
     setURL();
-    await fetchItemCategory(page, url!);
+    await getItemCategory(page, url!);
     isListened = false;
   }
 
   void onePageUpdateList() {
-
     setState(() {
       page = 1;
       setURL();
-      favoritePageBuilder = fetchItemCategory(1, url!);
+      favoritePageBuilder = getItemCategory(1, url!);
     });
   }
 
   void setURL() {
-    url = 'http://kdh.supomarket.com/items/category?sort=${ConvertEnumToString(selectedOption1)}&status=${ConvertEnumToString(selectedOption2)}&page=${page}&pageSize=${pageSize}';
+    url =
+        'http://kdh.supomarket.com/items/category?sort=${ConvertEnumToString(selectedOption1)}&status=${ConvertEnumToString(selectedOption2)}&page=${page}&pageSize=${pageSize}';
     if (type == '냉장고') {
-      data ={'category': 'REFRIGERATOR'};
+      data = {'category': 'REFRIGERATOR'};
     } else if (type == '의류') {
-      data ={'category': 'CLOTHES'};
+      data = {'category': 'CLOTHES'};
     } else if (type == '자취방') {
-      data ={'category': 'ROOM'};
+      data = {'category': 'ROOM'};
     } else if (type == '모니터') {
-      data ={'category': 'MORNITOR'};
+      data = {'category': 'MONITOR'};
     } else if (type == '책') {
-      data ={'category': 'BOOK'};
+      data = {'category': 'BOOK'};
     } else {
-      data ={'category': 'ETC'};
+      data = {'category': 'ETC'};
     }
   }
 
-  //homePage에서의 fetch (나머지는 page 1 로딩을 위한 fetchData in Control/Add)
-  Future<bool> fetchItemCategory(int page, String url) async {
-
+  //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
+  Future<bool> getItemCategory(int page, String url) async {
     ItemType? tempItemType;
     ItemStatus? tempItemStatus;
     ItemQuality? tempItemQuality;
@@ -447,12 +360,11 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
     }
 
     try {
-      Response response = await dio.get(url,data: data);
+      Response response = await dio.get(url, data: data);
       // Map<String, dynamic> JsonData = json.decode(response.data);
       dynamic jsonData = response.data;
 
       if (jsonData.toString() != "true") {
-
         setState(() {
           isMoreRequesting = true;
         });
@@ -491,7 +403,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
               uploadDateForCompare: dateTime,
               itemDetail: description,
               sellerImage:
-              "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
+                  "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
               isLiked: false,
               sellerSchoolNum: "20220000",
               imageListA: [],

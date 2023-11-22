@@ -47,8 +47,19 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Q&A 게시판'),
+        //automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        titleSpacing: 0,
+        leading : IconButton(icon : Icon(Icons.arrow_back_ios), color: Colors.black, onPressed: () { Navigator.pop(context);},),
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text('Q&A 게시판', style : TextStyle(color : Colors.black, fontFamily: 'KBO-M', fontWeight: FontWeight.bold, fontSize : 25)),
+          ],
+        ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 0),
@@ -59,7 +70,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
                     MaterialPageRoute(
                         builder: (context) => SubQnaPageMyPage()));
               },
-              icon: const Text("My"),
+              icon: const Text("My", style : TextStyle(color: Colors.black)),
             ),
           ),
           Padding(
@@ -72,7 +83,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
                         builder: (context) =>
                             SubQnAPageSearchPage(list: list)));
               },
-              icon: Icon(Icons.search, color: Colors.black45),
+              icon: Icon(Icons.search, color: Colors.black),
             ),
           ),
           Padding(
@@ -85,11 +96,12 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
                           builder: (context) => SubQnAPageAddBoardPage()));
                   if (data.returnType == "add") {
                     print("board add");
-                    await postBoard(data.newTitle, data.newDescription, data.newStatus);
-                    qnaPageBuilder = fetchBoard(_currentPage);
+                    await postBoard(
+                        data.newTitle, data.newDescription, data.newStatus);
+                    qnaPageBuilder = getBoard(_currentPage);
                   }
                 },
-                icon: Icon(Icons.add, color: Colors.black45)),
+                icon: Icon(Icons.add, color: Colors.black)),
           ),
         ],
       ),
@@ -133,96 +145,135 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
                                                   DateTime.now());
                                           //급처분 아이템은 보여주지 않기
                                           return GestureDetector(
-                                              child: Card(
-                                                color: Colors.white,
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 10,
-                                                        horizontal: 10),
-                                                elevation: 1,
-                                                child: Stack(
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Align(
-                                                            alignment: Alignment
-                                                                .centerLeft,
-                                                            child: Column(
-                                                              children: [
-                                                                const SizedBox(
-                                                                    height: 10),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                        child:
-                                                                            Padding(
-                                                                      padding: EdgeInsets.only(
-                                                                          left:
-                                                                              15),
-                                                                      child: Text(
-                                                                          list![position].boardStatus == BoardStatus.PRIVATE? "비밀글 입니다" : list![position].title!, style: const TextStyle(fontSize: 20),
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis),
-                                                                    )),
-                                                                  ],
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 5),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
+                                            onTap: () {
+                                              if (list[position].boardStatus ==
+                                                      BoardStatus.PRIVATE &&
+                                                  myUserInfo.userStatus !=
+                                                      UserStatus.ADMIN) {
+                                                print("비밀글은 접근할 수 없습니다");
+                                              } else {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            SubQnAPageBoardPage(
+                                                                board: list![
+                                                                    position],
+                                                                user: getUserInfo2(
+                                                                    list![
+                                                                        position]))));
+                                              }
+                                            },
+                                            child: Card(
+                                              color: Colors.grey[200],
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 5,
+                                                      horizontal: 10),
+                                              elevation: 0,
+                                              shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.zero,
+                                              ),
+                                              child: Stack(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      list![position].boardStatus == BoardStatus.PRIVATE?
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 15),
+                                                        height: 40,
+                                                        width: 40,
+                                                        child: Image.asset(
+                                                          "assets/images/icons/lock.png",
+                                                        ),
+                                                      )
+                                                      : Container(width : 40, height: 40),
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 15),
+                                                        height: 40,
+                                                        width: 10,
+                                                      ),
+                                                      Expanded(
+                                                        child: Align(
+                                                          alignment: Alignment
+                                                              .centerLeft,
+                                                          child: Column(
+                                                            children: [
+                                                              const SizedBox(
+                                                                  height: 10),
+                                                              Row(
+                                                                children: [
+                                                                  Expanded(
                                                                       child:
                                                                           Padding(
-                                                                        padding:
-                                                                            EdgeInsets.only(left: 15),
-                                                                        child: Text(
-                                                                            "등록 일자: ${list![position].uploadDate ?? ""}",
-                                                                            style:
-                                                                                const TextStyle(fontSize: 10),
-                                                                            overflow: TextOverflow.ellipsis),
-                                                                      ),
+                                                                    padding: EdgeInsets
+                                                                        .only(
+                                                                            left:
+                                                                                8),
+                                                                    child: Text(
+                                                                        list![position].boardStatus == BoardStatus.PRIVATE
+                                                                            ? "비밀글 입니다"
+                                                                            : list![position]
+                                                                                .title!,
+                                                                        style: const TextStyle(
+                                                                            fontSize:
+                                                                                20,
+                                                                            fontWeight: FontWeight
+                                                                                .bold),
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis),
+                                                                  )),
+                                                                ],
+                                                              ),
+                                                              const SizedBox(
+                                                                  height: 2),
+                                                              Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child:
+                                                                        Padding(
+                                                                      padding: EdgeInsets.only(
+                                                                          left:
+                                                                              8),
+                                                                      child: Text(
+                                                                          "등록 일자: ${list![position].uploadDate ?? ""}",
+                                                                          style: const TextStyle(
+                                                                              fontSize: 10,
+                                                                              fontFamily: 'KBO-L',
+                                                                              fontWeight: FontWeight.bold),
+                                                                          overflow: TextOverflow.ellipsis),
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 10),
-                                                              ],
-                                                            ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              const SizedBox(
+                                                                  height: 10),
+                                                            ],
                                                           ),
                                                         ),
-                                                      ],
-                                                    ),
-                                                    list![position].boardStatus == BoardStatus.PRIVATE?
-                                                    const Positioned(
-                                                      right: 10,
-                                                      top : 10,
-                                                      child: Align(
-                                                          alignment: Alignment.center,
-                                                          child: Icon(Icons.lock),
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                right: 10),
+                                                        child: Icon(
+                                                          Icons
+                                                              .arrow_forward_ios_sharp,
+                                                          size: 30,
+                                                          color:
+                                                              Colors.grey[600],
                                                         ),
-                                                    ) : const SizedBox(width: 0, height: 0),
-                                                  ],
-                                                ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
-                                              onTap: () {
-                                                if(list[position].boardStatus == BoardStatus.PRIVATE && myUserInfo.userStatus != UserStatus.ADMIN){
-                                                  print("비밀글은 접근할 수 없습니다");
-                                                }
-                                                else{
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              SubQnAPageBoardPage(
-                                                                  board: list![
-                                                                  position],
-                                                                  user: fetchUserInfo2(
-                                                                      list![
-                                                                      position]))));
-                                                }
-
-                                              });
+                                            ),
+                                          );
                                         },
                                         itemCount: list?.length,
                                       ),
@@ -287,7 +338,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
                                         setState(() {
                                           isLoading = true;
                                         });
-                                        fetchAllBoardNum(_currentPage);
+                                        getAllBoardNum(_currentPage);
                                         _currentPage = _currentPage - 1;
                                         await _goToPage(_currentPage - 1);
                                       }
@@ -316,7 +367,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
                       )
                     ],
                   );
-                }else{
+                } else {
                   return const SizedBox();
                 }
               }),
@@ -342,11 +393,11 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
 
   Future<void> updateList() async {
     debugPrint("페이지 변경 => ${_currentPage}");
-    qnaPageBuilder = fetchBoard(_currentPage);
+    qnaPageBuilder = getBoard(_currentPage);
   }
 
-  //homePage에서의 fetch (나머지는 page 1 로딩을 위한 fetchData in Control/Add)
-  Future<bool> fetchBoard(int page) async {
+  //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
+  Future<bool> getBoard(int page) async {
     int pageSize = 7;
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
@@ -395,7 +446,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
       print('Error sending GET request : $e');
     }
 
-    await fetchAllBoardNum(_currentPage);
+    await getAllBoardNum(_currentPage);
 
     setState(() {
       isLoading = false;
@@ -404,8 +455,8 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
     return true;
   }
 
-  //homePage에서의 fetch (나머지는 page 1 로딩을 위한 fetchData in Control/Add)
-  Future<bool> fetchAllBoardNum(int page) async {
+  //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
+  Future<bool> getAllBoardNum(int page) async {
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
@@ -430,7 +481,8 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
     return true;
   }
 
-  Future<bool> postBoard(String newTitle, String newDescription, BoardStatus newStatus) async {
+  Future<bool> postBoard(
+      String newTitle, String newDescription, BoardStatus newStatus) async {
     String token = await firebaseAuth.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
 
@@ -452,5 +504,4 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
 
     return true;
   }
-
 }

@@ -4,11 +4,13 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:supo_market/entity/user_entity.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/home_page/sub_picture_page.dart';
+import 'package:supo_market/page/my_page/widgets/board_page_widgets.dart';
 import 'package:supo_market/page/util_function.dart';
 import '../../entity/board_entity.dart';
 import '../../entity/item_entity.dart';
@@ -56,20 +58,14 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
 
   Future<void> scrollToTop() async {
     // if (isKeyboardOpen) {
+
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
+        _scrollController.position.minScrollExtent,
         duration: Duration(milliseconds: 100),
         curve: Curves.easeInOut,
       );
     });
-    // } else {
-    //   _scrollController.animateTo(
-    //     _scrollController.position.maxScrollExtent,
-    //     duration: Duration(milliseconds: 300),
-    //     curve: Curves.easeInOut,
-    //   );
-    // }
   }
 
   void scrollToBottom(BuildContext context) {
@@ -78,8 +74,8 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
     // if (isKeyboardOpen) {
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.animateTo(
-        _scrollController.position.minScrollExtent,
-        duration: Duration(milliseconds: 100),
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 10),
         curve: Curves.easeInOut,
       );
     });
@@ -103,173 +99,299 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-    if (isKeyboardOpen) {
-      scrollToBottom(context);
-    }
+    // final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    // if (isKeyboardOpen) {
+    //   scrollToBottom(context);
+    // }
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        flexibleSpace: Container(color: Colors.white),
-        actions: [
-          IconButton(onPressed: (){
-            setState(() {
-              isStackOn = !isStackOn;
-            });
-            if(isStackOn){
-              scrollToTop();
-            }
-          },
-              icon: Icon(Icons.chat_bubble, color: Colors.grey)),
-        ],
-      ),
       body: FutureBuilder(
-        future: boardPageBuilder,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Stack(children: [
-              ListView(children: [
-                Container(
-                  width: 1000,
-                  color: Colors.white,
-                  child: DataTable(
-                    columns: [
-                      DataColumn(label: Text("제목")),
-                      DataColumn(label: Text("${board.title}")),
-                    ],
-                    rows: [
-                      DataRow(cells: [
-                        const DataCell(Text('작성자')),
-                        DataCell(Text('${board.userName}')),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(Text('작성 일시')),
-                        DataCell(Text('${board.uploadDate}')),
-                      ]),
-                    ],
-                    showBottomBorder: true,
-                  ),
-                ),
-
-                Padding(
-                    padding: EdgeInsets.all(0.0),
-                    child: Container(
-                      width: 1000,
-                      color: Colors.white,
-                      child: Text("${board.description}"),
-                    )),
-
-              ]),
-              isStackOn==true?
-              Column(
+          future: boardPageBuilder,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return Stack(
                 children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(),
-                  ),
-                  Expanded(
-                    child: Container(
-                      child: ListView.builder(
-                        reverse: true,
-                        controller: _scrollController,
-                        itemCount: commentList.length,
-                        itemBuilder: (context, position) {
-                          //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
-                          return GestureDetector(
-                            child: Card(
-                              elevation: 0,
-                              child: Padding(
-                                padding: EdgeInsets.all(20.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:MainAxisAlignment.start,
-                                      children: [
-                                        Expanded(child:
-                                        Text(commentList[commentList.length - position - 1]['username'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment:MainAxisAlignment.start,
-                                      children: [
-                                        Expanded(child:
-                                        Text(commentList[commentList.length -
-                                            position -
-                                            1]['content']),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
+                  ListView(
+                    controller: _scrollController,
+                    children: [
+                      Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 40),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: BoardName(text : board.title!),
                             ),
-                          );
-                        },
-                      ),
-                    ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 20),
+                              child: BoardOwner(text: board.userName!),
+                            ),
+                            const SizedBox(height: 20),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: UploadTime(text: board.uploadDate!),
+                            ),
+                            const SizedBox(height: 20),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10, right: 10),
+                              child: BoardContents(text: board.title!),
+                            ),
+                            const SizedBox(height: 10),
+                            Stack(
+                              children: [
+                                ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  itemCount: commentList.length,
+                                  itemBuilder: (context, position) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 10, right: 10),
+                                      child: CommentCard(
+                                        writer: commentList[position]
+                                            ['username'],
+                                        date: formatDate(
+                                            commentList[position]['dateTime']),
+                                        content: commentList[position]
+                                            ['content'],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ]),
+                    ],
                   ),
-                  Row(children: [
-                    Expanded(
-                      child: TextField(
-                        maxLines : null,
-                        keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.next,
-                        onChanged: (text){
-                          print("변경!!!");
-                          setState(() {
-                            inputText = text;
-                          });
-                        },
-                        onSubmitted: (text){
-                           print("다음!!!");
-                           setState(() {
-                             comment.text = text + '\n';
-                             comment.selection = TextSelection.fromPosition(TextPosition(offset: comment.text.length));
-                             inputText = comment.text;
-                           });
-                        },
-                        controller: comment,
-                        // controller 속성을이용해 inputText변수값을 textfield의 초기 입력값으로 사용할 수 있다
-                        decoration:
-                            InputDecoration(labelText: "Enter your message"),
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.send),
-                      onPressed: () async {
-                        await postAnswer(inputText);
-                        await getAnswer();
-                        comment.clear();
-                        scrollToBottom(context);
-                      }
-                    ),
-                  ]),
-                  SizedBox(height: 15),
+                  Positioned(
+                      left: 10, top: 20,
+                      child: IconButton(onPressed: () {
+                        Navigator.pop(context);
+                      },
+                          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+                          iconSize: 30)
+                  ),
                 ],
-              ) : const SizedBox(),
-            ]);
-          } else {
-            return const Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                  ],
-                )
-              ],
-            ));
-          }
-          ;
-        },
+              );
+            } else {
+              return const Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                    ],
+                  )
+                ],
+              ));
+            }
+          }),
+      bottomNavigationBar: BottomAppBar(
+        height: 55,
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            BottomAppBar(
+              elevation: 0,
+              child: CommentInput(
+                onChanged: (text) {
+                  print("변경!!!");
+                  setState(() {
+                    inputText = text;
+                  });
+                },
+                onSubmitted: (text) {
+                  print("다음!!!");
+                  setState(() {
+                    comment.text = text + '\n';
+                    comment.selection = TextSelection.fromPosition(
+                        TextPosition(offset: comment.text.length));
+                    inputText = comment.text;
+                  });
+                },
+                onPressed: () async {
+                  await postAnswer(inputText);
+                  await getAnswer();
+                  comment.clear();
+                  scrollToBottom(context);
+                },
+                controller: comment,
+              ),
+            ),
+          ],
+        ),
       ),
     );
+
+    //
+    // return Scaffold(
+    //   backgroundColor: Colors.white,
+    //   appBar: AppBar(
+    //     flexibleSpace: Container(color: Colors.white),
+    //     actions: [
+    //       IconButton(onPressed: (){
+    //         setState(() {
+    //           isStackOn = !isStackOn;
+    //         });
+    //         if(isStackOn){
+    //           scrollToTop();
+    //         }
+    //       },
+    //           icon: Icon(Icons.chat_bubble, color: Colors.grey)),
+    //     ],
+    //   ),
+    //   body: FutureBuilder(
+    //     future: boardPageBuilder,
+    //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //       if (snapshot.connectionState == ConnectionState.done) {
+    //         return Stack(children: [
+    //           ListView(children: [
+    //             Container(
+    //               width: 1000,
+    //               color: Colors.white,
+    //               child: DataTable(
+    //                 columns: [
+    //                   DataColumn(label: Text("제목")),
+    //                   DataColumn(label: Text("${board.title}")),
+    //                 ],
+    //                 rows: [
+    //                   DataRow(cells: [
+    //                     const DataCell(Text('작성자')),
+    //                     DataCell(Text('${board.userName}')),
+    //                   ]),
+    //                   DataRow(cells: [
+    //                     const DataCell(Text('작성 일시')),
+    //                     DataCell(Text('${board.uploadDate}')),
+    //                   ]),
+    //                 ],
+    //                 showBottomBorder: true,
+    //               ),
+    //             ),
+    //
+    //             Padding(
+    //                 padding: EdgeInsets.all(0.0),
+    //                 child: Container(
+    //                   width: 1000,
+    //                   color: Colors.white,
+    //                   child: Text("${board.description}"),
+    //                 )),
+    //
+    //           ]),
+    //           isStackOn==true?
+    //           Column(
+    //             children: [
+    //               Expanded(
+    //                 flex: 1,
+    //                 child: Container(),
+    //               ),
+    //               Expanded(
+    //                 child: Container(
+    //                   child: ListView.builder(
+    //                     reverse: true,
+    //                     controller: _scrollController,
+    //                     itemCount: commentList.length,
+    //                     itemBuilder: (context, position) {
+    //                       //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
+    //                       return GestureDetector(
+    //                         child: Card(
+    //                           elevation: 0,
+    //                           child: Padding(
+    //                             padding: EdgeInsets.all(20.0),
+    //                             child: Column(
+    //                               mainAxisAlignment: MainAxisAlignment.start,
+    //                               children: [
+    //                                 Row(
+    //                                   mainAxisAlignment:MainAxisAlignment.start,
+    //                                   children: [
+    //                                     Expanded(child:
+    //                                     Text(commentList[commentList.length - position - 1]['username'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+    //                                     ),
+    //                                   ],
+    //                                 ),
+    //                                 const SizedBox(height: 10),
+    //                                 Row(
+    //                                   mainAxisAlignment:MainAxisAlignment.start,
+    //                                   children: [
+    //                                     Expanded(child:
+    //                                     Text(commentList[commentList.length -
+    //                                         position -
+    //                                         1]['content']),
+    //                                     ),
+    //                                   ],
+    //                                 ),
+    //                               ],
+    //                             ),
+    //                           )
+    //                         ),
+    //                       );
+    //                     },
+    //                   ),
+    //                 ),
+    //               ),
+    //               Row(children: [
+    //                 Expanded(
+    //                   child: TextField(
+    //                     maxLines : null,
+    //                     keyboardType: TextInputType.multiline,
+    //                     textInputAction: TextInputAction.next,
+    //                     onChanged: (text){
+    //                       print("변경!!!");
+    //                       setState(() {
+    //                         inputText = text;
+    //                       });
+    //                     },
+    //                     onSubmitted: (text){
+    //                        print("다음!!!");
+    //                        setState(() {
+    //                          comment.text = text + '\n';
+    //                          comment.selection = TextSelection.fromPosition(TextPosition(offset: comment.text.length));
+    //                          inputText = comment.text;
+    //                        });
+    //                     },
+    //                     controller: comment,
+    //                     // controller 속성을이용해 inputText변수값을 textfield의 초기 입력값으로 사용할 수 있다
+    //                     decoration:
+    //                         InputDecoration(labelText: "Enter your message"),
+    //                   ),
+    //                 ),
+    //                 IconButton(
+    //                   icon: Icon(Icons.send),
+    //                   onPressed: () async {
+    //                     await postAnswer(inputText);
+    //                     await getAnswer();
+    //                     comment.clear();
+    //                     scrollToBottom(context);
+    //                   }
+    //                 ),
+    //               ]),
+    //               SizedBox(height: 15),
+    //             ],
+    //           ) : const SizedBox(),
+    //         ]);
+    //       } else {
+    //         return const Center(
+    //             child: Column(
+    //           mainAxisAlignment: MainAxisAlignment.center,
+    //           children: [
+    //             Row(
+    //               mainAxisAlignment: MainAxisAlignment.center,
+    //               children: [
+    //                 CircularProgressIndicator(),
+    //               ],
+    //             )
+    //           ],
+    //         ));
+    //       }
+    //       ;
+    //     },
+    //   ),
+    // );
   }
 
   Future<bool> postAnswer(String content) async {
@@ -341,7 +463,7 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
     } catch (e) {
       print('Error sending GET request : $e');
     }
-
+    //await scrollToBottom(context);
     return true;
   }
 }

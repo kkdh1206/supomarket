@@ -41,6 +41,12 @@ abstract class RestClient {
   @GET('/boards/token/{roomId}')
   Future<Token> getTokenById({@Path() String? roomId});
 
+  @PATCH('/boards/roomr/{roomId}')
+  Future<void> updateResent(@Path() String? roomId, @Body() Resent resent);
+
+  @GET('/boards/getNum')
+  Future<List<SellGoods>> getReqRoomNum(@Query('sellerId') String sellerId,
+      @Query('goodsId') String goodsId);
 }
 
 
@@ -93,6 +99,8 @@ class RoomData {
   String? buyerToken;
   String? sellerToken;
   String? resentTime;
+  String? resentMessage;
+  String? resentCheck;
 
   RoomData({
     this.id,
@@ -103,6 +111,8 @@ class RoomData {
     this.buyerToken,
     this.sellerToken,
     this.resentTime,
+    this.resentMessage,
+    this.resentCheck
   });
   factory RoomData.fromJson(Map<String, dynamic> json) => _$RoomDataFromJson(json);
   Map<String, dynamic> toJson() => _$RoomDataToJson(this);
@@ -116,6 +126,8 @@ class Room {
   String? goodsID;
   String? buyerToken;
   String? sellerToken;
+  String? resentTime;
+  String? resentMessage;
 
   Room ({
     this.id,
@@ -124,7 +136,9 @@ class Room {
     this.roomName,
     this.goodsID,
     this.buyerToken,
-    this.sellerToken
+    this.sellerToken,
+    this.resentTime,
+    this.resentMessage,
   });
   factory Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);
   Map<String, dynamic> toJson() => _$RoomToJson(this);
@@ -210,4 +224,30 @@ class Token {
   });
   factory Token.fromJson(Map<String, dynamic> json) => _$TokenFromJson(json);
   Map<String, dynamic> toJson() => _$TokenToJson(this);
+}
+
+@JsonSerializable()
+class Resent {
+  String? resentMessage;
+  String? messageTime;
+
+  Resent({
+    this.resentMessage,
+    this.messageTime,
+  });
+  factory Resent.fromJson(Map<String, dynamic> json) => _$ResentFromJson(json);
+  Map<String, dynamic> toJson() => _$ResentToJson(this);
+}
+
+@JsonSerializable()
+class SellGoods {
+  String? sellerId;
+  String? goodsId;
+
+  SellGoods({
+    this.sellerId,
+    this.goodsId,
+  });
+  factory SellGoods.fromJson(Map<String, dynamic> json) => _$SellGoodsFromJson(json);
+  Map<String, dynamic> toJson() => _$SellGoodsToJson(this);
 }

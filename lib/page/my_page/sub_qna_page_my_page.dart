@@ -48,8 +48,28 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('내가 올린 질문'),
-          flexibleSpace: Container(color: Colors.white),
+          //automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          titleSpacing: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          title: const Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text('내가 올린 질문',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'KBO-M',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25)),
+            ],
+          ),
         ),
         body: FutureBuilder(
             future: myQnaPageBuilder,
@@ -78,14 +98,37 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
                                   //급처분 아이템은 보여주지 않기
                                   return GestureDetector(
                                       child: Card(
-                                        color: Colors.white,
+                                        color: Colors.grey[200],
                                         margin: const EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 10),
-                                        elevation: 1,
+                                            vertical: 5, horizontal: 10),
+                                        elevation: 0,
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.zero,
+                                        ),
                                         child: Stack(
                                           children: [
                                             Row(
                                               children: [
+                                                list![position].boardStatus ==
+                                                        BoardStatus.PRIVATE
+                                                    ? Container(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 15),
+                                                        height: 40,
+                                                        width: 40,
+                                                        child: Image.asset(
+                                                          "assets/images/icons/lock.png",
+                                                        ),
+                                                      )
+                                                    : Container(
+                                                        width: 40, height: 40),
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.only(left: 15),
+                                                  height: 40,
+                                                  width: 10,
+                                                ),
                                                 Expanded(
                                                   child: Align(
                                                     alignment:
@@ -100,13 +143,21 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
                                                                 child: Padding(
                                                               padding: EdgeInsets
                                                                   .only(
-                                                                      left: 15),
+                                                                      left: 8),
                                                               child: Text(
                                                                   list![position]
+                                                                              .boardStatus ==
+                                                                          BoardStatus
+                                                                              .PRIVATE
+                                                                      ? "비밀글 입니다"
+                                                                      : list![position]
                                                                           .title!,
                                                                   style: const TextStyle(
                                                                       fontSize:
-                                                                          20),
+                                                                          20,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
                                                                   overflow:
                                                                       TextOverflow
                                                                           .ellipsis),
@@ -114,7 +165,7 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
                                                           ],
                                                         ),
                                                         const SizedBox(
-                                                            height: 5),
+                                                            height: 2),
                                                         Row(
                                                           children: [
                                                             Expanded(
@@ -122,12 +173,17 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
                                                                 padding: EdgeInsets
                                                                     .only(
                                                                         left:
-                                                                            15),
+                                                                            8),
                                                                 child: Text(
                                                                     "등록 일자: ${list![position].uploadDate ?? ""}",
                                                                     style: const TextStyle(
                                                                         fontSize:
-                                                                            10),
+                                                                            10,
+                                                                        fontFamily:
+                                                                            'KBO-L',
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold),
                                                                     overflow:
                                                                         TextOverflow
                                                                             .ellipsis),
@@ -141,77 +197,60 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
                                                     ),
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                            Positioned(
-                                              right : 0, top : -5,
-                                              child: IconButton(
-                                                icon : const Icon(Icons.close, color: Colors.black45),
-                                                onPressed: () async{
-                                                  await delete(list![position].id!);
-                                                  await fetchBoardMyPage();
-                                                },
-                                              ),
-                                            ),
-                                            Positioned(
-                                              right: 10,
-                                              top: 30,
-                                              child: Container(
-                                                width: 80,
-                                                height: 25,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.yellow[200],
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(
-                                                              10.0)),
-                                                ),
-                                                child: MaterialButton(
-                                                  onPressed: () async {
-                                                    var newData = await Navigator.push(context, MaterialPageRoute(builder: (context)=>SubQnAPageModifyPage(board : list![position])));
-                                                      if(newData.returnType == "modified"){
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.only(right: 0),
+                                                  child: IconButton(
+                                                    icon: Icon(
+                                                      Icons.edit,
+                                                      size: 25,
+                                                      color: Colors.grey[600],
+                                                    ),
+                                                    onPressed: () async {
+                                                      var newData = await Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  SubQnAPageModifyPage(
+                                                                      board: list![
+                                                                          position])));
+                                                      if (newData.returnType == "modified") {
                                                         await modify(list![position]!.id!, newData.newTitle, newData.newDescription, ConvertEnumToString(newData.newStatus));
-                                                        await fetchBoardMyPage();
+                                                        await getBoardMyPage();
                                                       }
                                                     },
-                                                  child: const Text(
-                                                    "수정하기",
-                                                    style: TextStyle(
-                                                        color: Colors.black45,
-                                                        fontSize: 10,
-                                                        fontWeight:
-                                                            FontWeight.bold),
                                                   ),
                                                 ),
-                                              ),
-                                            ),
-                                            list![position].boardStatus ==
-                                                    BoardStatus.PRIVATE
-                                                ? const Positioned(
-                                                    right: 35,
-                                                    top: 10,
-                                                    child: Align(
-                                                      alignment: Alignment.center,
-                                                      child: Icon(Icons.lock, size: 17),
+                                                Container(
+                                                  padding: EdgeInsets.only(
+                                                      right: 10),
+                                                  child: IconButton(
+                                                    icon: Icon(
+                                                      Icons.delete,
+                                                      size: 25,
+                                                      color: Colors.grey[600],
                                                     ),
-                                                  )
-                                                : const SizedBox(
-                                                    width: 0, height: 0),
+                                                    onPressed: () async {
+                                                      await delete(
+                                                          list![position].id!);
+                                                      await getBoardMyPage();
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ],
                                         ),
                                       ),
                                       onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      SubQnAPageBoardPage(
-                                                          board:
-                                                              list![position],
-                                                          user: fetchUserInfo2(
-                                                              list![
-                                                                  position]))));
-
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SubQnAPageBoardPage(
+                                                        board: list![position],
+                                                        user: getUserInfo2(
+                                                            list![position]))));
                                       });
                                 },
                                 itemCount: list?.length,
@@ -273,7 +312,7 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
 
   Future<void> updateList() async {
     debugPrint("페이지 변경 => ${_currentPage}");
-    myQnaPageBuilder = fetchBoardMyPage();
+    myQnaPageBuilder = getBoardMyPage();
   }
 
   Future<bool> delete(int id) async {
@@ -287,14 +326,11 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
     setState(() {
       isLoading = true;
     });
-    var data = {
-      'status' : 'DELETED'
-    };
+    var data = {'status': 'DELETED'};
 
     try {
       Response response = await dio.patch(url, data: data);
       dynamic jsonData = response.data;
-
     } catch (e) {
       print('Error sending PATCH request : $e');
     }
@@ -306,7 +342,7 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
     return true;
   }
 
-  Future<bool> fetchBoardMyPage() async {
+  Future<bool> getBoardMyPage() async {
     int pageSize = 7;
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
@@ -363,8 +399,8 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
     return true;
   }
 
-  Future<bool> modify(int boardId, String title, String description, String status) async {
-
+  Future<bool> modify(
+      int boardId, String title, String description, String status) async {
     print("modify function");
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
@@ -376,8 +412,8 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
 
     var data = {
       "title": title,
-      "desciption": description,
-      "status" : status,
+      "description": description,
+      "status": status,
     };
 
     try {
@@ -388,6 +424,5 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
     }
 
     return true;
-
   }
 }

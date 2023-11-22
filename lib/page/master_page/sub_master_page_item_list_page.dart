@@ -338,7 +338,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                                                     onPressed: () async {
                                                       await delete(list![position]);
                                                       sellingPageBuilder =
-                                                          fetchItemMaster(
+                                                          getItemMaster(
                                                               1, selectedOption1,
                                                               selectedOption2);
                                                     },
@@ -398,7 +398,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                                                                 .itemDetail));
 
                                                         sellingPageBuilder =
-                                                            fetchItemMaster(
+                                                            getItemMaster(
                                                                 1, selectedOption1,
                                                                 selectedOption2);
                                                       }
@@ -489,7 +489,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                                         Navigator.push(context, MaterialPageRoute(
                                             builder: (context) =>
                                                 SubHomePage(item: list![position],
-                                                    user: fetchUserInfo(
+                                                    user: getUserInfo(
                                                         list![position]))));
                                       });
                                 } else {
@@ -552,7 +552,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
 
   void updateList() async {
     debugPrint("update List 함수 호출");
-    await fetchItemMaster(page, selectedOption1, selectedOption2);
+    await getItemMaster(page, selectedOption1, selectedOption2);
     isListened = false;
   }
 
@@ -566,12 +566,12 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
 
   void onePageUpdateList() {
     setState(() {
-      homePageBuilder = fetchItem(1, selectedOption1, selectedOption2);
+      homePageBuilder = getItem(1, selectedOption1, selectedOption2);
     });
   }
 
-  //homePage에서의 fetch (나머지는 page 1 로딩을 위한 fetchData in Control/Add)
-  Future<bool> fetchItemMaster(int page, SortType type, ItemStatus status) async {
+  //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
+  Future<bool> getItemMaster(int page, SortType type, ItemStatus status) async {
 
     debugPrint("요청");
 

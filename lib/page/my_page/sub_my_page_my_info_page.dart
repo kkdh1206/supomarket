@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/page/my_page/sub_my_info_page_change_password_page.dart';
 import 'package:supo_market/page/my_page/sub_my_info_page_change_profile_page.dart';
+import 'package:supo_market/page/my_page/widgets/my_page_widgets.dart';
 import '../../infra/my_info_data.dart';
 import '../../infra/users_info_data.dart';
 import '../log_in_page/log_in_page.dart';
@@ -36,59 +37,20 @@ class _SubMyPageMyInfoPageState extends State< SubMyPageMyInfoPage> {
       appBar : AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        toolbarHeight: 60,
-        leading: Padding(padding: const EdgeInsets.only(top:10, left: 10),
-            child: IconButton (onPressed: () {Navigator.pop(context);}, icon: const Icon(Icons.arrow_back, color: Colors.black45), iconSize: 30)
+        //toolbarHeight: 60,
+        leading: Padding(padding: const EdgeInsets.only(top:0, left: 10),
+            child: IconButton (onPressed: () {Navigator.pop(context);}, icon: const Icon(Icons.arrow_back_ios, color: Colors.black), iconSize: 30)
         ),
       ),
       body: Column(
         children: [
+          Padding(padding : const EdgeInsets.only(left : 20),
+          child: PasswordChange(),),
+          Padding(padding : const EdgeInsets.only(left : 20),
+            child: ProfileChange(),),
+
           //const Text(환경 설정)
-          const SizedBox(width: 500, child: Divider(color: Colors.black, thickness: 0.1)),
-          Expanded(child:
-          ListView(
-            children: [
-              SizedBox(
-                  height: 50,
-                  child: MaterialButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMyInfoPageChangePasswordPage()));
-                    },
-                    child: const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          Icon(Icons.password),
-                          SizedBox(width:18),
-                          Text('비밀번호 변경', style: TextStyle(fontSize: 15), textAlign: TextAlign.left),
-                        ],
-                      ),
-                    ),
-                  )
-              ),
-              SizedBox(
-                  height: 50,
-                  child: MaterialButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => SubMyInfoPageChangeProfilePage()));
-                    },
-                    child: const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          Icon(Icons.account_box),
-                          SizedBox(width:18),
-                          Text('프로필 변경', style: TextStyle(fontSize: 15), textAlign: TextAlign.left),
-                        ],
-                      ),
-                    ),
-                  )
-              ),
-            ],
-          ),
-          )
+          //const SizedBox(width: 500, child: Divider(color: Colors.black, thickness: 0.1)),
         ],
       ),
     );

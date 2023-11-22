@@ -12,6 +12,7 @@ import 'package:supo_market/page/sub_add_goods_page.dart';
 import 'package:supo_market/page/util_function.dart';
 import '../../entity/board_entity.dart';
 import '../../entity/user_entity.dart';
+import '../../infra/my_info_data.dart';
 
 class SubQnAPageSearchPage extends StatefulWidget {
   final List<Board> list;
@@ -63,7 +64,7 @@ class _SubQnAPageSearchPageState extends State<SubQnAPageSearchPage> {
     debugPrint("enter Function");
     setState(() {
       searchText = value;
-      qnaSearchPageBuilder = fetchBoardSearch(value, _currentPage);
+      qnaSearchPageBuilder = getBoardSearch(value, _currentPage);
     });
   }
 
@@ -72,12 +73,15 @@ class _SubQnAPageSearchPageState extends State<SubQnAPageSearchPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+          automaticallyImplyLeading: false,
+          titleSpacing: 0,
+          leading : IconButton(icon : Icon(Icons.arrow_back_ios), color: Colors.black, onPressed: () { Navigator.pop(context);},),
           flexibleSpace: Container(color: Colors.white),
           elevation: 0.0,
-          toolbarHeight: 100.0,
+          //toolbarHeight: 100.0,
           centerTitle: false,
           title: Padding(
-            padding: const EdgeInsets.only(left: 0, right: 0),
+            padding: const EdgeInsets.only(left: 0, right: 10),
             child: Column(
               children: [
                 Row(
@@ -95,7 +99,7 @@ class _SubQnAPageSearchPageState extends State<SubQnAPageSearchPage> {
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(
-                              Radius.circular(8),
+                              Radius.circular(20),
                             ),
                           ),
                           hintText: '제목 검색',
@@ -142,85 +146,136 @@ class _SubQnAPageSearchPageState extends State<SubQnAPageSearchPage> {
                               //uploadDate를 현재 시간 기준으로 계속 업데이트하기
 
                                 return GestureDetector(
-                                    child: Card(
-                                      color: Colors.white,
-                                      margin:
-                                      const EdgeInsets.symmetric(
-                                          vertical: 10,
-                                          horizontal: 10),
-                                      elevation: 1,
-                                      child: Stack(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                child: Align(
-                                                  alignment: Alignment
-                                                      .centerLeft,
-                                                  child: Column(
-                                                    children: [
-                                                      const SizedBox(
-                                                          height: 10),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                              child:
-                                                              Padding(
-                                                                padding: EdgeInsets.only(
-                                                                    left:
-                                                                    15),
-                                                                child: Text(
-                                                                    searchList![position].boardStatus == BoardStatus.PRIVATE? "비밀글 입니다" : searchList![position].title!, style: const TextStyle(fontSize: 20),
-                                                                    overflow:
-                                                                    TextOverflow.ellipsis),
-                                                              )),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(
-                                                          height: 5),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                            Padding(
-                                                              padding:
-                                                              EdgeInsets.only(left: 15),
-                                                              child: Text(
-                                                                  "등록 일자: ${searchList![position].uploadDate ?? ""}",
-                                                                  style:
-                                                                  const TextStyle(fontSize: 10),
-                                                                  overflow: TextOverflow.ellipsis),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(
-                                                          height: 10),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          searchList![position].boardStatus == BoardStatus.PRIVATE?
-                                          const Positioned(
-                                            right: 10,
-                                            top : 10,
-                                            child: Align(
-                                              alignment: Alignment.center,
-                                              child: Icon(Icons.lock),
-                                            ),
-                                          ) : const SizedBox(width: 0, height: 0),
-                                        ],
-                                      ),
-                                    ),
-                                    onTap: () {
+                                  onTap: () {
+                                    if (searchList[position].boardStatus ==
+                                        BoardStatus.PRIVATE &&
+                                        myUserInfo.userStatus !=
+                                            UserStatus.ADMIN) {
+                                      print("비밀글은 접근할 수 없습니다");
+                                    } else {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                            SubQnAPageBoardPage(board : searchList[position], user: fetchUserInfo2(searchList[position]))));
-                                    });
+                                                  SubQnAPageBoardPage(
+                                                      board: searchList![
+                                                      position],
+                                                      user: getUserInfo2(
+                                                          searchList![
+                                                          position]))));
+                                    }
+                                  },
+                                  child: Card(
+                                    color: Colors.grey[200],
+                                    margin:
+                                    const EdgeInsets.symmetric(
+                                        vertical: 5,
+                                        horizontal: 10),
+                                    elevation: 0,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero,
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            searchList![position].boardStatus == BoardStatus.PRIVATE?
+                                            Container(
+                                              padding:
+                                              EdgeInsets.only(
+                                                  left: 15),
+                                              height: 40,
+                                              width: 40,
+                                              child: Image.asset(
+                                                "assets/images/icons/lock.png",
+                                              ),
+                                            )
+                                                : Container(width : 40, height: 40),
+                                            Container(
+                                              padding:
+                                              EdgeInsets.only(
+                                                  left: 15),
+                                              height: 40,
+                                              width: 10,
+                                            ),
+                                            Expanded(
+                                              child: Align(
+                                                alignment: Alignment
+                                                    .centerLeft,
+                                                child: Column(
+                                                  children: [
+                                                    const SizedBox(
+                                                        height: 10),
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                            child:
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                  left:
+                                                                  8),
+                                                              child: Text(
+                                                                  searchList![position].boardStatus == BoardStatus.PRIVATE
+                                                                      ? "비밀글 입니다"
+                                                                      : searchList
+                                                                  ![position]
+                                                                      .title!,
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                      20,
+                                                                      fontWeight: FontWeight
+                                                                          .bold),
+                                                                  overflow:
+                                                                  TextOverflow.ellipsis),
+                                                            )),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(
+                                                        height: 2),
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child:
+                                                          Padding(
+                                                            padding: EdgeInsets.only(
+                                                                left:
+                                                                8),
+                                                            child: Text(
+                                                                "등록 일자: ${searchList![position].uploadDate ?? ""}",
+                                                                style: const TextStyle(
+                                                                    fontSize: 10,
+                                                                    fontFamily: 'KBO-L',
+                                                                    fontWeight: FontWeight.bold),
+                                                                overflow: TextOverflow.ellipsis),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(
+                                                        height: 10),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                              EdgeInsets.only(
+                                                  right: 10),
+                                              child: Icon(
+                                                Icons
+                                                    .arrow_forward_ios_sharp,
+                                                size: 30,
+                                                color:
+                                                Colors.grey[600],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
                             },
                             itemCount: searchList.length, //아이템 개수만큼 스크롤 가능
                           ),
@@ -288,7 +343,7 @@ class _SubQnAPageSearchPageState extends State<SubQnAPageSearchPage> {
     );
   }
 
-  Future<bool> fetchBoardSearch(String input, int page) async {
+  Future<bool> getBoardSearch(String input, int page) async {
     //여기좀 해봐
     int pageSize = 7;
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
@@ -334,7 +389,7 @@ class _SubQnAPageSearchPageState extends State<SubQnAPageSearchPage> {
       print('Error sending GET request : $e');
     }
 
-    await fetchAllBoardNumSearch(_currentPage, searchText);
+    await getAllBoardNumSearch(_currentPage, searchText);
 
     return true;
   }
@@ -353,11 +408,11 @@ class _SubQnAPageSearchPageState extends State<SubQnAPageSearchPage> {
 
   Future<void> updateList() async {
     debugPrint("페이지 변경 => ${_currentPage}");
-    qnaSearchPageBuilder = fetchBoardSearch(searchText, _currentPage);
+    qnaSearchPageBuilder = getBoardSearch(searchText, _currentPage);
     isListened = false;
   }
 
-  Future<bool> fetchAllBoardNumSearch(int page, String newTitle) async {
+  Future<bool> getAllBoardNumSearch(int page, String newTitle) async {
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';

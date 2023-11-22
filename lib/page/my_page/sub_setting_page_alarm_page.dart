@@ -2,15 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:supo_market/page/my_page/usecases/my_page_usecases.dart';
+import 'package:supo_market/page/my_page/widgets/my_page_widgets.dart';
 import 'package:supo_market/page/util_function.dart';
 import '../../entity/item_entity.dart';
 import '../../entity/user_entity.dart';
 import '../../entity/util_entity.dart';
 import '../../infra/my_info_data.dart';
 
-
 List<String> isClicked = [];
-
 
 class SubSettingPageAlarmPage extends StatefulWidget {
   const SubSettingPageAlarmPage({Key? key}) : super(key: key);
@@ -32,25 +32,34 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
   }
 
   Future<bool> initAlarm() async {
-    mySetting.chattingAlarm = await getKeyword(isClicked);
+    mySetting.chattingAlarm = await _getKeyword(isClicked);
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery
+        .of(context)
+        .size
+        .width;
+    var height = MediaQuery
+        .of(context)
+        .size
+        .height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        toolbarHeight: 60,
+        //toolbarHeight: 60,
         leading: Padding(
-            padding: const EdgeInsets.only(top: 10, left: 10),
+            padding: const EdgeInsets.only(top: 0, left: 10),
             child: IconButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                icon: const Icon(Icons.arrow_back, color: Colors.black45),
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
                 iconSize: 30)),
       ),
       body: FutureBuilder(
@@ -60,10 +69,6 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
               return Stack(
                 children: [
                   Column(children: [
-                    //const Text(환경 설정)
-                    const SizedBox(
-                        width: 500,
-                        child: Divider(color: Colors.black, thickness: 0.1)),
                     Expanded(
                       child: ListView(
                         children: [
@@ -76,18 +81,22 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                   SizedBox(width: 18),
                                   Text(
                                     "앱 알림",
-                                    style: TextStyle(fontSize: 15),
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontFamily: 'KBO-M',
+                                        fontWeight: FontWeight.bold),
                                   ),
                                   SizedBox(width: 18),
                                   CupertinoSwitch(
                                     // 급처분 여부
                                     value: mySetting.chattingAlarm!,
 
-                                    activeColor: CupertinoColors.activeOrange,
+                                    activeColor: mainColor,
                                     onChanged: (bool? value) {
                                       // 스위치가 토글될 때 실행될 코드
                                       setState(() {
-                                        mySetting.chattingAlarm = value ?? false;
+                                        mySetting.chattingAlarm =
+                                            value ?? false;
                                       });
                                       setAlarmInDevice(
                                           mySetting.chattingAlarm!);
@@ -97,44 +106,50 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 10),
-                          const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              children: [
+                          const SizedBox(height: 0),
+                          SizedBox(
+                            height: 50,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(children: [
                                 SizedBox(width: 18),
-                                Text(
-                                  "키워드 알림",
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                                SizedBox(width: 18),
-                              ],
+                                AlarmTitle(),
+                              ]),
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.center,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CategoryButton(text: '냉장고', isClicked: isClicked.contains('냉장고')),
-                                const SizedBox(width: 10),
-                                CategoryButton(text: '의류', isClicked: isClicked.contains('의류')),
-                                const SizedBox(width: 10),
-                                CategoryButton(text: '자취방', isClicked: isClicked.contains('자취방')),
-                                const SizedBox(width: 10),
-                                CategoryButton(text: '책', isClicked: isClicked.contains('책')),
-                              ],
+                          SizedBox(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    KeywordAlarm(text: "냉장고",
+                                        isClicked: isClicked.contains("냉장고")),
+                                    const SizedBox(width: 5),
+                                    KeywordAlarm(text: "의류",
+                                        isClicked: isClicked.contains("의류")),
+                                    const SizedBox(width: 5),
+                                    KeywordAlarm(text: "자취방",
+                                        isClicked: isClicked.contains("자취방")),
+                                  ]),
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.center,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CategoryButton(text: '모니터', isClicked: isClicked.contains('모니터')),
-                                const SizedBox(width: 10),
-                                CategoryButton(text: '기타', isClicked: isClicked.contains('기타')),
-                              ],
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    KeywordAlarm(text: "책",
+                                        isClicked: isClicked.contains("책")),
+                                    const SizedBox(width: 5),
+                                    KeywordAlarm(text: "모니터",
+                                        isClicked: isClicked.contains("모니터")),
+                                    const SizedBox(width: 5),
+                                    KeywordAlarm(text: "기타",
+                                        isClicked: isClicked.contains("기타")),
+                                  ]),
                             ),
                           ),
                         ],
@@ -171,134 +186,26 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
       print('Error sending PATCH request : $e');
     }
 
-    await fetchMyInfo();
+    await getMyInfo();
 
     setState(() {
       _isLoading = false;
     });
   }
-}
 
 
-class CategoryButton extends StatefulWidget{
-  const CategoryButton({Key? key, required this.text, required this.isClicked}) : super(key: key);
-
-  final String text;
-  final bool isClicked;
-
-  @override
-  State<StatefulWidget> createState() {
-    return _CategoryButtonState();
-  }
-}
-
-class _CategoryButtonState extends State<CategoryButton>{
-
-  bool? isClicked;
-
-  @override
-  void initState() {
-    isClicked = widget.isClicked;
-    super.initState();
+  Future<void> _postKeyword(String text) async {
+    await myPageUsecase.postKeyword(text);
+    return;
   }
 
-  @override
-  Widget build(BuildContext context) {
-
-    return MaterialButton(
-        color: isClicked!? postechRed : Colors.grey,
-      child: Text(widget.text, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-      onPressed: (){
-          setState(() {
-            isClicked = !isClicked!;
-          });
-
-          if(isClicked!){
-            postKeyword(widget.text);
-          }
-          else{
-            patchKeyword(widget.text);
-          }
-      });
+  Future<void> _patchKeyword(String text) async {
+    await myPageUsecase.patchKeyword(text);
+    return;
   }
 
-}
-
-
-Future<void> postKeyword(String text) async {
-
-  print("post Keyword");
-
-  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-
-  Dio dio = Dio();
-  dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/myAlarmCategory';
-
-  var data = {'category' : text};
-
-  try {
-    Response response = await dio.post(url, data: data);
-  } catch (e) {
-    print('Error sending POST request : $e');
+  Future<bool> _getKeyword(List<String> list) async {
+    await myPageUsecase.getKeyword(list);
+    return true;
   }
-
-  return;
-
 }
-
-Future<void> patchKeyword(String text) async {
-
-  print("patch Keyword");
-
-  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-
-  Dio dio = Dio();
-  dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/myAlarmCategory';
-
-  var data = {'category' : text};
-
-  try {
-    Response response = await dio.patch(url, data: data);
-  } catch (e) {
-    print('Error sending POST request : $e');
-  }
-
-  return;
-
-}
-
-Future<bool> getKeyword(List<String> list) async {
-
-  print("get Keyword");
-
-  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-
-  Dio dio = Dio();
-  dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/myAlarmCategory';
-
-  list.clear();
-
-  try {
-        Response response = await dio.get(url);
-        dynamic jsonData = response.data;
-
-        print("??");
-        for(int i=0; i<jsonData.length; i++){
-          list.add(jsonData[i]);
-        }
-        //print(jsonData[0]);
-        // list = List<String>.from(jsonData['alarmList']);
-        print(list.toString());
-
-
-    } catch (e) {
-    print('Error sending GET request : $e');
-  }
-
-  return true;
-
-}
-

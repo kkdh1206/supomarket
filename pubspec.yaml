@@ -160,6 +160,7 @@ flutter:
 
   assets:
     - assets/images/main_logo.jpg
+    - assets/images/main_logo.png
     - assets/images/user.png
     - assets/images/bot.png
     - assets/images/refri_sample.png
@@ -172,6 +173,45 @@ flutter:
     - assets/images/main_logo_3.png
     - assets/images/main_logo_4.png
     - assets/images/supi_logo.jpeg
+    - assets/images/icons/setting.png
+    - assets/images/icons/log-out.png
+    - assets/images/icons/comment.png
+    - assets/images/icons/product.png
+    - assets/images/icons/product2.png
+    - assets/images/icons/user.png
+    - assets/images/icons/homepage.png
+    - assets/images/icons/apps.png
+    - assets/images/icons/chat.png
+    - assets/images/icons/heart.png
+    - assets/images/icons/profile.png
+    - assets/images/icons/plus.png
+    - assets/images/icons/plus_again.png
+    - assets/images/icons/fridge.png
+    - assets/images/icons/room.png
+    - assets/images/icons/plus_again.png
+    - assets/images/icons/pending.png
+    - assets/images/icons/books.png
+    - assets/images/icons/desktop.png
+    - assets/images/icons/clothes-hanger.png
+    - assets/images/back.png
+    - assets/images/icons/heart.png
+    - assets/images/icons/comment.png
+    - assets/images/icons/check.png
+    - assets/images/icons/lock.png
+    - assets/images/icons/key.png
+    - assets/images/icons/user.png
+    - assets/images/good1.jpeg
+    - assets/images/bad1.jpeg
+    - assets/images/A+.jpeg
+    - assets/images/A-.jpeg
+    - assets/images/A0.jpeg
+    - assets/images/B+.jpeg
+    - assets/images/B-.jpeg
+    - assets/images/B0.jpeg
+    - assets/images/C+.jpeg
+    - assets/images/C-.jpeg
+    - assets/images/C0.jpeg
+    - assets/images/F.jpeg
 
 
 

@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:supo_market/page/chatting_page/sub_chatting_page_chatbot_page.dart';
+import 'package:supo_market/page/chatting_page/widgets/chatting_page_widgets.dart';
 
 import '../../infra/my_info_data.dart';
 import '../../retrofit/RestClient.dart';
@@ -24,8 +25,9 @@ class MessageEntity {
 }
 
 class SubChattingPage extends StatefulWidget {
-  const SubChattingPage({Key? key, required this.roomID}) : super(key: key);
+  const SubChattingPage({Key? key, required this.roomID, this.traderName}) : super(key: key);
   final String? roomID;
+  final String? traderName;
 
   @override
   State<SubChattingPage> createState() => _SubChattingPageState();
@@ -62,14 +64,21 @@ class _SubChattingPageState extends State<SubChattingPage> {
   @override
   void initState() {
     super.initState();
-    subChattingPageBuilder = getData();
     Dio dio = Dio();
     client = RestClient(dio);
+    subChattingPageBuilder = getData();
     socketInit();
     enterChatRoom();
     getMessage();
     fcmToken;
   }
+
+  @override
+  void dispose(){
+    super.dispose();
+    exitChatRoom();
+  }
+
 
   void socketInit() async {
     print("init");
@@ -119,7 +128,9 @@ class _SubChattingPageState extends State<SubChattingPage> {
     for (var data in pastMsg) {
       data.checkRead = "true";
     }
-    setState(() {});
+    if(mounted){
+      setState(() {});
+    }
   }
 
   void getMessage() {
@@ -134,6 +145,9 @@ class _SubChattingPageState extends State<SubChattingPage> {
 
         print(nickname);
         MessageEntity m = MessageEntity();
+
+        final resent = Resent(resentMessage: message, messageTime: time);
+        client?.updateResent(widget.roomID, resent);
 
         m.message = message;
         m.nickname = nickname;
@@ -157,7 +171,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
             checkRead: checkRead,
             createdAt: time));
 
-        setState(() {
+        if(mounted) setState(() {
           // myMessage['message'] = m.message!;
           // myMessage['nickname'] = m.nickname!;
         });
@@ -215,7 +229,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
       if (count == 2) {
         readAll();
         // await getData();
-        setState(() {});
+        if(mounted) setState(() {});
       }
     });
   }
@@ -241,92 +255,131 @@ class _SubChattingPageState extends State<SubChattingPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: Colors.white,
+      appBar : AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white.withOpacity(0.9),
+        title: Text(widget.traderName!, style : const TextStyle(fontSize : 28, color: Colors.black, fontFamily: 'KBO-M', fontWeight: FontWeight.w600)),
+        leading : IconButton(
+            icon: const Icon(Icons.arrow_back_ios,
+                color: Colors.black),
+            onPressed: () async{
+              Navigator.pop(context);
+            },
+          ),
+      ),
       body: FutureBuilder(
           future: subChattingPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return WillPopScope(
                 onWillPop: () async {
-                  exitChatRoom();
+                  //exitChatRoom();
                   socket?.disconnect();
                   Navigator.pop(context, true);
                   return true;
                 },
-                child: Column(
+                child: Stack(
                   children: [
-                    Expanded(
-                      child: ListView.builder(
-                        reverse: false,
-                        controller: _scrollController,
-                        itemCount: pastMsg.length,
-                        itemBuilder: (context, index) {
-                          //sendName = pastMsg[index].senderName;
-                          DateTime parseTime =
-                              DateTime.parse(pastMsg[index].createdAt!);
-                          String showTime =
-                              DateFormat('HH:mm').format(parseTime);
-                          if (myUserInfo.userUid == pastMsg[index].senderID) {
-                            isUserMessage = true;
-                          } else {
-                            isUserMessage = false;
-                          }
-                          if (pastMsg[index].senderID != myUserInfo.userUid &&
-                              pastMsg[index].checkRead == 'false') {
-                            pastMsg[index].checkRead = true.toString();
-                            final check = Check(
-                              checkRead: 'true',
-                            );
-                            client?.updateCheck(pastMsg[index].message, check);
-                          }
-                          return ChatBubbless(
-                            pastMsg[index].message!,
-                            isUserMessage!,
-                            image,
-                            pastMsg[index].senderName!,
-                            showTime,
-                            pastMsg[index].checkRead!,
-                          );
-                        },
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 8),
-                      padding: EdgeInsets.all(8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              // onTap: () {
-                              //   scrollAnimate();
-                              // },
-                              maxLines: null,
-                              controller: _controller,
-                              decoration:
-                                  InputDecoration(labelText: 'Send a message'),
-                              onChanged: (value) {
-                                _userEnterMessage = value;
-                              },
+                    Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            reverse: false,
+                            controller: _scrollController,
+                            itemCount: pastMsg.length,
+                            itemBuilder: (context, index) {
+                              //sendName = pastMsg[index].senderName;
+                              DateTime parseTime = DateTime.parse(pastMsg[index].createdAt!);
+                              String showTime = DateFormat('HH:mm').format(parseTime);
+                              if (myUserInfo.userUid == pastMsg[index].senderID) {
+                                isUserMessage = true;
+                              } else {
+                                isUserMessage = false;
+                              }
+                              if (pastMsg[index].senderID != myUserInfo.userUid && pastMsg[index].checkRead == 'false') {
+                                pastMsg[index].checkRead = true.toString();
+                                final check = Check(
+                                  checkRead: 'true',
+                                );
+                                client?.updateCheck(pastMsg[index].message, check);
+                              }
+                              return ChatBubbless(
+                                pastMsg[index].message!,
+                                isUserMessage!,
+                                image,
+                                pastMsg[index].senderName!,
+                                showTime,
+                                pastMsg[index].checkRead!,
+                              );
+                            },
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 8),
+                          padding: EdgeInsets.all(8),
+                          child: SafeArea(
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    
+                                  },
+                                  icon: Icon(Icons.add_circle_outline, color : Colors.black.withOpacity(0.7), size: 30),
+                                  color: Colors.blue,
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    maxLines: null,
+                                    controller: _controller,
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.grey.withOpacity(0.3),
+                                      contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white),
+                                        borderRadius: BorderRadius.circular(25.7),
+                                      ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white),
+                                        borderRadius: BorderRadius.circular(25.7),
+                                      ),
+                                      hintText: '메시지를 입력하세요',
+                                      hintStyle : TextStyle(color: Colors.grey),
+                                    ),
+                                    onChanged: (value) {
+                                      _userEnterMessage = value;
+                                    },
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    if (_userEnterMessage.isNotEmpty) {
+                                      _controller.clear();
+                                    }
+                                    sendMessage(_userEnterMessage, image!, sendName!);
+                                    scrollToBottom();
+                                  },
+                                  icon: const Icon(Icons.send, color : Colors.grey),
+                                  color: Colors.blue,
+                                ),
+                              ],
                             ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              if (_userEnterMessage.isNotEmpty) {
-                                _controller.clear();
-                              }
-                              sendMessage(_userEnterMessage, image!, sendName!);
-                              scrollToBottom();
-                              // pastMsg.add(Records(message: myMessage['message'], userName: myMessage['nickname']));
-                              // setState(() {
-                              //
-                              // });
-                            },
-                            icon: Icon(Icons.send),
-                            color: Colors.blue,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                    // Positioned(
+                    //   left: 3,
+                    //   top: 15,
+                    //   child: IconButton(
+                    //     icon: const Icon(Icons.arrow_back,
+                    //         color: Colors.black45),
+                    //     onPressed: () async {
+                    //       Navigator.pop(context);
+                    //     },
+                    //   ),
+                    // ),
                   ],
                 ),
               );

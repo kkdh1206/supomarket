@@ -47,38 +47,69 @@ class _AuthEmailPageState extends State<AuthEmailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage('assets/images/main_logo.jpg'), fit: BoxFit.cover),
-      ),
-      child: Scaffold(
-        backgroundColor: postechRed.withOpacity(0.9),
-        body: Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(left: 35, top: 130),
-              child: const Text(
-                '이메일 인증', style: TextStyle(color: Colors.white, fontSize: 33),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.only(left : 35, top : 180),
-              child: const Text(
-                  '이메일로 인증 링크가 발송되었습니다', style: TextStyle(color: Colors.white, fontSize: 15),
-                  textAlign: TextAlign.center,
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.only(left : 35, top : 210),
-              child: const Text(
-                '3초 뒤 로그인 페이지로 돌아갑니다', style: TextStyle(color: Colors.white, fontSize: 15),
+    return Scaffold(
+      backgroundColor: mainColor,
+      body: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '이메일로 인증 링크가', style: TextStyle(color: Colors.white, fontSize: 20),
                 textAlign: TextAlign.center,
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '발송되었습니다', style: TextStyle(color: Colors.white, fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '3초 뒤 로그인 페이지로 돌아갑니다', style: TextStyle(color: Colors.white, fontSize: 10),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ],
       ),
     );
+
+    //   Scaffold(
+    //   backgroundColor: postechRed.withOpacity(0.9),
+    //   body: Stack(
+    //     children: [
+    //       Container(
+    //         padding: const EdgeInsets.only(left: 35, top: 130),
+    //         child: const Text(
+    //           '이메일 인증', style: TextStyle(color: Colors.white, fontSize: 33),
+    //         ),
+    //       ),
+    //       Container(
+    //         padding: const EdgeInsets.only(left : 35, top : 180),
+    //         child: const Text(
+    //             '이메일로 인증 링크가 발송되었습니다', style: TextStyle(color: Colors.white, fontSize: 15),
+    //             textAlign: TextAlign.center,
+    //         ),
+    //       ),
+    //       Container(
+    //         padding: const EdgeInsets.only(left : 35, top : 210),
+    //         child: const Text(
+    //           '3초 뒤 로그인 페이지로 돌아갑니다', style: TextStyle(color: Colors.white, fontSize: 15),
+    //           textAlign: TextAlign.center,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }

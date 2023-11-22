@@ -17,6 +17,7 @@ Future<bool>? homePageBuilder;
 Future<bool>? subHomePageBuilder;
 Future<bool>? favoritePageBuilder;
 Future<bool>? sellingPageBuilder;
+Future<bool>? buyingPageBuilder;
 Future<bool>? searchPageBuilder;
 Future<bool>? categoryPageBuilder;
 Future<bool>? masterItemPageBuilder;
@@ -27,6 +28,7 @@ Future<bool>? qnaSearchPageBuilder;
 Future<bool>? boardPageBuilder;
 Future<bool>? myQnaPageBuilder;
 Future<bool>? subChattingPageBuilder;
+Future<bool>? subSubHomePageCommentsPageBuilder;
 
 String? fcmToken;
 
@@ -71,9 +73,9 @@ Future<String> getPasswordInDevice() async {
   }
 }
 
-Future<bool> fetchMyInfo() async{
+Future<bool> getMyInfo() async{
 
-  print("fetch My Info");
+  print("get My Info");
   //도형코드~
   debugPrint("LogInPage : auth/userInfo : 유저 정보 Response 받아오기");
   var token = await firebaseAuth.currentUser?.getIdToken();
@@ -102,6 +104,11 @@ Future<bool> fetchMyInfo() async{
     myUserInfo.userInterestedId = interestedId;
     String uid = jsonData['uid'] as String;
     myUserInfo.userUid = uid;
+    String grade = jsonData['userGrade'] as String;
+    myUserInfo.userGrade = grade;
+    int score = jsonData['userScore'] as int;
+    myUserInfo.userScore = score;
+
     print("uid : $uid");
 
   }catch (e) {
@@ -111,10 +118,36 @@ Future<bool> fetchMyInfo() async{
   return true;
 }
 
-Future<AUser> fetchUserInfo(Item item) async {
+Future<bool> getMyInfoRequestList() async {
+
+  print("get Request List");
+
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+  Dio dio = Dio();
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/auth/request';
+
+  try {
+    Response response = await dio.get(url);
+    dynamic jsonData = response.data;
+
+    final splitList = jsonData['request'] as String;
+    Map<String, String>? temp = {'itemId' : splitList[0], 'userId' : splitList[1]};
+    myUserInfo.requestList?.add(temp);
+  }
+  catch (e) {
+    print('Error sending GET request : $e');
+  }
+
+  return true;
+}
+
+
+Future<AUser> getUserInfo(Item item) async {
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   Dio dio = Dio();
-  print('fetchUserData');
+  print('getUserData');
   dio.options.headers['Authorization'] = 'Bearer $token';
   String url = 'http://kdh.supomarket.com/items/itemId/${item.itemID}';
 
@@ -143,10 +176,10 @@ Future<AUser> fetchUserInfo(Item item) async {
   }
 }
 
-Future<AUser> fetchUserInfo2(Board board) async {
+Future<AUser> getUserInfo2(Board board) async {
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   Dio dio = Dio();
-  print('fetchUserData in Board');
+  print('getUserData in Board');
   dio.options.headers['Authorization'] = 'Bearer $token';
   String url = 'http://kdh.supomarket.com/boards/boardId/${board.id}';
 
@@ -175,7 +208,7 @@ Future<AUser> fetchUserInfo2(Board board) async {
   }
 }
 
-Future<bool> fetchItem(int page, SortType type, ItemStatus status) async{
+Future<bool> getItem(int page, SortType type, ItemStatus status) async{
 
   ItemType? tempItemType;
   ItemStatus? tempItemStatus;
@@ -186,7 +219,7 @@ Future<bool> fetchItem(int page, SortType type, ItemStatus status) async{
 
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   Dio dio = Dio();
-  print('fetchData');
+  print('getData');
   dio.options.headers['Authorization'] = 'Bearer $token';
   String url = 'http://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&status=${ConvertEnumToString(status)}&pageSize=${pageSize}';
 
@@ -399,6 +432,10 @@ String formatDate(DateTime date) {
   } else {
     return '${date.year}.${date.month}.${date.day}';
   }
+}
+
+String formatDateOnlyDate(DateTime date) {
+  return '${date.year}.${date.month}.${date.day}';
 }
 
 

@@ -8,31 +8,32 @@ import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/home_page/sub_home_page.dart';
+import 'package:supo_market/page/log_in_page/usecases/popup_usecase.dart';
 import 'package:supo_market/page/my_page/sub_selling_page_modify_page.dart';
+import 'package:supo_market/page/my_page/widgets/my_page_widgets.dart';
+import 'package:supo_market/retrofit/RestClient.dart';
 import '../../entity/item_entity.dart';
 import 'package:intl/intl.dart';
 import '../../entity/user_entity.dart';
 import '../../entity/util_entity.dart';
 import '../../infra/item_list_data.dart';
+import '../home_page/widgets/home_page_widgets.dart';
 import '../util_function.dart';
 
-
-
-
 Color postechRed = const Color(0xffac145a);
-var f = NumberFormat('###,###,###,###'); //숫자 가격 콤마 표시
 
 class SubMyPageSellingPage extends StatefulWidget {
   final List<Item>? list;
   final AUser? user;
-  const SubMyPageSellingPage({Key? key, required this.list, this.user}) : super(key: key);
+
+  const SubMyPageSellingPage({Key? key, required this.list, this.user})
+      : super(key: key);
 
   @override
   _SubMyPageSellingPageState createState() => _SubMyPageSellingPageState();
 }
 
 class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
-
   List<Item>? list;
   int refreshNum = 0;
   bool isMoreRequesting = false;
@@ -59,12 +60,18 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     ItemStatus.SOLDOUT,
   ];
 
+  RestClient? client;
+  List<String>? nameList;
+  List<int>? userIdList;
+  int chatRoomNum = 0;
 
   @override
   void initState() {
     debugPrint("Home Initiate");
     super.initState();
     initialUpdateList();
+    Dio dio = Dio();
+    client = RestClient(dio);
     isEnded = false; //리스트 끝에 도달함
     page = 1; //늘어난 page 리스트 수
     list = widget.list;
@@ -83,8 +90,10 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
 
   void _scrollListener() {
     if (scrollController!.offset + 500 >=
-        scrollController!.position.maxScrollExtent &&
-        !scrollController!.position.outOfRange && !isListened && !isEnded) {
+            scrollController!.position.maxScrollExtent &&
+        !scrollController!.position.outOfRange &&
+        !isListened &&
+        !isEnded) {
       // 리스트의 마지막에 도달하면 새로운 리스트 아이템을 가져오는 함수 호출
       page++;
       isListened = true;
@@ -92,246 +101,160 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        toolbarHeight: 60,
+        //automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
-        elevation: 0.0,
-        flexibleSpace: Container(color: Colors.white),
+        elevation: 0,
+        titleSpacing: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body:
-      FutureBuilder(
+      body: FutureBuilder(
           future: sellingPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-
               return Center(
                 //위로 드래그하면 새로고침 -> 업데이트 되는 위젯 (Refresh Indicator)
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
-                          child: RefreshIndicator(
-                            onRefresh: () async {
-                              refreshNum += 1;
-                              setState(() {});
-                            },
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.vertical,
-                              child: ListView.builder(
-                                primary: false,
-                                shrinkWrap: true,
-                              controller: scrollController,
-                              itemBuilder: (context, position) {
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          refreshNum += 1;
+                          setState(() {});
+                        },
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: ListView.builder(
+                            primary: false,
+                            shrinkWrap: true,
+                            controller: scrollController,
+                            itemBuilder: (context, position) {
+                              //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
+                              list![position].uploadDate = formatDate(
+                                  list![position].uploadDateForCompare ??
+                                      DateTime.now());
+                              //uploadDate를 현재 시간 기준으로 계속 업데이트하기
+                              return GestureDetector(
+                                onTap: () {
+                                  debugPrint(list![position].sellerSchoolNum);
+                                  debugPrint(list![position].sellerName);
 
-                                //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
-                                list![position].uploadDate =
-                                    formatDate(
-                                        list![position].uploadDateForCompare ??
-                                            DateTime.now());
-                                //uploadDate를 현재 시간 기준으로 계속 업데이트하기
-                                  return GestureDetector(
-                                      child: Card(
-                                        margin: const EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 10),
-                                        elevation: 1,
-                                        child: Column(
-                                          children: [
-                                            Stack(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Padding(padding: const EdgeInsets.only(
-                                                        top: 10, bottom: 10, left: 10, right: 15),
-                                                      child: ClipRRect(
-                                                        borderRadius: BorderRadius.circular(8.0),
-                                                        child:list![position].imageListB.isEmpty?
-                                                        Image.asset( "assets/images/main_logo.jpg",width: 100, height: 100, fit: BoxFit.cover) :
-                                                        Image.network(list![position].imageListB[0], width: 100, height: 100, fit: BoxFit.cover),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Align(
-                                                        alignment: Alignment.centerLeft,
-                                                        child: Column(
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Text(list![position]
-                                                                      .sellingTitle!,
-                                                                      style: const TextStyle(
-                                                                          fontSize: 20),
-                                                                      overflow: TextOverflow
-                                                                          .ellipsis),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(height: 10),
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Text(
-                                                                      "등록 일자: ${list![position]
-                                                                          .uploadDate ?? ""}",
-                                                                      style: const TextStyle(
-                                                                          fontSize: 10),
-                                                                      overflow: TextOverflow
-                                                                          .ellipsis),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(height: 10),
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Text("가격: ${f.format(list![position].sellingPrice!)}원",
-                                                                      style: const TextStyle(fontSize: 10),
-                                                                      overflow: TextOverflow.ellipsis),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                //isQucikSell이 true라면 표시
-                                                list![position].itemStatus == ItemStatus.USERFASTSELL?
-                                                Positioned(
-                                                  right: 10,
-                                                  bottom: 10,
-                                                  child: Container(
-                                                    width: 60,
-                                                    height: 25,
-                                                    decoration: BoxDecoration(
-                                                      color: postechRed,
-                                                      borderRadius: const BorderRadius.all(
-                                                          Radius.circular(10.0)),
-                                                    ),
-                                                    child: const Align(
-                                                      alignment: Alignment.center,
-                                                      child: Text("급처분",
-                                                        style: TextStyle(color: Colors.white,
-                                                            fontSize: 10,
-                                                            fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ) : const SizedBox(width: 0, height: 0),
-                                                Positioned(
-                                                  right : 3, top : 3,
-                                                  child: IconButton(
-                                                    icon : const Icon(Icons.close, color: Colors.black45),
-                                                    onPressed: () async{
-                                                        await delete(list![position]);
-                                                        sellingPageBuilder = fetchMyItem(1,SortType.DATEASCEND);
-                                                    },
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  width: 100,
-                                                  height: 25,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.yellow[200],
-                                                    borderRadius: const BorderRadius.all(
-                                                        Radius.circular(10.0)),
-                                                  ),
-                                                  child: MaterialButton(
-                                                    onPressed: () async {
-                                                      final newData = await Navigator.push(
-                                                          context, MaterialPageRoute(
-                                                          builder: (context) => SubSellingPageModifyPage(item: list![position])));
-
-                                                      if(newData.returnType == "modified"){
-                                                          await modify(Item(sellingTitle: newData.sellingTitle, itemType: newData.itemType, itemQuality: newData.itemQuality, sellerName: "", sellerImage: "", sellingPrice: newData.sellingPrice, isLiked: true, sellerSchoolNum: "20000000", uploadDate: "", uploadDateForCompare: DateTime.now(), imageListA: newData.imageListA, imageListB: newData.imageListB, itemStatus: newData.itemStatus, itemID: newData.itemID, itemDetail: newData.itemDetail));
-                                                          sellingPageBuilder = fetchMyItem(1, SortType.DATEASCEND);
-                                                      }
-                                                    },
-                                                    child: const Text("수정하기",
-                                                      style: TextStyle(color: Colors.black45, fontSize: 10, fontWeight: FontWeight.bold),
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Container(
-                                                  width: 100,
-                                                  height: 25,
-                                                  decoration: BoxDecoration(
-                                                    color: postechRed,
-                                                    borderRadius: const BorderRadius.all(
-                                                        Radius.circular(10.0)),
-                                                  ),
-                                                  child: MaterialButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        if(list![position].itemStatus == ItemStatus.TRADING){
-                                                          list![position].itemStatus = ItemStatus.RESERVED;
-                                                        }
-                                                        else if(list![position].itemStatus == ItemStatus.RESERVED){
-                                                          list![position].itemStatus = ItemStatus.SOLDOUT;
-                                                        }
-                                                        else if(list![position].itemStatus == ItemStatus.SOLDOUT) {
-                                                          list![position].itemStatus = ItemStatus.USERFASTSELL;
-                                                        }
-                                                        else if(list![position].itemStatus == ItemStatus.USERFASTSELL) {
-                                                          list![position].itemStatus = ItemStatus.TRADING;
-                                                        }
-                                                      });
-                                                      changeStatus(list![position]);
-                                                    },
-                                                    child: Text("${list![position].itemStatus==ItemStatus.TRADING? "거래 가능" : list![position].itemStatus==ItemStatus.RESERVED? "예약 중" : list![position].itemStatus==ItemStatus.SOLDOUT? "거래 완료" : "급처분 중"}",
-                                                      style: const TextStyle(color: Colors.white,
-                                                          fontSize: 10, fontWeight: FontWeight.bold),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 10),
-                                          ],
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        Navigator.push(context, MaterialPageRoute(
-                                            builder: (context) =>
-                                                SubHomePage(item: list![position], user: fetchUserInfo(list![position]))));
-                                      }
-                                  );
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SubHomePage(
+                                                item: list![position],
+                                                user: getUserInfo(
+                                                    list![position]),
+                                              )));
                                 },
-                              itemCount: list?.length,
-                              ),
-                            ),
+                                child: MyItemCard(
+                                  image: list![position].imageListB.isEmpty
+                                      ? Image.asset(
+                                          "assets/images/main_logo.jpg",
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover)
+                                      : Image.network(
+                                          list![position].imageListB[0],
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover),
+                                  title: list![position].sellingTitle!,
+                                  date: list![position].uploadDate ?? "",
+                                  price: list![position].sellingPrice!,
+                                  stateText : list![position].itemStatus == ItemStatus.TRADING ? "판매 중" : list![position].itemStatus == ItemStatus.RESERVED ? "예약 중" : list![position].itemStatus == ItemStatus.SOLDOUT ? "판매 완료" : "급처분 중",
+                                  isFastSell : list![position].itemStatus == ItemStatus.USERFASTSELL,
+                                  modify: () async {
+                                    final newData = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SubSellingPageModifyPage(
+                                                    item: list![position])));
+
+                                    if (newData.returnType == "modified") {
+                                      await modify(Item(
+                                          sellingTitle: newData.sellingTitle,
+                                          itemType: newData.itemType,
+                                          itemQuality: newData.itemQuality,
+                                          sellerName: "",
+                                          sellerImage: "",
+                                          sellingPrice: newData.sellingPrice,
+                                          isLiked: true,
+                                          sellerSchoolNum: "20000000",
+                                          uploadDate: "",
+                                          uploadDateForCompare: DateTime.now(),
+                                          imageListA: newData.imageListA,
+                                          imageListB: newData.imageListB,
+                                          itemStatus: newData.itemStatus,
+                                          itemID: newData.itemID,
+                                          itemDetail: newData.itemDetail));
+                                      sellingPageBuilder =
+                                          _getMyItem(1, SortType.DATEASCEND);
+                                    }
+                                  },
+                                  stateChange: (index) {
+                                    setState(() {
+                                      switch (index) {
+                                        case (0):
+                                          list![position].itemStatus =
+                                              ItemStatus.TRADING;
+                                          break;
+                                        case (1):
+                                        list![position].itemStatus =
+                                            ItemStatus.RESERVED;
+                                        break;
+                                        case (2):
+                                          list![position].itemStatus =
+                                              ItemStatus.USERFASTSELL;
+                                          break;
+                                        case (3):
+                                          list![position].itemStatus =
+                                              ItemStatus.SOLDOUT;
+                                          _isSoldOutPopUp(list![position].itemID.toString());
+                                          break;
+                                      }
+                                    });
+                                    changeStatus(list![position]);
+                                  },
+                                ),
+                              );
+                            },
+                            itemCount: list?.length,
                           ),
                         ),
+                      ),
+                    ),
                     Stack(
                       children: [
-                        isMoreRequesting ? Container(
-                          height: 20.0,
-                          width: 20.0,
-                          color: Colors.transparent,
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                            ),
-                          ),
-                        ) : const SizedBox(width: 0, height: 0),
+                        isMoreRequesting
+                            ? Container(
+                                height: 20.0,
+                                width: 20.0,
+                                color: Colors.transparent,
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                            : const SizedBox(width: 0, height: 0),
                       ],
                     ),
                   ],
                 ),
               );
-            }
-            else {
+            } else {
               return const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -346,18 +269,46 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
                 ),
               );
             }
-          }
-      ),
+          }),
     );
   }
 
+  void _isSoldOutPopUp(String goodsId) async{
+    await getChatRoomNum(goodsId);
+    String? itemId = goodsId;
+    popUpUseCase.isSoldOutPopUp(context, chatRoomNum, itemId, nameList!, userIdList!);
+    print("채팅방 개수는 ${chatRoomNum}");
+  }
+
+  Future<void> getChatRoomNum(String goodsId) async {
+    print("11111111111");
+    print("22222222222");
+    List<SellGoods>? getNum;
+    print("goodsId : $goodsId, userName : ${myUserInfo.userUid.toString()}");
+    SellGoods sellGoods = SellGoods(sellerId: myUserInfo.userUid.toString(), goodsId: goodsId);
+    var res = await client?.getReqRoomNum(myUserInfo.userUid.toString(),
+    goodsId);
+    setState(() {
+      getNum = res;
+    });
+
+    if(getNum?.length == null){
+      chatRoomNum = 0;
+    }
+    else{
+      chatRoomNum = getNum!.length;
+    }
+
+    nameList = ['A'];
+    userIdList = [1];
+  }
 
   void updateList() async {
     debugPrint("update List 함수 호출");
     if (scrollController.hasClients) {
       scrollOffset = scrollController!.position.pixels;
     }
-    await fetchMyItem(page, SortType.DATEASCEND);
+    await _getMyItem(page, SortType.DATEASCEND);
     isListened = false;
   }
 
@@ -371,11 +322,11 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
 
   void initialUpdateList() {
     setState(() {
-      sellingPageBuilder = fetchMyItem(1, SortType.DATEASCEND);
+      sellingPageBuilder = _getMyItem(1, SortType.DATEASCEND);
     });
   }
 
-  Future<bool> fetchMyItem(int page, SortType type) async {
+  Future<bool> _getMyItem(int page, SortType type) async {
     ItemType? tempItemType;
     ItemStatus? tempItemStatus;
     ItemQuality? tempItemQuality;
@@ -386,8 +337,8 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems?sort=${ConvertEnumToString(
-        type)}&page=${page}&pageSize=${pageSize}';
+    String url =
+        'http://kdh.supomarket.com/items/myItems?sort=${ConvertEnumToString(type)}&page=${page}&pageSize=${pageSize}';
 
     if (page == 1) {
       itemList.clear();
@@ -405,7 +356,6 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
           isMoreRequesting = true;
         });
         await Future.delayed(Duration(milliseconds: 100));
-
 
         for (var data in jsonData) {
           int id = data['id'] as int;
@@ -430,7 +380,8 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
 
           // 시간 어떻게 받아올지 고민하기!!!!!!
           // 그리고 userId 는 현재 null 상태 해결해야함!!!
-          itemList.add(Item(sellingTitle: title,
+          itemList.add(Item(
+              sellingTitle: title,
               itemType: tempItemType,
               itemQuality: tempItemQuality!,
               sellerName: "정태형",
@@ -438,7 +389,8 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
               uploadDate: "10일 전",
               uploadDateForCompare: dateTime,
               itemDetail: description,
-              sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
+              sellerImage:
+                  "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
               isLiked: false,
               sellerSchoolNum: "20220000",
               imageListA: [],
@@ -452,8 +404,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
         setState(() {
           isMoreRequesting = false;
         });
-      }
-      else{
+      } else {
         setState(() {
           isEnded = true;
         });
@@ -466,14 +417,14 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
   }
 
   Future<bool> changeStatus(Item item) async {
-
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
+    String url =
+        'http://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
 
-    var data = {'status' : ConvertEnumToString(item.itemStatus)??"TRADING"};
+    var data = {'status': ConvertEnumToString(item.itemStatus) ?? "TRADING"};
 
     print(data);
     try {
@@ -484,11 +435,9 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
       print('Error sending PATCH request : $e');
       return true;
     }
-
   }
 
   Future<bool> delete(Item item) async {
-
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
 
     setState(() {
@@ -497,19 +446,17 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
+    String url =
+        'http://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
 
-    var data = {'status' :"DELETED"};
+    var data = {'status': "DELETED"};
 
     print(data);
     try {
       Response response = await dio.patch(url, data: data);
       print(response);
-
     } catch (e) {
-
       print('Error sending PATCH request : $e');
-
     }
 
     setState(() {
@@ -517,11 +464,11 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     });
 
     return true;
-
   }
 
   Future<bool> modify(Item item) async {
-
+    print("modify function 호출");
+    print("item price : ${item.sellingPrice}");
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
 
     setState(() {
@@ -531,20 +478,23 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     Dio dio = Dio();
     print('add Item To Server');
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems/patch/item/${item.itemID}';
-
+    String url =
+        'http://kdh.supomarket.com/items/myItems/patch/item/${item.itemID}';
 
     FormData formData = FormData.fromMap({
-      'title': item.sellingTitle??"무제",
-      'description': item.itemDetail??"",
-      'price': item.sellingPrice??0,
-      'category' : ConvertEnumToString(item.itemType)??"ETC",
-      'status' : ConvertEnumToString(item.itemStatus)??"TRADING",
-      'quality' : ConvertEnumToString(item.itemQuality)??"MID"
+      'title': item.sellingTitle ?? "무제",
+      'description': item.itemDetail ?? "",
+      'price': item.sellingPrice ?? 0,
+      'category': ConvertEnumToString(item.itemType) ?? "ETC",
+      'status': ConvertEnumToString(item.itemStatus) ?? "TRADING",
+      'quality': ConvertEnumToString(item.itemQuality) ?? "MID"
     });
 
     for (int i = 0; i < item.imageListA.length; i++) {
-      formData.files.add(MapEntry('image' , await MultipartFile.fromFile(item.imageListA[i].path, filename:'image.jpg')));
+      formData.files.add(MapEntry(
+          'image',
+          await MultipartFile.fromFile(item.imageListA[i].path,
+              filename: 'image.jpg')));
       print("add");
     }
 
@@ -560,7 +510,8 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     });
 
     return true;
-
   }
+
+
 
 }

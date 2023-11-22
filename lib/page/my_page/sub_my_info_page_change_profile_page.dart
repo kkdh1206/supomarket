@@ -172,10 +172,10 @@ class _SubMyInfoPageChangeProfilePageState
               ),
               onPressed: () async {
                 if(isNameChanged){
-                  await setProfileName(name ?? myUserInfo.userName!);
+                  await patchProfileName(name ?? myUserInfo.userName!);
                 }
                 if(isImageChanged){
-                  await setProfileImage(file!);
+                  await patchProfileImage(file!);
                 }
                 Navigator.pop(context);
               },
@@ -207,7 +207,7 @@ class _SubMyInfoPageChangeProfilePageState
     }
   }
 
-  Future<bool> setProfileImage(dynamic? file) async {
+  Future<bool> patchProfileImage(dynamic? file) async {
 
     print("이미지 변경");
 
@@ -231,7 +231,7 @@ class _SubMyInfoPageChangeProfilePageState
       print('Error sending PATCH request : $e');
     }
 
-    await fetchMyInfo();
+    await getMyInfo();
 
     setState(() {
       isLoading = false;
@@ -240,7 +240,7 @@ class _SubMyInfoPageChangeProfilePageState
     return true;
   }
 
-  Future<bool> setProfileName(String name) async {
+  Future<bool> patchProfileName(String name) async {
 
     print("이름 변경");
 
@@ -262,7 +262,7 @@ class _SubMyInfoPageChangeProfilePageState
       print('Error sending PATCH request : $e');
     }
 
-    await fetchMyInfo();
+    await getMyInfo();
 
     setState(() {
       isLoading = false;
@@ -294,7 +294,7 @@ class _SubMyInfoPageChangeProfilePageState
       print('Error sending PATCH request : $e');
     }
 
-    await fetchMyInfo();
+    await getMyInfo();
 
     setState(() {
       isLoading = false;

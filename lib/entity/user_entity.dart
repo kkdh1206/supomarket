@@ -5,6 +5,7 @@ class AUser {
   String? email;
   String? password;
   String? userName;
+  String? realName;
   String? imagePath;
   String? userStudentNumber;
   int? userItemNum;
@@ -12,6 +13,9 @@ class AUser {
   UserStatus userStatus;
   List<dynamic>? userInterestedId;
   String? userUid;
+  int? userScore;
+  String? userGrade;
+  List<Map<String, String>>? requestList;
 
   AUser
     ({
@@ -19,6 +23,7 @@ class AUser {
       required this.email,
       this.password,
       required this.userName,
+      this.realName,
       required this.imagePath,
       this.userStudentNumber,
       this.userItemNum,
@@ -26,6 +31,9 @@ class AUser {
       required this.userStatus,
       this.userInterestedId,
       this.userUid,
+      this.userScore,
+      this.userGrade,
+      this.requestList,
     });
 
 }

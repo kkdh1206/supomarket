@@ -23,29 +23,30 @@ import '../provider/socket_provider.dart';
 import 'control_page.dart';
 import 'log_in_page/log_in_page.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
 
 void main() async {
   //firebase 사용을 위한 호출들
 
   WidgetsFlutterBinding.ensureInitialized();
   //안드로이드 권한 허용
-  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestPermission();
+  flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()
+      ?.requestPermission();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  FirebaseMessaging.instance..requestPermission(
-    badge: true,
-    alert: true,
-    sound: true
-  );
+  FirebaseMessaging.instance
+    ..requestPermission(badge: true, alert: true, sound: true);
 
   FirebaseMessaging fbMsg = FirebaseMessaging.instance;
   fcmToken = await fbMsg.getToken();
   print("fcmToken : ${fcmToken}을 받았습니다");
-  if(firebaseAuth.currentUser != null){
+  if (firebaseAuth.currentUser != null) {
     await patchToken(fcmToken!); //서버에 해당 토큰을 저장 및 수정하는 로직 구현
   }
 
@@ -54,14 +55,14 @@ void main() async {
 
   runApp(const MyApp());
 
-  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-  if(initialMessage != null) {
+  RemoteMessage? initialMessage =
+  await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
     _handleMessage(initialMessage);
   }
   //알림 받기 설정
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-
     print("실행됨?");
 
     if (message != null) {
@@ -75,8 +76,8 @@ void main() async {
           message.notification?.title,
           message.notification?.body,
           const NotificationDetails(
-              android: AndroidNotificationDetails('channelId', 'channelName', icon: "ic_notification")
-          ),
+              android: AndroidNotificationDetails('channelId', 'channelName',
+                  icon: "ic_notification")),
         );
       }
     }
@@ -85,8 +86,8 @@ void main() async {
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) {
     _handleMessage(message!);
   });
-
 }
+
 void _handleMessage(RemoteMessage message) {
   final String targetPage = message.data['screen'];
 }
@@ -95,39 +96,73 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   flutterLocalNotificationsPlugin.show(
-      message.notification.hashCode,
-      message.notification!.title,
-      message.notification!.body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'channelId', 'channelName', icon: "ic_notification")
-        ),
-      );
+    message.notification.hashCode,
+    message.notification!.title,
+    message.notification!.body,
+    NotificationDetails(
+        android: AndroidNotificationDetails('channelId', 'channelName',
+            icon: "ic_notification")),
+  );
 }
 
-class SplashScreen extends StatelessWidget{
+class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: mainColor,
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
             children: [
-              Image.asset("assets/images/main_logo_2.png"),
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(postechRed),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/images/main_logo.png'),
+                    ],
+                  ),
+                  const SizedBox(height : 50),
+                ],
               ),
+              const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height : 140),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    ],
+                  )
+                ],
+              )
             ],
           ),
         ),
       ),
     );
+    // Scaffold(
+    //   backgroundColor: Colors.white,
+    //   body: Center(
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       children: [
+    //         Image.asset("assets/images/main_logo_2.png"),
+    //         CircularProgressIndicator(
+    //           valueColor: AlwaysStoppedAnimation(postechRed),
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // )
+    // ,
+    // );
   }
 }
-
-
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -139,14 +174,13 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-
-
   @override
   void initState() {
     //값 받아오기 전 초기값
     //initNotification();
 
-    myUserInfo.imagePath = "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
+    myUserInfo.imagePath =
+    "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
     myUserInfo.password = "";
     myUserInfo.isUserLogin = false;
 
@@ -158,27 +192,25 @@ class MyAppState extends State<MyApp> {
     if (firebaseAuth.currentUser != null) {
       myUserInfo.isUserLogin = true;
       debugPrint("로그인 상태입니다");
-      fetchMyInfo();
-    }
-    else {
+      getMyInfo();
+    } else {
       debugPrint("로그아웃 상태입니다");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+       // ChangeNotifierProvider(create: (_)=> LoginModel()),
         ChangeNotifierProvider(create: (_) => SocketProvider()),
       ],
       child: MaterialApp(
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFB70001)),
-          fontFamily: 'Tenada',
-        ),
+            colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFB70001)),
+            fontFamily: 'KBO-M'),
         home: FutureBuilder(
-          future: Future.delayed(const Duration(seconds: 3), ()=> "completed"),
+          future: Future.delayed(const Duration(seconds: 3), () => "completed"),
           builder: (context, snapshot) {
             return AnimatedSwitcher(
               duration: const Duration(milliseconds: 1000),
@@ -187,7 +219,8 @@ class MyAppState extends State<MyApp> {
           },
         ),
         initialRoute: '/',
-        routes: {'/control': (context) => ControlPage(),
+        routes: {
+          '/control': (context) => ControlPage(),
           //'/subHome': (context) => const SubHomePage()
         },
       ),
@@ -195,63 +228,73 @@ class MyAppState extends State<MyApp> {
   }
 
   Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot) {
-    if(snapshot.hasError) {
+    if (snapshot.hasError) {
       return const Text("Error!!");
-    }
-    else if(snapshot.hasData) {
-      if((myUserInfo.isUserLogin == true) && (firebaseAuth.currentUser?.emailVerified == true)){
-        if(myUserInfo.userStatus == UserStatus.BANNED){
+    } else if (snapshot.hasData) {
+      if ((myUserInfo.isUserLogin == true) &&
+          (firebaseAuth.currentUser?.emailVerified == true)) {
+        if (myUserInfo.userStatus == UserStatus.BANNED) {
           return WelcomePage();
-        }
-        else{
+        } else {
           return ControlPage();
         }
-      }
-      else{
+      } else {
         return WelcomePage();
       }
-    }
-    else {
+    } else {
       return SplashScreen();
     }
   }
-
 }
 
-
 class WelcomePage extends StatelessWidget {
-
   const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
-      theme: ThemeData(
-      fontFamily: 'KBO-M'
-      ),
+      theme: ThemeData(fontFamily: 'KBO-M'),
       home: Scaffold(
-        backgroundColor: Colors.white,
-        body : Center(
-          child : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        backgroundColor: mainColor,
+        body: Center(
+          child: Stack(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child : Image.asset('assets/images/main_logo_2.png'),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 50),
-                child : MaterialButton(
-                      height: 60,
-                      minWidth: 180,
-                      shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),
-                      color: const Color(0xffac145a),
-                      elevation: 5,
-                      onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => LogInPage()));
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/images/main_logo.png'),
+                      ],
+                    ),
+                    const SizedBox(height : 50),
+                  ],
+                ),
+              Positioned(
+                bottom: 360,
+                left: 138,
+                right: 138,
+                child: Container(
+                  height: 35,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(color: Colors.white, width: 3)),
+                  child: MaterialButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0)),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LogInPage()));
                       },
-                      child: const Text("시작하기", textScaleFactor: 2.0, textAlign: TextAlign.center, style: TextStyle(color: Colors.white))),
+                      child: const Text("시작하기",
+                          textScaleFactor: 1.2,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.white, fontFamily: 'KBO-B'))),
+                ),
               ),
             ],
           ),
@@ -260,4 +303,3 @@ class WelcomePage extends StatelessWidget {
     );
   }
 }
-

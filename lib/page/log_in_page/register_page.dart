@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:supo_market/page/log_in_page/widgets/log_in_page_widget.dart';
 import '../../entity/util_entity.dart';
 import '../../infra/users_info_data.dart';
 import 'auth_email_page.dart';
@@ -69,9 +70,11 @@ class _RegisterPageState extends State<RegisterPage> {
       if (e.code == 'weak-password') {
         _weakPasswordPopUp();
         print('The password provided is too weak.');
+        isPressed = false;
       } else if (e.code == 'email-already-in-use') {
         _alreadyExistPopUp();
         print('The account already exists for that email.');
+        isPressed = false;
       }
     } catch (e) {
       print(e);
@@ -83,250 +86,181 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage('assets/images/main_logo.jpg'),
-            fit: BoxFit.cover),
-      ),
-      child: Scaffold(
-        backgroundColor: postechRed.withOpacity(0.9),
-        body: Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(left: 35, top: 130),
-              child: const Text(
-                '회원가입',
-                style: TextStyle(color: Colors.white, fontSize: 33),
-              ),
-            ),
-            SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.23),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              //padding: EdgeInsets.only(
+              // top: MediaQuery.of(context).size.height * 0.23),
+              child: Stack(
+                children: [
+                  Column(children: [
+                    const SizedBox(height: 100),
+                    SupoTitle3(),
+                    const SizedBox(height: 60),
+                    TextInputwithButton(
+                        hintText: '이메일',
+                        onChanged: (text) {
+                          setState(() {
+                            newID = "$text@postech.ac.kr";
+                          });
+                        }),
+                    TextInputwithButton(
+                        hintText: '비밀번호',
+                        onChanged: (text) {
+                          setState(() {
+                            newPassword = text;
+                          });
+                        }),
+                    TextInputwithButton(
+                        hintText: '비밀번호 재입력',
+                        onChanged: (text) {
+                          setState(() {
+                            newPassword2 = text;
+                          });
+                        }),
+                    TextInputwithButton(
+                        hintText: '이름',
+                        onChanged: (text) {
+                          setState(() {
+                            newRealName = text;
+                          });
+                        }),
+                    Stack(
+                      children: [
+                        TextInputwithButton(
+                            hintText: '닉네임',
+                            onChanged: (text) {
+                              setState(() {
+                                newNickName = text;
+                              });
+                            }),
+                        Positioned(
+                          right : 5,
+                          top : 10,
+                          child: Container(
+                            width: 75,
+                            height: 28,
+                            alignment: Alignment.center,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                checkDuplication(newNickName);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: Colors.grey[600],
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 0.0, vertical: 0.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                              ),
+                              child: Text(
+                                "중복확인",
+                                style: TextStyle(
+                                    color: Colors.white, fontFamily: 'KBO-B'),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    TextInputwithButton(
+                        hintText: '학번',
+                        onChanged: (text) {
+                          setState(() {
+                            newUserSchoolNum = text;
+                          });
+                        }),
                     Container(
                       margin: const EdgeInsets.only(left: 35, right: 35),
                       child: Column(
                         children: [
-                          TextField(
-                            controller: id,
-                            style: const TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              fillColor: Colors.grey.shade100,
-                              filled: true,
-                              hintText: "이메일",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              suffixText: "@postech.ac.kr",
-                            ),
-                            onChanged: (text) {
-                              setState(() {
-                                newID = "$text@postech.ac.kr";
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          TextField(
-                            controller: password,
-                            style: const TextStyle(),
-                            obscureText: true,
-                            //패스워드 별표 처리
-                            decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                hintText: "비밀번호",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
-                            onChanged: (text) {
-                              setState(() {
-                                newPassword = text;
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          TextField(
-                            controller: password2,
-                            style: const TextStyle(),
-                            obscureText: true,
-                            //패스워드 별표 처리
-                            decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                hintText: "비밀번호 재입력",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
-                            onChanged: (text) {
-                              setState(() {
-                                newPassword2 = text;
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          TextField(
-                            controller: realName,
-                            style: const TextStyle(),
-                            decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                hintText: "이름",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
-                            onChanged: (text) {
-                              setState(() {
-                                newRealName = text;
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          Stack(
-                            alignment: Alignment.centerLeft,
-                            children: [
-                              TextField(
-                                controller: nickName,
-                                style: const TextStyle(),
-                                decoration: InputDecoration(
-                                    fillColor: Colors.grey.shade100,
-                                    filled: true,
-                                    hintText: "닉네임",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    )),
-                                onChanged: (text) {
-                                  setState(() {
-                                    newNickName = text;
-                                  });
-                                },
-                              ),
-                              Positioned(
-                                right: 15,
-                                child: MaterialButton(
-                                  color: Colors.grey,
-                                  child: const Text(
-                                    "중복 확인",
-                                    textScaleFactor: 0.9,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: 325,
+                            height: 60,
+                            child: TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Color(0xFFB70001),
+                                  padding: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        15.0), // 원하는 둥근 정도 설정
                                   ),
-                                  onPressed: () {
-                                    checkDuplication(newNickName);
-                                  },
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          TextField(
-                            controller: userStudentNumber,
-                            style: const TextStyle(),
-                            decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                hintText: "학번",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
-                            onChanged: (text) {
-                              setState(() {
-                                newUserSchoolNum = text;
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              const Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                    fontSize: 27,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.black45),
-                              ),
-                              const SizedBox(width: 15),
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundColor: const Color(0xff4c505b),
-                                child: IconButton(
-                                    color: Colors.white,
-                                    onPressed: () async {
-                                      if (newPassword.compareTo(newPassword2) == 0) {
+                                onPressed: () async {
+                                  if (newPassword.compareTo(newPassword2) ==
+                                      0) {
+                                    setState(() {
+                                      isPressed = true;
+                                    });
 
-                                        setState(() {
-                                          isPressed = true;
-                                        });
+                                    await createEmailAndPassword(
+                                        newID,
+                                        newPassword,
+                                        newRealName,
+                                        newUserSchoolNum);
+                                    String token = await firebaseAuth
+                                            .currentUser
+                                            ?.getIdToken() ??
+                                        '';
 
-                                        await createEmailAndPassword(
-                                            newID,
-                                            newPassword,
-                                            newRealName,
-                                            newUserSchoolNum);
-                                        String token = await firebaseAuth
-                                                .currentUser
-                                                ?.getIdToken() ??
-                                            '';
+                                    Dio dio = Dio();
 
-                                        Dio dio = Dio();
+                                    try {
+                                      dio.options.headers['Authorization'] =
+                                          'Bearer $token';
+                                      String url =
+                                          'http://kdh.supomarket.com/auth/signup'; // 여기에 api 랑 endpoint 추가해야됨
 
-                                        try {
-                                          dio.options.headers['Authorization'] = 'Bearer $token';
-                                          String url = 'http://kdh.supomarket.com/auth/signup'; // 여기에 api 랑 endpoint 추가해야됨
+                                      Map<String, String> data = {
+                                        'Email': newID,
+                                        'username': newNickName,
+                                        'realname': newRealName,
+                                        'studentNumber': newUserSchoolNum
+                                      };
+                                      Response response =
+                                          await dio.post(url, data: data);
 
-                                          Map<String, String> data = {
-                                            'Email': newID,
-                                            'username': newNickName,
-                                            'realname': newRealName,
-                                            'studentNumber': newUserSchoolNum
-                                          };
-                                          Response response = await dio.post(url, data: data);
+                                      setState(() {
+                                        isPressed = false;
 
-                                          setState(() {
-                                            isPressed = false;
-
-                                            if (checkForArrive) {
-                                              //로그인 되어있으면 넘어가기
-                                              //uploadInfo();
-                                              Navigator.pushAndRemoveUntil(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (BuildContext
-                                                              context) =>
+                                        if (checkForArrive) {
+                                          //로그인 되어있으면 넘어가기
+                                          //uploadInfo();
+                                          Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
                                                           AuthEmailPage()),
-                                                  (route) => false);
-                                            }
-                                          });
-                                        } catch (e) {
-                                          print('Error sending POST request : $e');
+                                              (route) => false);
                                         }
-                                      } else {
-                                        _differentPasswordPopUp();
-                                      }
-                                      ;
-                                    },
-                                    icon: const Icon(
-                                      Icons.arrow_forward,
-                                    )),
-                              )
-                            ],
+                                      });
+                                    } catch (e) {
+                                      print('Error sending POST request : $e');
+                                    }
+                                  } else {
+                                    _differentPasswordPopUp();
+                                  }
+                                },
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '회원가입',
+                                      // textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontFamily: 'KBO-M',
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 23),
+                                    )
+                                  ],
+                                )),
                           ),
                           const SizedBox(
                             height: 40,
@@ -334,27 +268,27 @@ class _RegisterPageState extends State<RegisterPage> {
                         ],
                       ),
                     )
-                  ],
-                ),
+                  ]),
+                ],
               ),
             ),
-            Positioned(
-                left: 10,
-                top: 30,
-                child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.arrow_back, color: Colors.white54),
-                    iconSize: 30)),
-            isPressed == true
-                ? const Align(
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
-                  )
-                : const SizedBox(width: 0, height: 0),
-          ],
-        ),
+          ),
+          Positioned(
+              left: 10,
+              top: 50,
+              child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.arrow_back_ios, color: Colors.grey),
+                  iconSize: 30)),
+          isPressed == true
+              ? const Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                )
+              : const SizedBox(width: 0, height: 0),
+        ],
       ),
     );
   }
@@ -386,6 +320,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> checkDuplication(String username) async {
     String name = username ?? '';
+
     if (await checkUsername(name) == true) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -393,15 +328,8 @@ class _RegisterPageState extends State<RegisterPage> {
           SnackBar(content: Text('사용 가능한 username 입니다')),
         );
     }
-    if (username == '') {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text('username 을 넣어주세요')),
-        );
-    }
 
-    if (await checkUsername(name) == false) {
+    else if (await checkUsername(name) == false) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text('이미 존재하는 username 입니다')));
@@ -412,8 +340,12 @@ class _RegisterPageState extends State<RegisterPage> {
     Dio dio = Dio();
     dio.options.responseType = ResponseType.plain; // responseType 설정
     String url =
-        'http://kdh.supomarket.com/auth/username'; // 수정요망 (https://) 일단 뺌  --> 앞에 http든 https 든 꼭 있어야되구나!!
+        'http://kdh.supomarket.com/auth/username';
 
+    //빈칸이면 오류나서 이렇게 보낼게
+    username = username==""?'ㅈㅓㅇㅇㅠㅈㅣㄴ':username;
+
+    print(username);
     try {
       Map<String, String> data = {'username': username};
       Response response = await dio.get(url, data: data);
