@@ -572,7 +572,6 @@ class CommentInputState extends State<CommentInput>{
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [Container(
-            alignment: Alignment.center,
             width: 325.0,
             padding: EdgeInsets.all(5),
             child:

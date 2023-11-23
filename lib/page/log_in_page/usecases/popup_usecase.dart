@@ -110,7 +110,7 @@ class PopUpUseCase {
     );
   }
 
-  void isSoldOutPopUp(BuildContext context, int? chatRoomNum, String itemId, List<String> nameList, List<int> userIdList) {
+  void isSoldOutPopUp(BuildContext context, int? chatRoomNum, String itemId, List<String> nameList, List<String> userUidList) {
 
     showDialog(
       context: context,
@@ -134,7 +134,7 @@ class PopUpUseCase {
                               secondaryAnimation) {
                             //여기서 상대방 ID 줘야함 ㅁㄴㅇㄹ
                             return SubSellingPageSelectionPage(
-                              nameList: nameList, userIdList: userIdList, itemId: itemId); // 화면을 반환하는 부분
+                              nameList: nameList, userUidList: userUidList, itemId: itemId); // 화면을 반환하는 부분
                           }));
                     }
                   }

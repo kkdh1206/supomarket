@@ -8,10 +8,10 @@ import '../../infra/users_info_data.dart';
 
 class SubSellingPageSelectionPage extends StatefulWidget {
   final List<String> nameList;
-  final List<int> userIdList;
+  final List<String> userUidList;
   final String itemId;
 
-  const SubSellingPageSelectionPage ({super.key, required this.nameList, required this.userIdList, required this.itemId, });
+  const SubSellingPageSelectionPage ({super.key, required this.nameList, required this.userUidList, required this.itemId, });
 
   @override
   State<StatefulWidget> createState() {
@@ -85,7 +85,7 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
                       height: 60,
                       child: TextButton(
                           onPressed: () {
-                            postRequestList(widget.userIdList[selectedIndex], widget.itemId);
+                            postRequestList(widget.userUidList[selectedIndex], widget.itemId);
                             //list 추가 traderName - post, get userInfo
                           },
                           style: TextButton.styleFrom(
@@ -133,12 +133,12 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
         ));
   }
 
-  Future<bool> postRequestList(int userId, String itemId) async {
+  Future<bool> postRequestList(String userUid, String itemId) async {
 
     print("post Request List");
 
-    userId = 9;
-    print("userId : $userId");
+    userUid = 'Bs57W32IIeOX288WMVZRlTdbBpQ2';
+    print("userId : $userUid");
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     setState(() {
@@ -149,7 +149,7 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url = 'http://kdh.supomarket.com/auth/request';
 
-    Map<String, int> data = {'buyerId' : userId, 'itemId' : int.parse(itemId)};
+    Map<String, String> data = {'buyerUid' : userUid, 'itemId' : itemId};
 
     try {
       Response response = await dio.post(url, data: data);

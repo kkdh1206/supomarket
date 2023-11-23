@@ -111,6 +111,8 @@ Future<bool> getMyInfo() async{
 
     print("uid : $uid");
 
+    //getMyInfoRequestList();
+
   }catch (e) {
     print('Error sending GET request : $e');
   }

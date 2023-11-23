@@ -31,17 +31,20 @@ class sendData {
   String? message;
   String? myImageUrl;
   String? checkRead;
+  String? imageUrl;
 
   sendData({
     this.message,
     this.myImageUrl,
     this.checkRead,
+    this.imageUrl
   });
   Map<String, dynamic> toJson() {
     return{
       'message': message,
       'myImageUrl': myImageUrl,
       'checkRead': checkRead,
+      'imageUrl': imageUrl,
     };
   }
 }

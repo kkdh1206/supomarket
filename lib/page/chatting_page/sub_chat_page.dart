@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 // import 'package:chatting_app/chatting/chat/RoomInfo.dart';
 import 'package:dio/dio.dart';
@@ -18,6 +19,7 @@ import '../util_function.dart';
 import '../welcome_page.dart';
 import 'Info_entity.dart';
 import 'chat_bubble_entity.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MessageEntity {
   String? message;
@@ -60,6 +62,29 @@ class _SubChattingPageState extends State<SubChattingPage> {
   String? checkRead;
   String? sendName;
   String? sendToken;
+  List imageList = [];
+  final picker = ImagePicker();
+  XFile? _image;
+  List<String>? imageUrlList;
+
+  Future getImage() async {
+    final pickedFile = await picker.pickMultiImage(
+      imageQuality: 100,
+      maxHeight: 1000,
+      maxWidth: 1000
+    );
+
+    if(pickedFile != null) {
+      setState(() {
+        int count = pickedFile.length;
+        for(int i = 0; i < count; i++) {
+          _image = XFile(pickedFile[i].path);
+          File file = File(_image!.path);
+          imageList.add(file);
+        }
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -142,6 +167,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
         String? check = data['checkRead'];
         int? count = data['count'];
         String? time = data['time'];
+        String? recieveImg = data['imageUrl'];
 
         print(nickname);
         MessageEntity m = MessageEntity();
@@ -169,7 +195,9 @@ class _SubChattingPageState extends State<SubChattingPage> {
             message: m.message!,
             senderName: m.nickname!,
             checkRead: checkRead,
-            createdAt: time));
+            createdAt: time,
+            imageUrl: recieveImg
+        ));
 
         if(mounted) setState(() {
           // myMessage['message'] = m.message!;
@@ -181,9 +209,9 @@ class _SubChattingPageState extends State<SubChattingPage> {
     });
   }
 
-  void sendMessage(String message, String myImageUrl, String sendName) async {
+  void sendMessage(String message, String myImageUrl, String sendName, String imageUrl) async {
     sendData senddata =
-        sendData(message: message, myImageUrl: myImageUrl, checkRead: 'false');
+        sendData(message: message, myImageUrl: myImageUrl, checkRead: 'false', imageUrl: imageUrl);
     String? changeData = jsonEncode(senddata);
     print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $sendName');
     print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $fcmToken');
@@ -311,6 +339,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                 pastMsg[index].senderName!,
                                 showTime,
                                 pastMsg[index].checkRead!,
+                                pastMsg[index].imageUrl,
                               );
                             },
                           ),
@@ -323,11 +352,36 @@ class _SubChattingPageState extends State<SubChattingPage> {
                               children: [
                                 IconButton(
                                   onPressed: () {
-                                    
+                                    showModalBottomSheet(
+                                        context: context,
+                                        enableDrag: true,
+                                      isDismissible: true,
+                                      barrierColor: Colors.black.withOpacity(0.1),
+                                      constraints: const BoxConstraints(
+                                        minHeight: 100,
+                                        maxHeight: 150,
+                                        minWidth: 500,
+                                        maxWidth: 500
+                                      ),
+                                      builder: (BuildContext context) {
+                                          return ClipRRect(
+                                            borderRadius: BorderRadius.circular(30),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                CameraGalleryButton("갤러리 열기",
+                                                    const Icon(Icons.image, color: Colors.black45,)
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                      }
+                                    );
                                   },
                                   icon: Icon(Icons.add_circle_outline, color : Colors.black.withOpacity(0.7), size: 30),
                                   color: Colors.blue,
                                 ),
+                                //ExpandImage(""),
                                 Expanded(
                                   child: TextField(
                                     maxLines: null,
@@ -353,11 +407,51 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                   ),
                                 ),
                                 IconButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_userEnterMessage.isNotEmpty) {
                                       _controller.clear();
                                     }
-                                    sendMessage(_userEnterMessage, image!, sendName!);
+                                    if(imageList.length != 0) {
+                                      Images? images;
+                                      FormData formData = FormData.fromMap({
+                                      });
+                                      for(int i = 0; i < imageList.length; i++) {
+                                        formData.files.add(MapEntry('image', await MultipartFile
+                                                .fromFile(
+                                            imageList[i].path, filename: 'image.jpg')));
+                                    }
+                                    print("폼데이타는 ??????????????????????");
+                                    print(imageList);
+
+                                    try {
+                                    Dio dio = Dio();
+                                    await dio.post('http://jtaeh.supomarket.com/boards/images/${widget.roomID}', data: formData);
+                                    } catch (e) {
+                                    print('Error sending Post request : $e');
+                                    }
+                                    print("전송하는 방의 아이디는::::::::::::");
+                                    print(widget.roomID);
+                                    var res = await client?.getImage(roomId: widget.roomID);
+                                    setState(() {
+                                    images = res;
+                                    });
+                                    imageUrlList = images?.imageUrl;
+                                    for(String imgUrl in imageUrlList!) {
+                                    print("받은 이미지의 유알앨은 ???????");
+                                    print(imgUrl);
+                                    // sendData send = sendData(message: "ttt", myImageUrl: image!, checkRead: 'false', imageUrl: imgUrl);
+                                    // String? changeData = jsonEncode(send);
+                                    // if(socket!.connected) {
+                                    //   socket!.emit('sendMessage', changeData);
+                                    // }
+                                      sendMessage(_userEnterMessage, image!, sendName!, imgUrl);
+                                    }
+                                    imageUrlList?.clear();
+                                    imageList.clear();
+                                    }
+                                    else{
+                                      sendMessage(_userEnterMessage, image!, sendName!, "k");
+                                    }
                                     scrollToBottom();
                                   },
                                   icon: const Icon(Icons.send, color : Colors.grey),
@@ -394,6 +488,27 @@ class _SubChattingPageState extends State<SubChattingPage> {
             }
             ;
           }),
+    );
+
+  }
+  Widget CameraGalleryButton(String text, Icon icon) {
+    return Column(
+      children: [
+        Container(
+          width: 60, height: 60,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            color: Colors.grey[200],
+            icon: icon,
+            onPressed: () {
+              getImage();
+            },
+          ),
+        ),
+        Text(text),
+      ],
     );
   }
 }

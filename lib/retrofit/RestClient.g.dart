@@ -86,6 +86,7 @@ Chat _$ChatFromJson(Map<String, dynamic> json) => Chat(
       senderName: json['senderName'] as String?,
       checkRead: json['checkRead'] as String?,
       createdAt: json['createdAt'] as String?,
+      imageUrl: json['imageUrl'] as String?,
     );
 
 Map<String, dynamic> _$ChatToJson(Chat instance) => <String, dynamic>{
@@ -94,6 +95,7 @@ Map<String, dynamic> _$ChatToJson(Chat instance) => <String, dynamic>{
       'senderName': instance.senderName,
       'checkRead': instance.checkRead,
       'createdAt': instance.createdAt,
+      'imageUrl': instance.imageUrl,
     };
 
 DeleteId _$DeleteIdFromJson(Map<String, dynamic> json) => DeleteId(
@@ -163,6 +165,16 @@ SellGoods _$SellGoodsFromJson(Map<String, dynamic> json) => SellGoods(
 Map<String, dynamic> _$SellGoodsToJson(SellGoods instance) => <String, dynamic>{
       'sellerId': instance.sellerId,
       'goodsId': instance.goodsId,
+    };
+
+Images _$ImagesFromJson(Map<String, dynamic> json) => Images(
+      imageUrl: (json['imageUrl'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$ImagesToJson(Images instance) => <String, dynamic>{
+      'imageUrl': instance.imageUrl,
     };
 
 // **************************************************************************
@@ -472,33 +484,54 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<List<SellGoods>> getReqRoomNum(
+  Future<List<Room>> getReqRoomNum(
     sellerId,
     goodsId,
   ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'sellerId': sellerId,
-      r'goodsId': goodsId,
-    };
+    final queryParameters = <String, dynamic>{r'goodsId': goodsId};
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
     final _result =
-        await _dio.fetch<List<dynamic>>(_setStreamType<List<SellGoods>>(Options(
+        await _dio.fetch<List<dynamic>>(_setStreamType<List<Room>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              '/boards/getNum',
+              '/boards/roomnumber/${sellerId}',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     var value = _result.data!
-        .map((dynamic i) => SellGoods.fromJson(i as Map<String, dynamic>))
+        .map((dynamic i) => Room.fromJson(i as Map<String, dynamic>))
         .toList();
+    return value;
+  }
+
+  @override
+  Future<Images> getImage({roomId}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result =
+        await _dio.fetch<Map<String, dynamic>>(_setStreamType<Images>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/boards/images/${roomId}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = Images.fromJson(_result.data!);
     return value;
   }
 

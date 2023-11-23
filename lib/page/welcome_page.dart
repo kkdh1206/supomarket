@@ -51,7 +51,7 @@ void main() async {
   }
 
   //IOS 알람 권한 요청
-  await reqIOSPermission(fbMsg);
+  if(Platform.isIOS) await reqIOSPermission(fbMsg);
 
   runApp(const MyApp());
 

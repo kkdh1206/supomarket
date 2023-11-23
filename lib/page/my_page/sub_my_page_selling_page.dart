@@ -62,7 +62,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
 
   RestClient? client;
   List<String>? nameList;
-  List<int>? userIdList;
+  List<String>?userUidList;
   int chatRoomNum = 0;
 
   @override
@@ -80,6 +80,9 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     scrollController!.addListener(_scrollListener); //스크롤뷰 위치 이용 함수
     isMoreRequesting = false; //요청 중이면 circle progress
     isListened = false; //progress가 돌아가고 있으면 추가로 요청하지 않기 (한번만)
+
+    nameList = [];
+    userUidList = [];
   }
 
   @override
@@ -122,6 +125,13 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
           future: sellingPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
+
+              if(list!.isEmpty){
+                return const Center(
+                  child: Text("판매한 물품이 없습니다"),
+                );
+              }
+
               return Center(
                 //위로 드래그하면 새로고침 -> 업데이트 되는 위젯 (Refresh Indicator)
                 child: Column(
@@ -145,90 +155,93 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
                                   list![position].uploadDateForCompare ??
                                       DateTime.now());
                               //uploadDate를 현재 시간 기준으로 계속 업데이트하기
-                              return GestureDetector(
-                                onTap: () {
-                                  debugPrint(list![position].sellerSchoolNum);
-                                  debugPrint(list![position].sellerName);
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    debugPrint(list![position].sellerSchoolNum);
+                                    debugPrint(list![position].sellerName);
 
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => SubHomePage(
-                                                item: list![position],
-                                                user: getUserInfo(
-                                                    list![position]),
-                                              )));
-                                },
-                                child: MyItemCard(
-                                  image: list![position].imageListB.isEmpty
-                                      ? Image.asset(
-                                          "assets/images/main_logo.jpg",
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover)
-                                      : Image.network(
-                                          list![position].imageListB[0],
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover),
-                                  title: list![position].sellingTitle!,
-                                  date: list![position].uploadDate ?? "",
-                                  price: list![position].sellingPrice!,
-                                  stateText : list![position].itemStatus == ItemStatus.TRADING ? "판매 중" : list![position].itemStatus == ItemStatus.RESERVED ? "예약 중" : list![position].itemStatus == ItemStatus.SOLDOUT ? "판매 완료" : "급처분 중",
-                                  isFastSell : list![position].itemStatus == ItemStatus.USERFASTSELL,
-                                  modify: () async {
-                                    final newData = await Navigator.push(
+                                    Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                SubSellingPageModifyPage(
-                                                    item: list![position])));
+                                            builder: (context) => SubHomePage(
+                                                  item: list![position],
+                                                  user: getUserInfo(
+                                                      list![position]),
+                                                )));
+                                  },
+                                  child: MyItemCard(
+                                    image: list![position].imageListB.isEmpty
+                                        ? Image.asset(
+                                            "assets/images/main_logo.jpg",
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.cover)
+                                        : Image.network(
+                                            list![position].imageListB[0],
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.cover),
+                                    title: list![position].sellingTitle!,
+                                    date: list![position].uploadDate ?? "",
+                                    price: list![position].sellingPrice!,
+                                    stateText : list![position].itemStatus == ItemStatus.TRADING ? "판매 중" : list![position].itemStatus == ItemStatus.RESERVED ? "예약 중" : list![position].itemStatus == ItemStatus.SOLDOUT ? "판매 완료" : "급처분 중",
+                                    isFastSell : list![position].itemStatus == ItemStatus.USERFASTSELL,
+                                    modify: () async {
+                                      final newData = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SubSellingPageModifyPage(
+                                                      item: list![position])));
 
-                                    if (newData.returnType == "modified") {
-                                      await modify(Item(
-                                          sellingTitle: newData.sellingTitle,
-                                          itemType: newData.itemType,
-                                          itemQuality: newData.itemQuality,
-                                          sellerName: "",
-                                          sellerImage: "",
-                                          sellingPrice: newData.sellingPrice,
-                                          isLiked: true,
-                                          sellerSchoolNum: "20000000",
-                                          uploadDate: "",
-                                          uploadDateForCompare: DateTime.now(),
-                                          imageListA: newData.imageListA,
-                                          imageListB: newData.imageListB,
-                                          itemStatus: newData.itemStatus,
-                                          itemID: newData.itemID,
-                                          itemDetail: newData.itemDetail));
-                                      sellingPageBuilder =
-                                          _getMyItem(1, SortType.DATEASCEND);
-                                    }
-                                  },
-                                  stateChange: (index) {
-                                    setState(() {
-                                      switch (index) {
-                                        case (0):
-                                          list![position].itemStatus =
-                                              ItemStatus.TRADING;
-                                          break;
-                                        case (1):
-                                        list![position].itemStatus =
-                                            ItemStatus.RESERVED;
-                                        break;
-                                        case (2):
-                                          list![position].itemStatus =
-                                              ItemStatus.USERFASTSELL;
-                                          break;
-                                        case (3):
-                                          list![position].itemStatus =
-                                              ItemStatus.SOLDOUT;
-                                          _isSoldOutPopUp(list![position].itemID.toString());
-                                          break;
+                                      if (newData.returnType == "modified") {
+                                        await modify(Item(
+                                            sellingTitle: newData.sellingTitle,
+                                            itemType: newData.itemType,
+                                            itemQuality: newData.itemQuality,
+                                            sellerName: "",
+                                            sellerImage: "",
+                                            sellingPrice: newData.sellingPrice,
+                                            isLiked: true,
+                                            sellerSchoolNum: "20000000",
+                                            uploadDate: "",
+                                            uploadDateForCompare: DateTime.now(),
+                                            imageListA: newData.imageListA,
+                                            imageListB: newData.imageListB,
+                                            itemStatus: newData.itemStatus,
+                                            itemID: newData.itemID,
+                                            itemDetail: newData.itemDetail));
+                                        sellingPageBuilder =
+                                            _getMyItem(1, SortType.DATEASCEND);
                                       }
-                                    });
-                                    changeStatus(list![position]);
-                                  },
+                                    },
+                                    stateChange: (index) {
+                                      setState(() {
+                                        switch (index) {
+                                          case (0):
+                                            list![position].itemStatus =
+                                                ItemStatus.TRADING;
+                                            break;
+                                          case (1):
+                                          list![position].itemStatus =
+                                              ItemStatus.RESERVED;
+                                          break;
+                                          case (2):
+                                            list![position].itemStatus =
+                                                ItemStatus.USERFASTSELL;
+                                            break;
+                                          case (3):
+                                            list![position].itemStatus =
+                                                ItemStatus.SOLDOUT;
+                                            _isSoldOutPopUp(list![position].itemID.toString());
+                                            break;
+                                        }
+                                      });
+                                      changeStatus(list![position]);
+                                    },
+                                  ),
                                 ),
                               );
                             },
@@ -274,33 +287,40 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
   }
 
   void _isSoldOutPopUp(String goodsId) async{
-    await getChatRoomNum(goodsId);
+    await getChatRoomNumUid(goodsId);
+    for(int i = 0; i<userUidList!.length; i++){
+      await getUserName(userUidList![i]);
+    }
     String? itemId = goodsId;
-    popUpUseCase.isSoldOutPopUp(context, chatRoomNum, itemId, nameList!, userIdList!);
-    print("채팅방 개수는 ${chatRoomNum}");
+    popUpUseCase.isSoldOutPopUp(context, chatRoomNum, itemId, nameList!, userUidList!);
+    print("채팅방 개수는 $chatRoomNum");
   }
 
-  Future<void> getChatRoomNum(String goodsId) async {
+  Future<void> getChatRoomNumUid(String goodsId) async {
     print("11111111111");
     print("22222222222");
-    List<SellGoods>? getNum;
+    List<Room>? getNum;
     print("goodsId : $goodsId, userName : ${myUserInfo.userUid.toString()}");
-    SellGoods sellGoods = SellGoods(sellerId: myUserInfo.userUid.toString(), goodsId: goodsId);
-    var res = await client?.getReqRoomNum(myUserInfo.userUid.toString(),
-    goodsId);
+    var res = await client?.getReqRoomNum(myUserInfo.userUid.toString(), goodsId);
     setState(() {
       getNum = res;
     });
 
-    if(getNum?.length == null){
+    if(getNum?.length == null) {
       chatRoomNum = 0;
     }
     else{
       chatRoomNum = getNum!.length;
+      print("========================");
+      for(int i = 0; i < chatRoomNum; i++) {
+        String? buyUid;
+        print(chatRoomNum);
+        print(getNum?[i].buyerID);
+        buyUid = getNum?[i].buyerID;
+        userUidList?.add(buyUid!);
+      }
     }
 
-    nameList = ['A'];
-    userIdList = [1];
   }
 
   void updateList() async {
@@ -399,7 +419,6 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
               itemID: id));
         }
 
-        //await moreSpaceFunction();
 
         setState(() {
           isMoreRequesting = false;
@@ -512,6 +531,24 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     return true;
   }
 
+  Future<void> getUserName(String userUrl) async{
+    Dio dio = Dio();
+    dio.options.responseType = ResponseType.plain; // responseType 설정
+    String url =
+        'http://kdh.supomarket.com/auth/username';
 
+    Map<String, String> data = {'userUrl': userUrl};
+
+    try {
+      Response response = await dio.get(url, data:data);
+      dynamic jsonData = response.data;
+      userUrl = jsonData as String;
+      print("userUrl ${userUrl}을 받았습니다");
+      nameList?.add(userUrl);
+    } catch (e) {
+      print('Error sending GET request : $e');
+    }
+    return;
+  }
 
 }

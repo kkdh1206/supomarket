@@ -112,6 +112,12 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
           future: buyingPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
+
+              if(list!.isEmpty){
+                return const Center(
+                  child: Text("구입한 물품이 없습니다"),
+                );
+              }
               return Center(
                 //위로 드래그하면 새로고침 -> 업데이트 되는 위젯 (Refresh Indicator)
                 child: Column(
@@ -130,41 +136,45 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
                             shrinkWrap: true,
                             controller: scrollController,
                             itemBuilder: (context, position) {
+
                               //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
                               list![position].uploadDate = formatDate(
                                   list![position].uploadDateForCompare ??
                                       DateTime.now());
                               //uploadDate를 현재 시간 기준으로 계속 업데이트하기
-                              return GestureDetector(
-                                onTap: () {
-                                  debugPrint(list![position].sellerSchoolNum);
-                                  debugPrint(list![position].sellerName);
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    debugPrint(list![position].sellerSchoolNum);
+                                    debugPrint(list![position].sellerName);
 
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              SubHomePage(
-                                                item: list![position],
-                                                user: getUserInfo(
-                                                    list![position]),
-                                              )));
-                                },
-                                child: MyItemCard2(
-                                  image: list![position].imageListB.isEmpty
-                                      ? Image.asset(
-                                      "assets/images/main_logo.jpg",
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover)
-                                      : Image.network(
-                                      list![position].imageListB[0],
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover),
-                                  title: list![position].sellingTitle!,
-                                  date: list![position].uploadDate ?? "",
-                                  price: list![position].sellingPrice!,
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SubHomePage(
+                                                  item: list![position],
+                                                  user: getUserInfo(
+                                                      list![position]),
+                                                )));
+                                  },
+                                  child: MyItemCard2(
+                                    image: list![position].imageListB.isEmpty
+                                        ? Image.asset(
+                                        "assets/images/main_logo.jpg",
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover)
+                                        : Image.network(
+                                        list![position].imageListB[0],
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover),
+                                    title: list![position].sellingTitle!,
+                                    date: list![position].uploadDate ?? "",
+                                    price: list![position].sellingPrice!,
+                                  ),
                                 ),
                               );
                             },

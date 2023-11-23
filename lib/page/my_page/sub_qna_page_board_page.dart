@@ -105,6 +105,7 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
     // }
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: FutureBuilder(
           future: boardPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -120,7 +121,7 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
                             const SizedBox(height: 40),
                             Padding(
                               padding: const EdgeInsets.only(left: 20),
-                              child: BoardName(text : board.title!),
+                              child: BoardName(text: board.title!),
                             ),
                             const SizedBox(height: 10),
                             Padding(
@@ -167,13 +168,15 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
                     ],
                   ),
                   Positioned(
-                      left: 10, top: 20,
-                      child: IconButton(onPressed: () {
-                        Navigator.pop(context);
-                      },
-                          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-                          iconSize: 30)
-                  ),
+                      left: 10,
+                      top: 20,
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.arrow_back_ios,
+                              color: Colors.black),
+                          iconSize: 30)),
                 ],
               );
             } else {
@@ -191,207 +194,48 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
               ));
             }
           }),
-      bottomNavigationBar: BottomAppBar(
-        height: 55,
-        color: Colors.white,
+      bottomNavigationBar: Padding(
+        padding: MediaQuery.of(context).viewInsets,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BottomAppBar(
-              elevation: 0,
-              child: CommentInput(
-                onChanged: (text) {
-                  print("변경!!!");
-                  setState(() {
-                    inputText = text;
-                  });
-                },
-                onSubmitted: (text) {
-                  print("다음!!!");
-                  setState(() {
-                    comment.text = text + '\n';
-                    comment.selection = TextSelection.fromPosition(
-                        TextPosition(offset: comment.text.length));
-                    inputText = comment.text;
-                  });
-                },
-                onPressed: () async {
-                  await postAnswer(inputText);
-                  await getAnswer();
-                  comment.clear();
-                  scrollToBottom(context);
-                },
-                controller: comment,
+            Container(
+              color: Colors.white,
+              child: new ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 300.0,
+                ),
+                child: CommentInput(
+                  onChanged: (text) {
+                    print("변경!!!");
+                    setState(() {
+                      inputText = text;
+                    });
+                  },
+                  onSubmitted: (text) {
+                    print("다음!!!");
+                    setState(() {
+                      comment.text = text + '\n';
+                      comment.selection = TextSelection.fromPosition(
+                          TextPosition(offset: comment.text.length));
+                      inputText = comment.text;
+                    });
+                  },
+                  onPressed: () async {
+                    await postAnswer(inputText);
+                    await getAnswer();
+                    comment.clear();
+                    inputText = "";
+                    scrollToBottom(context);
+                  },
+                  controller: comment,
+                ),
               ),
             ),
           ],
         ),
       ),
     );
-
-    //
-    // return Scaffold(
-    //   backgroundColor: Colors.white,
-    //   appBar: AppBar(
-    //     flexibleSpace: Container(color: Colors.white),
-    //     actions: [
-    //       IconButton(onPressed: (){
-    //         setState(() {
-    //           isStackOn = !isStackOn;
-    //         });
-    //         if(isStackOn){
-    //           scrollToTop();
-    //         }
-    //       },
-    //           icon: Icon(Icons.chat_bubble, color: Colors.grey)),
-    //     ],
-    //   ),
-    //   body: FutureBuilder(
-    //     future: boardPageBuilder,
-    //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //       if (snapshot.connectionState == ConnectionState.done) {
-    //         return Stack(children: [
-    //           ListView(children: [
-    //             Container(
-    //               width: 1000,
-    //               color: Colors.white,
-    //               child: DataTable(
-    //                 columns: [
-    //                   DataColumn(label: Text("제목")),
-    //                   DataColumn(label: Text("${board.title}")),
-    //                 ],
-    //                 rows: [
-    //                   DataRow(cells: [
-    //                     const DataCell(Text('작성자')),
-    //                     DataCell(Text('${board.userName}')),
-    //                   ]),
-    //                   DataRow(cells: [
-    //                     const DataCell(Text('작성 일시')),
-    //                     DataCell(Text('${board.uploadDate}')),
-    //                   ]),
-    //                 ],
-    //                 showBottomBorder: true,
-    //               ),
-    //             ),
-    //
-    //             Padding(
-    //                 padding: EdgeInsets.all(0.0),
-    //                 child: Container(
-    //                   width: 1000,
-    //                   color: Colors.white,
-    //                   child: Text("${board.description}"),
-    //                 )),
-    //
-    //           ]),
-    //           isStackOn==true?
-    //           Column(
-    //             children: [
-    //               Expanded(
-    //                 flex: 1,
-    //                 child: Container(),
-    //               ),
-    //               Expanded(
-    //                 child: Container(
-    //                   child: ListView.builder(
-    //                     reverse: true,
-    //                     controller: _scrollController,
-    //                     itemCount: commentList.length,
-    //                     itemBuilder: (context, position) {
-    //                       //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
-    //                       return GestureDetector(
-    //                         child: Card(
-    //                           elevation: 0,
-    //                           child: Padding(
-    //                             padding: EdgeInsets.all(20.0),
-    //                             child: Column(
-    //                               mainAxisAlignment: MainAxisAlignment.start,
-    //                               children: [
-    //                                 Row(
-    //                                   mainAxisAlignment:MainAxisAlignment.start,
-    //                                   children: [
-    //                                     Expanded(child:
-    //                                     Text(commentList[commentList.length - position - 1]['username'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-    //                                     ),
-    //                                   ],
-    //                                 ),
-    //                                 const SizedBox(height: 10),
-    //                                 Row(
-    //                                   mainAxisAlignment:MainAxisAlignment.start,
-    //                                   children: [
-    //                                     Expanded(child:
-    //                                     Text(commentList[commentList.length -
-    //                                         position -
-    //                                         1]['content']),
-    //                                     ),
-    //                                   ],
-    //                                 ),
-    //                               ],
-    //                             ),
-    //                           )
-    //                         ),
-    //                       );
-    //                     },
-    //                   ),
-    //                 ),
-    //               ),
-    //               Row(children: [
-    //                 Expanded(
-    //                   child: TextField(
-    //                     maxLines : null,
-    //                     keyboardType: TextInputType.multiline,
-    //                     textInputAction: TextInputAction.next,
-    //                     onChanged: (text){
-    //                       print("변경!!!");
-    //                       setState(() {
-    //                         inputText = text;
-    //                       });
-    //                     },
-    //                     onSubmitted: (text){
-    //                        print("다음!!!");
-    //                        setState(() {
-    //                          comment.text = text + '\n';
-    //                          comment.selection = TextSelection.fromPosition(TextPosition(offset: comment.text.length));
-    //                          inputText = comment.text;
-    //                        });
-    //                     },
-    //                     controller: comment,
-    //                     // controller 속성을이용해 inputText변수값을 textfield의 초기 입력값으로 사용할 수 있다
-    //                     decoration:
-    //                         InputDecoration(labelText: "Enter your message"),
-    //                   ),
-    //                 ),
-    //                 IconButton(
-    //                   icon: Icon(Icons.send),
-    //                   onPressed: () async {
-    //                     await postAnswer(inputText);
-    //                     await getAnswer();
-    //                     comment.clear();
-    //                     scrollToBottom(context);
-    //                   }
-    //                 ),
-    //               ]),
-    //               SizedBox(height: 15),
-    //             ],
-    //           ) : const SizedBox(),
-    //         ]);
-    //       } else {
-    //         return const Center(
-    //             child: Column(
-    //           mainAxisAlignment: MainAxisAlignment.center,
-    //           children: [
-    //             Row(
-    //               mainAxisAlignment: MainAxisAlignment.center,
-    //               children: [
-    //                 CircularProgressIndicator(),
-    //               ],
-    //             )
-    //           ],
-    //         ));
-    //       }
-    //       ;
-    //     },
-    //   ),
-    // );
   }
 
   Future<bool> postAnswer(String content) async {
@@ -402,21 +246,26 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
     String url =
         'http://kdh.supomarket.com/comment'; // 여기에 api 랑 endpoint 추가해야됨
 
-    Map<String, dynamic> data = {
-      'content': content,
-      'username': myUserInfo.userName!,
-      'boardId': board.id,
-    };
+    if (content != "") {
+      Map<String, dynamic> data = {
+        'content': content,
+        'username': myUserInfo.userName!,
+        'boardId': board.id,
+      };
 
-    try {
-      print(data);
-      Response response = await dio.post(url, data: data);
-      print(response);
-    } catch (e) {
-      print('Error sending POST request : $e');
+      try {
+        print(data);
+        Response response = await dio.post(url, data: data);
+        print(response);
+      } catch (e) {
+        print('Error sending POST request : $e');
+      }
+
+      return true;
+    } else {
+      print("입력해주세요");
+      return true;
     }
-
-    return true;
   }
 
   Future<bool> getAnswer() async {

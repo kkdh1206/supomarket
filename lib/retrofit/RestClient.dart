@@ -44,9 +44,11 @@ abstract class RestClient {
   @PATCH('/boards/roomr/{roomId}')
   Future<void> updateResent(@Path() String? roomId, @Body() Resent resent);
 
-  @GET('/boards/getNum')
-  Future<List<SellGoods>> getReqRoomNum(@Query('sellerId') String sellerId,
-      @Query('goodsId') String goodsId);
+  @GET('/boards/roomnumber/{sellerId}')
+  Future<List<Room>> getReqRoomNum(@Path('sellerId') String sellerId, @Query('goodsId') String goodsId);
+
+  @GET('/boards/images/{roomId}')
+  Future<Images> getImage({@Path() String? roomId});
 }
 
 
@@ -151,6 +153,7 @@ class Chat {
   String? senderName;
   String? checkRead;
   String? createdAt;
+  String? imageUrl;
 
   Chat({
     this.senderID,
@@ -158,6 +161,7 @@ class Chat {
     this.senderName,
     this.checkRead,
     this.createdAt,
+    this.imageUrl,
   });
   factory Chat.fromJson(Map<String, dynamic> json) => _$ChatFromJson(json);
   Map<String, dynamic> toJson() => _$ChatToJson(this);
@@ -250,4 +254,15 @@ class SellGoods {
   });
   factory SellGoods.fromJson(Map<String, dynamic> json) => _$SellGoodsFromJson(json);
   Map<String, dynamic> toJson() => _$SellGoodsToJson(this);
+}
+
+@JsonSerializable()
+class Images {
+  List<String>? imageUrl;
+
+  Images({
+    this.imageUrl,
+  });
+  factory Images.fromJson(Map<String, dynamic> json) => _$ImagesFromJson(json);
+  Map<String, dynamic> toJson() => _$ImagesToJson(this);
 }

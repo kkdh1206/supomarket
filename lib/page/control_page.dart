@@ -130,6 +130,7 @@ class _ControlPageState extends State<ControlPage>
           ),
           backgroundColor: Colors.white),
       floatingActionButton: FloatingActionButton(
+        elevation: 0,
         backgroundColor: postechRed,
         onPressed: () async {
           final newData = await Navigator.push(
