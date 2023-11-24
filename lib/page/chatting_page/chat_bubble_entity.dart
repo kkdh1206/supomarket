@@ -65,13 +65,13 @@ class ChatBubblessState extends State<ChatBubbless> {
         mainAxisAlignment:
             isUserMessage! ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-
           //내가 보낸 메세지
           if (isUserMessage! && imageUrl == "k")
             Row(
               children: [
                 //내 현재 시간
                 Column(
+                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     if (isUserMessage! && checkRead == 'false')
@@ -80,7 +80,6 @@ class ChatBubblessState extends State<ChatBubbless> {
                         color: Colors.grey[400],
                         size: 17,
                       ),
-
                     //내 현재 시간
                     Container(
                       padding:
@@ -131,32 +130,24 @@ class ChatBubblessState extends State<ChatBubbless> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    const SizedBox(height: 220),
                     //내 음표
                     if (isUserMessage! && checkRead == 'false')
-                      Row(
-                        children: [
-                            Icon(
-                              Icons.music_note,
-                              color: Colors.grey[400],
-                              size: 17,
-                            ),
-                        ],
+                      Icon(
+                        Icons.music_note,
+                        color: Colors.grey[400],
+                        size: 17,
                       ),
                     //내 시간
                     Container(
                       padding:
-                      const EdgeInsets.only(top: 0, left: 0, right: 3, bottom: 0),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 240),
-                          Text(
-                            currentTime!,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                                fontSize: 11),
-                          ),
-                        ],
+                      const EdgeInsets.only(top: 3, left: 0, right: 0, bottom: 0),
+                      child: Text(
+                        currentTime!,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 11),
                       ),
                     ),
                   ],

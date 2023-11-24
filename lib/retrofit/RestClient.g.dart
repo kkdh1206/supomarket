@@ -177,6 +177,16 @@ Map<String, dynamic> _$ImagesToJson(Images instance) => <String, dynamic>{
       'imageUrl': instance.imageUrl,
     };
 
+Pages _$PagesFromJson(Map<String, dynamic> json) => Pages(
+      page: json['page'] as int?,
+      pageSize: json['pageSize'] as int?,
+    );
+
+Map<String, dynamic> _$PagesToJson(Pages instance) => <String, dynamic>{
+      'page': instance.page,
+      'pageSize': instance.pageSize,
+    };
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -292,12 +302,15 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<List<Chat>> getChatById({id}) async {
+  Future<List<Chat>> getChatById({
+    String? id,
+    Pages? page,
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    final _data = page;
     final _result =
         await _dio.fetch<List<dynamic>>(_setStreamType<List<Chat>>(Options(
       method: 'GET',

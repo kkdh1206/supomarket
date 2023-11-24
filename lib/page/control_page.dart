@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_icons/lottiefiles.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:supo_market/infra/users_info_data.dart';
@@ -53,6 +55,7 @@ class _ControlPageState extends State<ControlPage>
   TabController? controller;
   List<ChatRoom> chatRoomList = List.empty(growable: true);
   late AUser otherUser;
+  //late AnimationController _bellController;
 
   @override
   void initState() {
@@ -80,6 +83,8 @@ class _ControlPageState extends State<ControlPage>
     setState(() {
       myUserInfo.userItemNum ??= 0; //널이면 0 초기화
     });
+
+   // _bellController = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat();
   }
 
   @override
@@ -95,6 +100,7 @@ class _ControlPageState extends State<ControlPage>
   void dispose() {
     debugPrint("control_dispose");
     controller!.dispose();
+  //  _bellController.dispose();
     super.dispose();
   }
 
@@ -117,6 +123,7 @@ class _ControlPageState extends State<ControlPage>
                       icon: const Icon(Icons.search, size: 35),
                       color: Colors.black,
                       onPressed: () {
+                        deleteReqeustList(165, '김도형');
                         Navigator.push(
                             context,
                             MaterialPageRoute(

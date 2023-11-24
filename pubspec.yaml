@@ -59,6 +59,8 @@ dependencies:
   web_socket_channel: ^2.2.0
   firebase_core: ^2.15.0
   firebase_messaging: ^14.6.7
+  flutter_animated_icons: ^1.0.1
+  lottie: ^1.4.3
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -21,7 +21,7 @@ abstract class RestClient {
   Future<List<Room>> getRoomrDetail();
 
   @GET('/boards/{id}')
-  Future<List<Chat>> getChatById({@Path() String? id});
+  Future<List<Chat>> getChatById({@Path() String? id, @Body() Pages page});
 
   @GET('/boards/room/{id}')
   Future<List<Room>> getRoomById({@Path() String? id});
@@ -265,4 +265,17 @@ class Images {
   });
   factory Images.fromJson(Map<String, dynamic> json) => _$ImagesFromJson(json);
   Map<String, dynamic> toJson() => _$ImagesToJson(this);
+}
+
+@JsonSerializable()
+class Pages {
+  int? page;
+  int? pageSize;
+
+  Pages({
+    this.page,
+    this.pageSize
+  });
+  factory Pages.fromJson(Map<String, dynamic> json) => _$PagesFromJson(json);
+  Map<String, dynamic> toJson() => _$PagesToJson(this);
 }

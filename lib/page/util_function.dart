@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supo_market/widgets/util_widgets.dart';
 import '../entity/board_entity.dart';
 import '../entity/item_entity.dart';
 import '../entity/user_entity.dart';
@@ -12,6 +14,8 @@ import '../entity/util_entity.dart';
 import '../infra/item_list_data.dart';
 import '../infra/my_info_data.dart';
 import '../infra/users_info_data.dart';
+import '../usecases/util_usecases.dart';
+import 'my_page/sub_selling_page_evaluation_page.dart';
 
 Future<bool>? homePageBuilder;
 Future<bool>? subHomePageBuilder;
@@ -111,7 +115,7 @@ Future<bool> getMyInfo() async{
 
     print("uid : $uid");
 
-    //getMyInfoRequestList();
+    getMyInfoRequestList();
 
   }catch (e) {
     print('Error sending GET request : $e');
@@ -134,15 +138,183 @@ Future<bool> getMyInfoRequestList() async {
     Response response = await dio.get(url);
     dynamic jsonData = response.data;
 
-    final splitList = jsonData['request'] as String;
-    Map<String, String>? temp = {'itemId' : splitList[0], 'userId' : splitList[1]};
-    myUserInfo.requestList?.add(temp);
+    var splitList = jsonData as List<dynamic>;
+    Map<String,String>? temp = {'itemId' : '' , 'userId' : ''};
+    for(int i = 0; i<splitList.length; i++){
+      temp?['itemId'] = splitList[i].split(' ')[0];
+      temp?['userId'] = splitList[i].split(' ')[1];
+      myUserInfo.requestList?.add(temp!);
+      print(myUserInfo.requestList?[i].toString());
+    }
+
   }
   catch (e) {
     print('Error sending GET request : $e');
   }
 
   return true;
+}
+
+String itemName = "";
+String sellerName = "";
+
+Future<String> getItemById(String id) async{
+
+  String? itemName;
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+  print('getData');
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/items/id/${id}';
+
+  try {
+    Response response = await dio.get(url);
+    // Map<String, dynamic> JsonData = json.decode(response.data);
+    dynamic jsonData = response.data;
+
+    String name = jsonData['title'] as String;
+    itemName = name;
+  } catch (e) {
+
+    print('Error sending GET request : $e');
+  }
+  return " ";
+
+}
+
+Future<String> getSellerById(String id) async{
+
+  String? itemName;
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+  print('getData');
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/items/id/${id}';
+
+  try {
+    Response response = await dio.get(url);
+    // Map<String, dynamic> JsonData = json.decode(response.data);
+    dynamic jsonData = response.data;
+
+    String name = jsonData['title'] as String;
+    itemName = name;
+  } catch (e) {
+
+    print('Error sending GET request : $e');
+  }
+  return " ";
+
+}
+
+void checkRequestList(BuildContext context){
+  bool isLoading = false;
+
+  if(myUserInfo.requestList!.isNotEmpty){
+    for(int i=0; i<myUserInfo.requestList!.length; i++){
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              scrollable: true,
+              title: const Text('해당 물품을 거래하셨나요?'),
+              content: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Form(
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: [
+                              Text('제목 :', style: TextStyle(fontFamily: 'KBO-B')),
+                              Expanded(
+                                  child: Text(itemName)),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              Text('판매자 :',
+                                  style: TextStyle(fontFamily: 'KBO-B')),
+                              Expanded(child: Text(sellerName)),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                  child: Text("예"),
+                                  onPressed: () async {
+                                    isLoading = true;
+
+                                    await utilUsecase.postReallyBought('9','9');
+
+                                    isLoading = false;
+
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SubSellingPageEvaluationPage(
+                                                    userID: int.parse(myUserInfo.requestList![0]['userId']!))));
+                                    //맨 앞 없애기
+                                    myUserInfo.requestList?.removeAt(0);
+                                  }),
+                              const SizedBox(width: 10),
+                              ElevatedButton(
+                                  child: Text("아니오"),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  })
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  isLoading ? const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ) : const SizedBox(width: 0, height: 0),
+                ],
+              ),
+            );
+          });
+    }
+
+  }
+}
+
+Future<void> deleteReqeustList(int itemId, String sellerName) async {
+
+  print("patch Request");
+
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+  Dio dio = Dio();
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/auth/request';
+
+  //id인데 사실은 sellerName이라는거지 ㅇㅋ
+  var data = {'itemId' : itemId, 'sellerId' : sellerName};
+
+  try {
+    Response response = await dio.patch(url, data: data);
+  } catch (e) {
+    print('Error sending PATCH request : $e');
+  }
+
+  return;
+
 }
 
 

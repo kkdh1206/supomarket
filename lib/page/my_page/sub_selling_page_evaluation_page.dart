@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:supo_market/page/util_function.dart';
 
 import '../../infra/users_info_data.dart';
 
@@ -49,6 +50,7 @@ class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPa
                 InkWell(
                   onTap: () async {
                     await patchEvaluation(widget.userID, 5);
+                    checkRequestList(context);
                     Navigator.popUntil(context, ModalRoute.withName("/"));
                   },
                   child: Image.asset(
@@ -61,6 +63,7 @@ class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPa
                 InkWell(
                   onTap: () async {
                     await patchEvaluation(widget.userID, -5);
+                    checkRequestList(context);
                     Navigator.popUntil(context, ModalRoute.withName("/"));
                   },
                   child: Image.asset(

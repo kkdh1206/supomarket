@@ -28,10 +28,14 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
   Widget build(BuildContext context) {
 
     double height = MediaQuery.of(context).size.height;
-    int num = 7;
-    String traderName = "";
+
+
     List<String> nameList = widget.nameList;
-    nameList = ['A', 'B', 'C', 'D', 'E','F','G'];
+    List<String> userUidList = widget.userUidList;
+
+    String traderName = nameList[0];
+    String traderUid = userUidList[0];
+
     int selectedIndex = 0;
 
     return Scaffold(
@@ -63,10 +67,11 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
                         onSelectedItemChanged: (index) {
                           setState(() {
                             traderName = nameList[index];
+                            traderUid = userUidList[index];
                             selectedIndex = index;
                           });
                         },
-                        children: List<Widget>.generate(num, (index) {
+                        children: List<Widget>.generate(nameList.length, (index) {
                           return Center(
                             child: Text(
                                   nameList[index],
@@ -84,9 +89,11 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
                       width: 325,
                       height: 60,
                       child: TextButton(
-                          onPressed: () {
-                            postRequestList(widget.userUidList[selectedIndex], widget.itemId);
-                            //list 추가 traderName - post, get userInfo
+                          onPressed: () async {
+                            if(widget.userUidList.isNotEmpty) {
+                              await postRequestList(traderUid, widget.itemId);
+                            }
+                            Navigator.popUntil(context, ModalRoute.withName("/"));
                           },
                           style: TextButton.styleFrom(
                             backgroundColor: Color(0xFFB70001),
@@ -135,11 +142,15 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
 
   Future<bool> postRequestList(String userUid, String itemId) async {
 
-    print("post Request List");
+    print("post Request List $userUid ${int.parse(itemId)}");
 
-    userUid = 'Bs57W32IIeOX288WMVZRlTdbBpQ2';
-    print("userId : $userUid");
+    if(userUid == null){
+      print("uid는 Null");
+      userUid = "steadfastness";
+    }
 
+    //없애기 이부분
+    userUid = "E3GFCEbDoyTfjKbt3MkTlsOzRph2";
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     setState(() {
       isLoading = true;
@@ -149,7 +160,7 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url = 'http://kdh.supomarket.com/auth/request';
 
-    Map<String, String> data = {'buyerUid' : userUid, 'itemId' : itemId};
+    Map<String, dynamic> data = {'buyerUid' : userUid, 'itemId' : int.parse(itemId)};
 
     try {
       Response response = await dio.post(url, data: data);

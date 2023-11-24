@@ -125,14 +125,16 @@ class PopUpUseCase {
                 TextButton(
                   child: const Text("예"),
                   onPressed: () {
-                    chatRoomNum = 1;
-                    if (num == 0) {
+                    if (!nameList.isEmpty) {
                       Navigator.popUntil(context, ModalRoute.withName("/"));
                     } else {
                       Navigator.push(context, PageRouteBuilder(
                           pageBuilder: (context, animation,
                               secondaryAnimation) {
                             //여기서 상대방 ID 줘야함 ㅁㄴㅇㄹ
+                            nameList = ['김도형'];
+                            userUidList = ['asdfafafsf'];
+                            itemId = '9';
                             return SubSellingPageSelectionPage(
                               nameList: nameList, userUidList: userUidList, itemId: itemId); // 화면을 반환하는 부분
                           }));

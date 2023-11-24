@@ -3,6 +3,7 @@ import 'dart:io';
 
 // import 'package:chatting_app/chatting/chat/RoomInfo.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +68,10 @@ class _SubChattingPageState extends State<SubChattingPage> {
   XFile? _image;
   List<String>? imageUrlList;
 
+  int page = 1;
+  int pageSize = 15;
+
+
   Future getImage() async {
     final pickedFile = await picker.pickMultiImage(
       imageQuality: 100,
@@ -91,7 +96,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
     super.initState();
     Dio dio = Dio();
     client = RestClient(dio);
-    subChattingPageBuilder = getData();
+    subChattingPageBuilder = getData(1);
     socketInit();
     enterChatRoom();
     getMessage();
@@ -138,9 +143,11 @@ class _SubChattingPageState extends State<SubChattingPage> {
     print("sendToken: .....$sendToken");
   }
 
-  Future<bool> getData() async {
+  Future<bool> getData(int pageNum) async {
     // await Future.delayed(Duration(seconds: 5));
-    var data = await client!.getChatById(id: widget.roomID);
+    pageNum = 1;
+    Pages page = Pages(page: pageNum, pageSize: 15);
+    var data = await client!.getChatById(id: widget.roomID, page: page);
 
     setState(() {
       pastMsg = data;
@@ -234,7 +241,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
   void enterChatRoom() async {
     sendName = myUserInfo.userName;
     print("누군가 들어옴");
-    await getData();
+    await getData(1);
     final String? roomID = widget.roomID;
     socket!.emit('enterChatRoom', roomID);
     await getEnterSignal();
@@ -300,6 +307,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
           future: subChattingPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
+
               return WillPopScope(
                 onWillPop: () async {
                   //exitChatRoom();
@@ -313,10 +321,20 @@ class _SubChattingPageState extends State<SubChattingPage> {
                       children: [
                         Expanded(
                           child: ListView.builder(
-                            reverse: false,
+                            reverse: true,
                             controller: _scrollController,
-                            itemCount: pastMsg.length,
-                            itemBuilder: (context, index) {
+                            itemCount: pastMsg.length+1,
+                            itemBuilder: (context, index){
+
+                              if(index == pastMsg.length){
+                                print("scroll To bottom");
+                                WidgetsBinding.instance?.addPostFrameCallback((_) {
+                                  scrollToBottom();
+                                });
+                                return const SizedBox();
+                              }
+
+
                               //sendName = pastMsg[index].senderName;
                               DateTime parseTime = DateTime.parse(pastMsg[index].createdAt!);
                               String showTime = DateFormat('HH:mm').format(parseTime);
@@ -452,6 +470,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                     else{
                                       sendMessage(_userEnterMessage, image!, sendName!, "k");
                                     }
+
                                     scrollToBottom();
                                   },
                                   icon: const Icon(Icons.send, color : Colors.grey),
@@ -463,17 +482,6 @@ class _SubChattingPageState extends State<SubChattingPage> {
                         ),
                       ],
                     ),
-                    // Positioned(
-                    //   left: 3,
-                    //   top: 15,
-                    //   child: IconButton(
-                    //     icon: const Icon(Icons.arrow_back,
-                    //         color: Colors.black45),
-                    //     onPressed: () async {
-                    //       Navigator.pop(context);
-                    //     },
-                    //   ),
-                    // ),
                   ],
                 ),
               );
@@ -486,7 +494,6 @@ class _SubChattingPageState extends State<SubChattingPage> {
                 ],
               );
             }
-            ;
           }),
     );
 
@@ -511,4 +518,89 @@ class _SubChattingPageState extends State<SubChattingPage> {
       ],
     );
   }
+
+  //Future<bool> _getChatiing(int page) async {
+  //   String? tempSellerName;
+  //   String? tempSellerSchoolNum;
+  //   int pageSize = 10;
+  //
+  //   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  //   Dio dio = Dio();
+  //
+  //   if (page == 1) {
+  //     //itemList.clear();
+  //   }
+  //
+  //   try {
+  //     Response response = await dio.get(url);
+  //     // Map<String, dynamic> JsonData = json.decode(response.data);
+  //     dynamic jsonData = response.data;
+  //
+  //     if (jsonData.toString() != "true") {
+  //       debugPrint("List 개수 update");
+  //
+  //       setState(() {
+  //         isMoreRequesting = true;
+  //       });
+  //       await Future.delayed(Duration(milliseconds: 100));
+  //
+  //       for (var data in jsonData) {
+  //         int id = data['id'] as int;
+  //         String title = data['title'] as String;
+  //         String description = data['description'] as String;
+  //         int price = data['price'] as int;
+  //
+  //         String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
+  //         tempItemStatus = convertStringToEnum(status);
+  //
+  //         String quality = data['quality'] as String;
+  //         tempItemQuality = convertStringToEnum(quality);
+  //
+  //         String category = data['category'] as String;
+  //         tempItemType = convertStringToEnum(category);
+  //
+  //         String updatedAt = data['updatedAt'] as String;
+  //         List<String> imageUrl = List<String>.from(data['ImageUrls']);
+  //
+  //         // 사진도 받아야하는데
+  //         DateTime dateTime = DateTime.parse(updatedAt);
+  //
+  //         // 시간 어떻게 받아올지 고민하기!!!!!!
+  //         // 그리고 userId 는 현재 null 상태 해결해야함!!!
+  //         itemList.add(Item(
+  //             sellingTitle: title,
+  //             itemType: tempItemType,
+  //             itemQuality: tempItemQuality!,
+  //             sellerName: "정태형",
+  //             sellingPrice: price,
+  //             uploadDate: "10일 전",
+  //             uploadDateForCompare: dateTime,
+  //             itemDetail: description,
+  //             sellerImage:
+  //             "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
+  //             isLiked: false,
+  //             sellerSchoolNum: "20220000",
+  //             imageListA: [],
+  //             imageListB: imageUrl,
+  //             itemStatus: tempItemStatus!,
+  //             itemID: id));
+  //       }
+  //
+  //       //await moreSpaceFunction();
+  //
+  //       setState(() {
+  //         isMoreRequesting = false;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         isEnded = true;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Error sending GET request : $e');
+  //   }
+  //
+  //   return true;
+  // }
+
 }
