@@ -52,7 +52,8 @@ class _SubChattingPageState extends State<SubChattingPage> {
     }
   };
   List<MessageEntity> chatMessages = [];
-  List<dynamic> pastMsg = [];
+  List<Chat> pastMsg = [];
+  List<Chat> localMsg = [];
   final myMessage = {'nickname': '', 'message': ''};
   userData userdata =
       userData(userID: myUserInfo.userUid, nickname: myUserInfo.userName);
@@ -67,9 +68,12 @@ class _SubChattingPageState extends State<SubChattingPage> {
   final picker = ImagePicker();
   XFile? _image;
   List<String>? imageUrlList;
+  bool? isListened;
+  bool? isEnded;
+  //Future<bool>? subChattingPageBuilder;
 
   int page = 1;
-  int pageSize = 15;
+  int pageSize = 10;
 
 
   Future getImage() async {
@@ -96,11 +100,16 @@ class _SubChattingPageState extends State<SubChattingPage> {
     super.initState();
     Dio dio = Dio();
     client = RestClient(dio);
-    subChattingPageBuilder = getData(1);
+    subChattingPageBuilder = getData(page);
     socketInit();
     enterChatRoom();
     getMessage();
     fcmToken;
+    isListened = false;
+    isEnded = false;
+    page = 1;
+    pageSize = 10;
+    _scrollController!.addListener(scrollListener);
   }
 
   @override
@@ -143,17 +152,19 @@ class _SubChattingPageState extends State<SubChattingPage> {
     print("sendToken: .....$sendToken");
   }
 
-  Future<bool> getData(int pageNum) async {
+  Future<bool> getData(int page) async {
     // await Future.delayed(Duration(seconds: 5));
-    pageNum = 1;
-    Pages page = Pages(page: pageNum, pageSize: 15);
-    var data = await client!.getChatById(id: widget.roomID, page: page);
+    //Pages page = Pages(page: pageNum, pageSize: 15);
+    var data = await client!.getChatById(id: widget.roomID, page: page, pageSize: 10);
 
     setState(() {
       pastMsg = data;
     });
+
+    for(int index = 0; index < pastMsg.length; index++) {
+      localMsg.add(pastMsg[index]);
+    }
     return true;
-    //pastMsg = res;
   }
 
   readAll() {
@@ -196,8 +207,8 @@ class _SubChattingPageState extends State<SubChattingPage> {
         } else {
           checkRead = check;
         }
-
-        pastMsg.add(Chat(
+        localMsg = localMsg.reversed.toList();
+        localMsg.add(Chat(
             senderID: id,
             message: m.message!,
             senderName: m.nickname!,
@@ -205,6 +216,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
             createdAt: time,
             imageUrl: recieveImg
         ));
+        localMsg = localMsg.reversed.toList();
 
         if(mounted) setState(() {
           // myMessage['message'] = m.message!;
@@ -245,6 +257,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
     final String? roomID = widget.roomID;
     socket!.emit('enterChatRoom', roomID);
     await getEnterSignal();
+    localMsg.clear();
   }
 
   void exitChatRoom() {
@@ -282,6 +295,19 @@ class _SubChattingPageState extends State<SubChattingPage> {
         duration: Duration(milliseconds: 100), curve: Curves.easeIn);
   }
 
+  void scrollListener() {
+    if(_scrollController!.offset + 500 >= _scrollController!.position.maxScrollExtent &&
+        !_scrollController!.position.outOfRange && !isListened!) {
+      page++;
+      isListened = true;
+      updateList();
+    }
+  }
+
+  void updateList() async{
+    await getData(page);
+    isListened = false;
+  }
   // void setInitialData() {
   //   final nickname = '플러터 유저'; // 초기 설정에 사용할 닉네임 (변경 가능)
   //   socket?.emit('setInit', {'nickname': nickname});
@@ -323,10 +349,10 @@ class _SubChattingPageState extends State<SubChattingPage> {
                           child: ListView.builder(
                             reverse: true,
                             controller: _scrollController,
-                            itemCount: pastMsg.length+1,
+                            itemCount: localMsg.length + 1,
                             itemBuilder: (context, index){
 
-                              if(index == pastMsg.length){
+                              if(index == localMsg.length){
                                 print("scroll To bottom");
                                 WidgetsBinding.instance?.addPostFrameCallback((_) {
                                   scrollToBottom();
@@ -336,28 +362,28 @@ class _SubChattingPageState extends State<SubChattingPage> {
 
 
                               //sendName = pastMsg[index].senderName;
-                              DateTime parseTime = DateTime.parse(pastMsg[index].createdAt!);
+                              DateTime parseTime = DateTime.parse(localMsg[index].createdAt!);
                               String showTime = DateFormat('HH:mm').format(parseTime);
-                              if (myUserInfo.userUid == pastMsg[index].senderID) {
+                              if (myUserInfo.userUid == localMsg[index].senderID) {
                                 isUserMessage = true;
                               } else {
                                 isUserMessage = false;
                               }
-                              if (pastMsg[index].senderID != myUserInfo.userUid && pastMsg[index].checkRead == 'false') {
-                                pastMsg[index].checkRead = true.toString();
+                              if (localMsg[index].senderID != myUserInfo.userUid && localMsg[index].checkRead == 'false') {
+                                localMsg[index].checkRead = true.toString();
                                 final check = Check(
                                   checkRead: 'true',
                                 );
                                 client?.updateCheck(pastMsg[index].message, check);
                               }
                               return ChatBubbless(
-                                pastMsg[index].message!,
+                                localMsg[index].message!,
                                 isUserMessage!,
                                 image,
-                                pastMsg[index].senderName!,
+                                localMsg[index].senderName!,
                                 showTime,
-                                pastMsg[index].checkRead!,
-                                pastMsg[index].imageUrl,
+                                localMsg[index].checkRead!,
+                                localMsg[index].imageUrl!,
                               );
                             },
                           ),

@@ -21,7 +21,7 @@ abstract class RestClient {
   Future<List<Room>> getRoomrDetail();
 
   @GET('/boards/{id}')
-  Future<List<Chat>> getChatById({@Path() String? id, @Body() Pages page});
+  Future<List<Chat>> getChatById({@Path() String? id, @Query('page') int? page, @Query('pageSize') int? pageSize});
 
   @GET('/boards/room/{id}')
   Future<List<Room>> getRoomById({@Path() String? id});

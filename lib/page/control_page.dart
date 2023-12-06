@@ -115,6 +115,11 @@ class _ControlPageState extends State<ControlPage>
             children: [
               SupoTitle2(),
               Positioned(
+                right : 30,
+                top : -7,
+                child: ReallyBoughtPopUp(itemId: '126', traderId: '9', itemName: '아이템제목', traderName: '거래자이름',),
+              ),
+              Positioned(
                 right: 0,
                 top : 0,
                 child: Padding(
@@ -132,9 +137,12 @@ class _ControlPageState extends State<ControlPage>
                       }),
                 ),
               ),
-              ReallyBoughtPopUp(itemId: '126', traderId: '9', itemName: '아이템제목', traderName: '거래자이름',),
+              //ReallyBoughtPopUp(itemId: '126', traderId: '9', itemName: '아이템제목', traderName: '거래자이름',),
             ],
           ),
+          actions : [
+
+          ],
           backgroundColor: Colors.white),
       floatingActionButton: FloatingActionButton(
         elevation: 0,
@@ -209,4 +217,6 @@ class _ControlPageState extends State<ControlPage>
       homePageBuilder = getItem(1, SortType.DATEASCEND, ItemStatus.TRADING);
     });
   }
+
+
 }

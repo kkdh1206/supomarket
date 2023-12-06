@@ -15,6 +15,7 @@ import 'package:supo_market/page/util_function.dart';
 import '../entity/item_entity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:synchronized/synchronized.dart';
 
 String temp = "";
 Map<String, int> myData = Map();
@@ -112,8 +113,17 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
     debugPrint("add page dispose");
   }
 
+  bool completed = true; // --> 이런식으로 외부에 선언해야 초기화 안되고 막음
+
   @override
   Widget build(BuildContext context) {
+    // Completer<bool> doubleRequest = Completer<bool>();
+    // doubleRequest.complete(false);
+    // print("~~~~~~~~~");
+    // print(doubleRequest.isCompleted);
+    // bool completed = true;  ---> 이딴식으로 함수안에 선언 하면 누를때마다 새로 초기화 되서 다 뚫림
+    final _lock = Lock();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -132,63 +142,86 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
         actions: <Widget>[
           TextButton(
             onPressed: () async {
-              if (newItem.sellingTitle!.length < 5) {
-                popUp("판매 제목은 5글자 이상이어야 합니다");
-              } else if (newItem.imageListA.isEmpty) {
-                popUp("최소 하나의 사진을 첨부 해야 합니다");
-              } else if (newItem.sellingPrice.isNegative ||
-                  newItem.sellingPrice.isNaN) {
-                popUp("가격을 제시해 주세요");
-              } else if (newItem.itemDetail == null ||
-                  newItem.itemDetail!.length < 10) {
-                popUp("세부 내용을 10글자 이상 작성해 주세요");
-              } else {
-                setState(() {
-                  //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
-                  newItem.uploadDate = "방금 전";
-                  newItem.uploadDateForCompare = DateTime.now();
-                });
+              if(!completed) {
+                print("업로드 중입니다!!!!");
+                // print(doubleRequest.isCompleted);
+                popUp("업로드 중입니다");
+                return;
+              }else{
+                try{
+                  //print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                  if (newItem.sellingTitle!.length < 5) {
+                    popUp("판매 제목은 5글자 이상이어야 합니다");
+                  } else if (newItem.imageListA.isEmpty) {
+                    popUp("최소 하나의 사진을 첨부 해야 합니다");
+                  } else if (newItem.sellingPrice.isNegative ||
+                      newItem.sellingPrice.isNaN) {
+                    popUp("가격을 제시해 주세요");
+                  } else if (newItem.itemDetail == null ||
+                      newItem.itemDetail!.length < 10) {
+                    popUp("세부 내용을 10글자 이상 작성해 주세요");
+                  } else {
+                    completed = false;
+                    //print(completed);
+                    //print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                    //doubleRequest = true; // setState 안에쓰면 여러번 누르면 에러뜸
 
-                //--도형 코드---
-                String token =
-                    await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+                    setState(() {
+                      //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
 
-                Dio dio = Dio();
-                print('add Item To Server');
-                dio.options.headers['Authorization'] = 'Bearer $token';
-                String url = 'http://kdh.supomarket.com/items';
+                      newItem.uploadDate = "방금 전";
+                      newItem.uploadDateForCompare = DateTime.now();
+                    });
 
-                print("itemQauilty : ${newItem.itemQuality}");
-                FormData formData = FormData.fromMap({
-                  'title': newItem.sellingTitle ?? "무제",
-                  'description': newItem.itemDetail ?? "",
-                  'price': newItem.sellingPrice ?? -1,
-                  'category':
-                      ConvertEnumToString(newItem.itemType) ?? ItemType.ETC,
-                  'status': ConvertEnumToString(newItem.itemStatus) ??
-                      ItemStatus.TRADING,
-                  'quality': ConvertEnumToString(newItem.itemQuality) ??
-                      ItemQuality.MID,
-                });
-                for (int i = 0; i < newItem.imageListA.length; i++) {
-                  formData.files.add(MapEntry(
-                      'image',
-                      await MultipartFile.fromFile(newItem.imageListA[i].path,
-                          filename: 'image.jpg')));
+
+                    //--도형 코드---
+                    print("전송전");
+                    String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+                    Dio dio = Dio();
+                    print('add Item To Server');
+                    dio.options.headers['Authorization'] = 'Bearer $token';
+                    String url = 'http://kdh.supomarket.com/items';
+
+                    print("itemQauilty : ${newItem.itemQuality}");
+                    FormData formData = FormData.fromMap({
+                      'title': newItem.sellingTitle ?? "무제",
+                      'description': newItem.itemDetail ?? "",
+                      'price': newItem.sellingPrice ?? -1,
+                      'category': ConvertEnumToString(newItem.itemType) ?? ItemType.ETC,
+                      'status': ConvertEnumToString(newItem.itemStatus) ?? ItemStatus.TRADING,
+                      'quality': ConvertEnumToString(newItem.itemQuality) ?? ItemQuality.MID,
+                    });
+                    for (int i = 0; i < newItem.imageListA.length; i++) {
+                      formData.files.add(MapEntry(
+                          'image',
+                          await MultipartFile.fromFile(newItem.imageListA[i].path,
+                              filename: 'image.jpg')));
+                    }
+
+                    print(formData);
+                    try {
+                      Response response = await dio.post(url, data: formData);
+                      print(response);
+                      print("전송완료");
+                      //doubleRequest.complete(true);
+
+                    } catch (e) {
+                      print('Error sending POST request : $e');
+                    }
+
+                    //--도형 코드---
+
+                    Navigator.pop(
+                        context, ReturnData(item: newItem, returnType: "add"));
+                  }
+                }finally {
+                  completed = true;
                 }
-
-                print(formData);
-                try {
-                  Response response = await dio.post(url, data: formData);
-                  print(response);
-                } catch (e) {
-                  print('Error sending POST request : $e');
-                }
-                //--도형 코드---
-
-                Navigator.pop(
-                    context, ReturnData(item: newItem, returnType: "add"));
               }
+
+
+
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -198,9 +231,10 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
             child: const Text(
               "등록하기",
               style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.black45,
-                  fontFamily: 'KBO-M',),
+                fontSize: 15,
+                color: Colors.black45,
+                fontFamily: 'KBO-M',
+              ),
             ),
           ),
           const SizedBox(width: 10),
@@ -265,12 +299,13 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const SizedBox(width : 20),
+              const SizedBox(width: 20),
               SizedBox(
-                width : 150,
+                width: 150,
                 child: CupertinoButton(
                   minSize: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                   color: mainColor,
                   onPressed: () {
                     showCupertinoModalPopup(
@@ -315,14 +350,14 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                               index == 0
                                                   ? "냉장고"
                                                   : index == 1
-                                                      ? "의류"
-                                                      : index == 2
-                                                          ? "자취방"
-                                                          : index == 3
-                                                              ? "모니터"
-                                                              : index == 4
-                                                                  ? "책"
-                                                                  : "기타",
+                                                  ? "의류"
+                                                  : index == 2
+                                                  ? "자취방"
+                                                  : index == 3
+                                                  ? "모니터"
+                                                  : index == 4
+                                                  ? "책"
+                                                  : "기타",
                                               style: const TextStyle(
                                                   fontSize: 15,
                                                   color: Colors.black,
@@ -338,18 +373,19 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                         });
                   },
                   child: Text(
-                      "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "냉장고" : newItem.itemType == ItemType.MONITOR ? "모니터" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "의류" : "기타"}",
-                      textScaleFactor: 1.0,
-                      style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),),
+                    "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "냉장고" : newItem.itemType == ItemType.MONITOR ? "모니터" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "의류" : "기타"}",
+                    textScaleFactor: 1.0,
+                    style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
               SizedBox(
-                width : 100,
+                width: 100,
                 child: CupertinoButton(
                   minSize: 0,
                   padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                   color: mainColor,
                   onPressed: () {
                     showCupertinoModalPopup(
@@ -372,9 +408,11 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                             newItem.itemQuality =
                                                 ItemQuality.HIGH;
                                           case (1):
-                                            newItem.itemQuality = ItemQuality.MID;
+                                            newItem.itemQuality =
+                                                ItemQuality.MID;
                                           case (2):
-                                            newItem.itemQuality = ItemQuality.LOW;
+                                            newItem.itemQuality =
+                                                ItemQuality.LOW;
                                         }
                                       });
                                     },
@@ -388,8 +426,8 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                               Index == 0
                                                   ? "상"
                                                   : Index == 1
-                                                      ? "중"
-                                                      : "하",
+                                                  ? "중"
+                                                  : "하",
                                               style: const TextStyle(
                                                   fontSize: 15,
                                                   color: Colors.black,
@@ -405,8 +443,9 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                         });
                   },
                   child: Text(
-                      "품질 : ${newItem.itemQuality == ItemQuality.HIGH ? "상" : newItem.itemQuality == ItemQuality.MID ? "중" : "하"}"
-                  , style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),),
+                    "품질 : ${newItem.itemQuality == ItemQuality.HIGH ? "상" : newItem.itemQuality == ItemQuality.MID ? "중" : "하"}",
+                    style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
+                  ),
                 ),
               ),
             ],
@@ -417,7 +456,8 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
           Row(
             children: [
               const SizedBox(width: 20),
-              const Text("급처분 : ", style: TextStyle(fontFamily : 'KBO-B', fontSize: 18)),
+              const Text("급처분 : ",
+                  style: TextStyle(fontFamily: 'KBO-B', fontSize: 18)),
               CupertinoSwitch(
                 // 급처분 여부
                 value: isFastSellForToggle,
@@ -437,102 +477,101 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
           //가격
           Flexible(
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Container(
-                      alignment: Alignment.center,
-                      width: 350.0,
-                      height: 80.0,
-                      padding: EdgeInsets.all(5),
-                      child:
-                      Stack(
-                        children: [
-                          TextFormField(
-                            maxLength: 12,
-                          keyboardType: TextInputType.number,
-                          onChanged: (text) {
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Container(
+                  alignment: Alignment.center,
+                  width: 350.0,
+                  height: 80.0,
+                  padding: EdgeInsets.all(5),
+                  child: Stack(
+                    children: [
+                      TextFormField(
+                        maxLength: 12,
+                        keyboardType: TextInputType.number,
+                        onChanged: (text) {
                           setState(() {
-                             temp = text;
+                            temp = text;
                             if (temp != "") {
-                              newItem.sellingPrice = int.parse(temp.replaceAll('￦','').replaceAll(',',''));
+                              newItem.sellingPrice = int.parse(
+                                  temp.replaceAll('￦', '').replaceAll(',', ''));
                             } else {
                               newItem.sellingPrice = -1;
                             }
                           });
                         },
-                            inputFormatters: <TextInputFormatter>[
-                              CurrencyTextInputFormatter(
-                                locale: 'ko',
-                                decimalDigits: 0,
-                                symbol: '￦',
-                              ),
-                            ],
-                            maxLines: 1,
-                            decoration: InputDecoration(
-                              hintText: '가격(원)',
-                              hintStyle: TextStyle(
-                                color: Colors.grey[600], // labelText의 텍스트 색상
-                                fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
-                                fontFamily: 'KBO-L', // 알아서 변경할 것!!
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFFB70001), width: 5), // 활성 상태일 때 밑줄 색상
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFFB70001), width: 5), // 포커스 상태일 때 밑줄 색상
-
-                              ),
-                            ),
-                          )
+                        inputFormatters: <TextInputFormatter>[
+                          CurrencyTextInputFormatter(
+                            locale: 'ko',
+                            decimalDigits: 0,
+                            symbol: '￦',
+                          ),
                         ],
+                        maxLines: 1,
+                        decoration: InputDecoration(
+                          hintText: '가격(원)',
+                          hintStyle: TextStyle(
+                            color: Colors.grey[600], // labelText의 텍스트 색상
+                            fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
+                            fontFamily: 'KBO-L', // 알아서 변경할 것!!
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color(0xFFB70001),
+                                width: 5), // 활성 상태일 때 밑줄 색상
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color(0xFFB70001),
+                                width: 5), // 포커스 상태일 때 밑줄 색상
+                          ),
+                        ),
                       )
-                  )]
-              ),
+                    ],
+                  ))
+            ]),
           ),
           const SizedBox(height: 10),
           //내용
           Flexible(
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Container(
-                      alignment: Alignment.center,
-
-
-                      width: 350.0,
-                      height: 200.0, // 이렇게만 해도 여백이 생겨버리네 (textField라는게 부모 높이 따라가는듯)
-                      padding: EdgeInsets.all(5),
-                      child:
-                      Stack(
-                        children: [
-                          TextField(
-                            onChanged: (text) {
-                              setState(() {
-                                newItem.itemDetail = text;
-                              });
-                            },
-                            keyboardType: TextInputType.multiline,
-                            maxLines: 10,
-
-                            decoration: InputDecoration(
-                              hintText: '추가로 알리고 싶은 내용을 적어주세요.',
-                              hintStyle: TextStyle(
-                                color: Colors.grey[600], // labelText의 텍스트 색상
-                                fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
-                                fontFamily: 'KBO-L', // 알아서 변경할 것!!
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFFB70001), width: 5), // 활성 상태일 때 밑줄 색상
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Color(0xFFB70001), width: 5), // 포커스 상태일 때 밑줄 색상
-
-                              ),
-                            ),
-                          )
-                        ],
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Container(
+                  alignment: Alignment.center,
+                  width: 350.0,
+                  height: 200.0,
+                  // 이렇게만 해도 여백이 생겨버리네 (textField라는게 부모 높이 따라가는듯)
+                  padding: EdgeInsets.all(5),
+                  child: Stack(
+                    children: [
+                      TextField(
+                        onChanged: (text) {
+                          setState(() {
+                            newItem.itemDetail = text;
+                          });
+                        },
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 10,
+                        decoration: InputDecoration(
+                          hintText: '추가로 알리고 싶은 내용을 적어주세요.',
+                          hintStyle: TextStyle(
+                            color: Colors.grey[600], // labelText의 텍스트 색상
+                            fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
+                            fontFamily: 'KBO-L', // 알아서 변경할 것!!
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color(0xFFB70001),
+                                width: 5), // 활성 상태일 때 밑줄 색상
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color(0xFFB70001),
+                                width: 5), // 포커스 상태일 때 밑줄 색상
+                          ),
+                        ),
                       )
-                  )]
-              ),
+                    ],
+                  ))
+            ]),
           ),
         ],
       ),
@@ -544,64 +583,64 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
     return newItem.imageListA.isEmpty
         ? PlusMaterialButton()
         : Flexible(
-            child: SizedBox(
-                height: 100,
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  children: [
-                    PlusMaterialButton(),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: newItem.imageListA?.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Row(
-                            children: [
-                              Stack(
-                                children: [
-                                  RawMaterialButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          //편집 기능
-                                        });
-                                      },
-                                      child: Image.file(
-                                          File(newItem.imageListA![index].path),
-                                          width: 80,
-                                          height: 80,
-                                          fit: BoxFit.fitHeight)),
-                                  Positioned(
-                                    right: -20,
-                                    child: RawMaterialButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          newItem.imageListA!.removeAt(index);
-                                        });
-                                      },
-                                      shape: const CircleBorder(),
-                                      fillColor: Colors.white,
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(0.0),
-                                        child: Icon(
-                                          Icons.close,
-                                          size: 25,
-                                          color: Colors.black45,
-                                        ),
-                                      ),
-                                    ),
+      child: SizedBox(
+          height: 100,
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            children: [
+              PlusMaterialButton(),
+              const SizedBox(width: 5),
+              Expanded(
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: newItem.imageListA?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Row(
+                      children: [
+                        Stack(
+                          children: [
+                            RawMaterialButton(
+                                onPressed: () {
+                                  setState(() {
+                                    //편집 기능
+                                  });
+                                },
+                                child: Image.file(
+                                    File(newItem.imageListA![index].path),
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.fitHeight)),
+                            Positioned(
+                              right: -20,
+                              child: RawMaterialButton(
+                                onPressed: () {
+                                  setState(() {
+                                    newItem.imageListA!.removeAt(index);
+                                  });
+                                },
+                                shape: const CircleBorder(),
+                                fillColor: Colors.white,
+                                child: const Padding(
+                                  padding: EdgeInsets.all(0.0),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 25,
+                                    color: Colors.black45,
                                   ),
-                                ],
+                                ),
                               ),
-                              const SizedBox(width: 5),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                )),
-          );
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 5),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          )),
+    );
   }
 
   Widget CameraGalleryButton(String text, Icon icon) {
@@ -639,7 +678,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
         return AlertDialog(
           //화면 잘리는 것 방지
           content:
-              const SingleChildScrollView(child: Text("업로드 가능한 이미지 수는 5장 입니다")),
+          const SingleChildScrollView(child: Text("업로드 가능한 이미지 수는 5장 입니다")),
           actions: <Widget>[
             TextButton(
               child: const Text("확인"),
@@ -652,6 +691,39 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
       },
     );
   }
+
+  // Future<void> performDioRequest() async {
+  //   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  //
+  //   Dio dio = Dio();
+  //   print('add Item To Server');
+  //   dio.options.headers['Authorization'] = 'Bearer $token';
+  //   String url = 'http://kdh.supomarket.com/items';
+  //
+  //   print("itemQauilty : ${newItem.itemQuality}");
+  //   FormData formData = FormData.fromMap({
+  //     'title': newItem.sellingTitle ?? "무제",
+  //     'description': newItem.itemDetail ?? "",
+  //     'price': newItem.sellingPrice ?? -1,
+  //     'category': ConvertEnumToString(newItem.itemType) ?? ItemType.ETC,
+  //     'status': ConvertEnumToString(newItem.itemStatus) ?? ItemStatus.TRADING,
+  //     'quality': ConvertEnumToString(newItem.itemQuality) ?? ItemQuality.MID,
+  //   });
+  //   for (int i = 0; i < newItem.imageListA.length; i++) {
+  //     formData.files.add(MapEntry(
+  //         'image',
+  //         await MultipartFile.fromFile(newItem.imageListA[i].path,
+  //             filename: 'image.jpg')));
+  //   }
+  //
+  //   print(formData);
+  //   try {
+  //     Response response = await dio.post(url, data: formData);
+  //     print(response);
+  //   } catch (e) {
+  //     print('Error sending POST request : $e');
+  //   }
+  // }
 
   void popUp(String value) {
     showDialog(

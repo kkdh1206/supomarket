@@ -123,37 +123,37 @@ Future<bool> getMyInfo() async{
 
   return true;
 }
-
-Future<bool> getMyInfoRequestList() async {
-
-  print("get Request List");
-
-  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-
-  Dio dio = Dio();
-  dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/auth/request';
-
-  try {
-    Response response = await dio.get(url);
-    dynamic jsonData = response.data;
-
-    var splitList = jsonData as List<dynamic>;
-    Map<String,String>? temp = {'itemId' : '' , 'userId' : ''};
-    for(int i = 0; i<splitList.length; i++){
-      temp?['itemId'] = splitList[i].split(' ')[0];
-      temp?['userId'] = splitList[i].split(' ')[1];
-      myUserInfo.requestList?.add(temp!);
-      print(myUserInfo.requestList?[i].toString());
-    }
-
-  }
-  catch (e) {
-    print('Error sending GET request : $e');
-  }
-
-  return true;
-}
+//
+// Future<bool> getMyInfoRequestList() async {
+//
+//   print("get Request List");
+//
+//   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+//
+//   Dio dio = Dio();
+//   dio.options.headers['Authorization'] = 'Bearer $token';
+//   String url = 'http://kdh.supomarket.com/auth/request';
+//
+//   try {
+//     Response response = await dio.get(url);
+//     dynamic jsonData = response.data;
+//
+//     var splitList = jsonData as List<dynamic>;
+//     Map<String,String>? temp = {'itemId' : '' , 'userId' : ''};
+//     for(int i = 0; i<splitList.length; i++){
+//       temp?['itemId'] = splitList[i].split(' ')[0];
+//       temp?['userId'] = splitList[i].split(' ')[1];
+//       myUserInfo.requestList?.add(temp!);
+//       print(myUserInfo.requestList?[i].toString());
+//     }
+//
+//   }
+//   catch (e) {
+//     print('Error sending GET request : $e');
+//   }
+//
+//   return true;
+// }
 
 String itemName = "";
 String sellerName = "";
@@ -670,4 +670,42 @@ Future reqIOSPermission(FirebaseMessaging fbMsg) async {
     provisional: false,
     sound: true,
   );
+}
+
+Future<bool> getMyInfoRequestList() async {
+
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/auth/request';
+
+  try {
+
+    debugPrint("Get Request List");
+
+    Response response = await dio.get(url);
+    dynamic jsonData = response.data;
+
+      myUserInfo.requestList?.clear();
+
+      List<dynamic> requestList = jsonData as List<dynamic>;
+      String inputString = "";
+      Map<String, String> map = Map();
+
+      for(int i = 0; i<requestList.length; i++){
+        inputString = requestList[i];
+        List<String> userIdList = inputString.split(' ');
+        print(userIdList[0]);
+        map['itemId'] = userIdList[0];
+        map['userId'] = userIdList[1];
+        myUserInfo.requestList?.add(map);
+      }
+      print(myUserInfo.requestList.toString());
+
+
+  } catch (e) {
+    print('Error sending GET request : $e');
+  }
+
+  return true;
 }

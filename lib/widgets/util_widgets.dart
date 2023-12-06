@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:supo_market/page/my_page/sub_selling_page_evaluation_page.dart';
-
+import 'package:flutter_animated_icons/lottiefiles.dart';
+import 'package:lottie/lottie.dart';
 import '../usecases/util_usecases.dart';
 
 class SupoTitle extends StatelessWidget {
@@ -156,18 +157,53 @@ class ReallyBoughtPopUp extends StatefulWidget {
   }
 }
 
-class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> {
-
+class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProviderStateMixin {
+  late AnimationController _bellController;
   bool isLoading = false;
 
   @override
+  void initState(){
+    super.initState();
+    _bellController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1))
+          ..repeat();
+    // 애니메이션 컨트롤러 초기화
+  }
+
+  @override
+  void dispose() {
+    //_controller.dispose(); // 페이지가 dispose 될 때 컨트롤러 해제
+    _bellController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return TextButton(
-      child: Text("Open Popup"),
+    return IconButton(
+      splashRadius: 50,
+      iconSize: 50,
+      icon: Lottie.asset(LottieFiles.$63128_bell_icon,
+          controller: _bellController,
+          height: 30,
+          fit: BoxFit.cover),
+
+
+
       onPressed: () {
         showDialog(
             context: context,
             builder: (BuildContext context) {
+              if (_bellController.isAnimating) { // 이거를 request 있을때로 바꾸어 줘야함
+
+                _bellController.stop();
+                print("!!");
+                print(_bellController.status);
+                // _bellController.reset();
+              } else {
+                _bellController.repeat();
+              }
+
+
               return AlertDialog(
                 scrollable: true,
                 title: const Text('해당 물품을 거래하셨나요?'),

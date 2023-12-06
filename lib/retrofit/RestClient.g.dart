@@ -303,14 +303,18 @@ class _RestClient implements RestClient {
 
   @override
   Future<List<Chat>> getChatById({
-    String? id,
-    Pages? page,
+    id,
+    page,
+    pageSize,
   }) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'pageSize': pageSize,
+    };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = page;
+    final Map<String, dynamic>? _data = null;
     final _result =
         await _dio.fetch<List<dynamic>>(_setStreamType<List<Chat>>(Options(
       method: 'GET',
