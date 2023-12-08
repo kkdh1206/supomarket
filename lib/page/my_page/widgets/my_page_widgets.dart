@@ -173,7 +173,6 @@ class MySoldButtonState extends State<MySoldButton> {
   }
 }
 
-
 class MyBoughtButton extends StatefulWidget {
   final List<Item> list;
 
@@ -216,7 +215,6 @@ class MyBoughtButtonState extends State<MyBoughtButton> {
             )));
   }
 }
-
 
 class MyInfoChangeButton extends StatefulWidget {
   @override
@@ -295,13 +293,12 @@ class NameNumber extends StatelessWidget {
   }
 }
 
-
 class UserGrade extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Image.asset("assets/images/${myUserInfo.userGrade??"F"}.jpeg", scale: 10),
+      child: Image.asset("assets/images/${myUserInfo.userGrade ?? "F"}.jpeg",
+          scale: 10),
     );
   }
 }
@@ -376,7 +373,8 @@ class PasswordChangeState extends State<PasswordChange> {
                   height: 25,
                 ),
                 Text(
-                  '  비밀번호 변경', style: TextStyle(fontFamily: 'Arial', fontSize: 17),
+                  '  비밀번호 변경',
+                  style: TextStyle(fontFamily: 'Arial', fontSize: 17),
                 )
               ],
             )));
@@ -438,7 +436,11 @@ class KeywordAlarm extends StatefulWidget {
   final String text;
   final Function() delay;
 
-  const KeywordAlarm({Key? key, required this.isClicked, required this.text, required this.delay})
+  const KeywordAlarm(
+      {Key? key,
+      required this.isClicked,
+      required this.text,
+      required this.delay})
       : super(key: key);
 
   @override
@@ -519,34 +521,34 @@ class MyItemCard extends StatefulWidget {
   final String stateText;
   final bool isFastSell;
 
-  MyItemCard({Key? key,
-    required this.image,
-    required this.title,
-    required this.date,
-    required this.price,
-    required this.modify,
-    required this.stateChange,
-    required this.stateText,
-    required this.isFastSell})
+  MyItemCard(
+      {Key? key,
+      required this.image,
+      required this.title,
+      required this.date,
+      required this.price,
+      required this.modify,
+      required this.stateChange,
+      required this.stateText,
+      required this.isFastSell})
       : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
     return MyItemCardState();
   }
-
 }
 
-class MyItemCardState extends State<MyItemCard>{
-
+class MyItemCardState extends State<MyItemCard> {
   FixedExtentScrollController? firstController;
-  int initialIndex= 0;
+  int initialIndex = 0;
   int selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    initialIndex = widget.stateText == "거래 중"? 0 : widget.stateText == "예약 중"? 1 : widget.stateText == "급처분 중"? 2 : 3;
+    //print("initial : " + widget.stateText.toString());
+    initialIndex = widget.stateText == "판매 중" ? 0 : widget.stateText == "예약 중" ? 1 : widget.stateText == "급처분 중" ? 2 : 3;
     firstController = FixedExtentScrollController(initialItem: initialIndex);
   }
 
@@ -679,7 +681,8 @@ class MyItemCardState extends State<MyItemCard>{
                                     height: 400,
                                     width: 400,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Expanded(
                                           child: CupertinoPicker(
@@ -691,7 +694,8 @@ class MyItemCardState extends State<MyItemCard>{
                                                 selectedIndex = index;
                                               });
                                             },
-                                            children: List<Widget>.generate(4, (index) {
+                                            children: List<Widget>.generate(4,
+                                                (index) {
                                               return Center(
                                                 child: TextButton(
                                                     onPressed: () {
@@ -716,23 +720,30 @@ class MyItemCardState extends State<MyItemCard>{
                                           ),
                                         ),
                                         Container(
-                                          width: MediaQuery.of(context).size.width * 1,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              1,
                                           height: 60,
                                           color: Colors.white,
                                           child: TextButton(
                                               style: TextButton.styleFrom(
-                                                backgroundColor: Color(0xFFB70001),
+                                                backgroundColor:
+                                                    Color(0xFFB70001),
                                                 padding: EdgeInsets.zero,
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
-                                                  BorderRadius.circular(0), // 원하는 둥근 정도 설정
+                                                      BorderRadius.circular(
+                                                          0), // 원하는 둥근 정도 설정
                                                 ),
                                               ),
                                               onPressed: () {
-                                                widget.stateChange(selectedIndex);
+                                                widget
+                                                    .stateChange(selectedIndex);
                                               },
                                               child: const Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
                                                 children: [
                                                   Text(
                                                     '확인',
@@ -740,7 +751,8 @@ class MyItemCardState extends State<MyItemCard>{
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontFamily: 'KBO-M',
-                                                        fontWeight: FontWeight.w800,
+                                                        fontWeight:
+                                                            FontWeight.w800,
                                                         fontSize: 23),
                                                   )
                                                 ],
@@ -779,25 +791,26 @@ class MyItemCard2 extends StatefulWidget {
   final int price;
   final String buyingDate;
   final String itemId;
+  final Function() rebuild;
 
-
-  MyItemCard2({Key? key,
+  MyItemCard2({
+    Key? key,
     required this.image,
     required this.title,
     required this.date,
     required this.price,
-    required this.buyingDate, required this.itemId,})
-      : super(key: key);
+    required this.buyingDate,
+    required this.itemId,
+    required this.rebuild,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
     return MyItemCard2State();
   }
-
 }
 
-class MyItemCard2State extends State<MyItemCard2>{
-
+class MyItemCard2State extends State<MyItemCard2> {
   @override
   void initState() {
     super.initState();
@@ -816,15 +829,16 @@ class MyItemCard2State extends State<MyItemCard2>{
         ),
         child: Stack(
           children: [
-            // Positioned(
-            //     top: 5,right: 5,
-            //     child: IconButton(
-            //       onPressed: () async{
-            //         await utilUsecase.patchBuyingList(widget.itemId);
-            //         setState(() {});
-            //       },
-            //       icon: Icon(CupertinoIcons.clear),
-            //     )),
+            Positioned(
+                top: 5,
+                right: 5,
+                child: IconButton(
+                  onPressed: () async {
+                    await utilUsecase.patchBuyingList(widget.itemId);
+                    await widget.rebuild();
+                  },
+                  icon: Icon(CupertinoIcons.clear),
+                )),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -928,4 +942,3 @@ class MyItemCard2State extends State<MyItemCard2>{
     );
   }
 }
-

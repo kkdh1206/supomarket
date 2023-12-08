@@ -92,7 +92,7 @@ class ExpandImage extends StatelessWidget {
           children: [
             Image.network(
               recieveUrl,
-              fit: BoxFit.none,
+              fit: BoxFit.contain,
             ),
             // X 버튼을 가진 AppBar
             Positioned(

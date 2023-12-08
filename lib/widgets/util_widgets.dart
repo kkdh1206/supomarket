@@ -172,6 +172,7 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
     itemId = widget.itemId; userId = widget.traderId;
     print("Really Bought Pop Up");
     print("initiate : $itemId + $userId");
+    _bellController.stop();
     getInitInfo();
   }
 
@@ -229,6 +230,10 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
     if(myUserInfo.requestList!.isNotEmpty){
       itemId = myUserInfo.requestList![0]['itemId']!;
       userId = myUserInfo.requestList![0]['userId']!;
+      _bellController.repeat();
+    }
+    else{
+      _bellController.stop();
     }
 
 

@@ -6,6 +6,7 @@ import 'package:supo_market/page/chatting_page/sub_chatting_page_chatbot_page.da
 import 'package:supo_market/page/chatting_page/widgets/chatting_page_widgets.dart';
 import '../../entity/chat_room_entity.dart';
 import '../../entity/user_entity.dart';
+import '../../entity/util_entity.dart';
 import '../../infra/my_info_data.dart';
 import '../../retrofit/RestClient.dart';
 import '../util_function.dart';
@@ -109,6 +110,11 @@ class ChattingPageState extends State<ChattingPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    chattingPageBuilder = null;
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: const Color(0xffffffff),
@@ -116,6 +122,13 @@ class ChattingPageState extends State<ChattingPage> {
             future: chattingPageBuilder,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
+
+                if(roomList.isEmpty){
+                  return const Center(
+                    child: Text("채팅이 없습니다"),
+                  );
+                }
+
                 return Stack(
                   children: [
                     Container(
@@ -275,7 +288,9 @@ class ChattingPageState extends State<ChattingPage> {
                   ],
                 );
               } else {
-                return const SizedBox();
+                return Center(
+                  child: CircularProgressIndicator(color: mainColor),
+                );
               }
             }
             ));

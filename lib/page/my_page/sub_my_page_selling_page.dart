@@ -80,7 +80,6 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     scrollController!.addListener(_scrollListener); //스크롤뷰 위치 이용 함수
     isMoreRequesting = false; //요청 중이면 circle progress
     isListened = false; //progress가 돌아가고 있으면 추가로 요청하지 않기 (한번만)
-
     nameList = [];
     userUidList = [];
   }

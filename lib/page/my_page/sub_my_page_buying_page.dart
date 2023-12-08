@@ -79,6 +79,7 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
   }
 
   void _scrollListener() {
+    print("scroll Listener");
     if (scrollController!.offset + 500 >=
         scrollController!.position.maxScrollExtent &&
         !scrollController!.position.outOfRange &&
@@ -182,6 +183,12 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
                                     buyingDate : list![position].buyingDate ?? "",
                                     price: list![position].sellingPrice!,
                                     itemId: list![position].itemID!.toString(),
+                                    rebuild: (){
+                                      print("rebuild");
+                                      setState(() {
+                                        buyingPageBuilder = _getMySellingItem(1, SortType.DATEASCEND);
+                                      });
+                                    },
                                   ),
                                 ),
                               );

@@ -122,33 +122,31 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
             children: [
               SupoTitle2(),
               Positioned(
-                right : 40,
-                top : 0,
-                child: ReallyBoughtPopUp(
-                  itemId: requestList.isNotEmpty
-                      ? requestList![0]['itemId']!
-                      : '-1',
-                  traderId: requestList.isNotEmpty
-                      ? requestList![0]['userId']!
-                      : '-1',
-                ),
-              ),
-              Positioned(
-                right: 0,
-                top : 0,
-                child: Padding(
-                  padding: EdgeInsets.only(right: 0),
-                  child: IconButton(
-                      icon: const Icon(Icons.search, size: 35),
-                      color: Colors.black,
-                      onPressed: () {
-                        deleteReqeustList(165, '김도형');
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    SearchPage(list: itemList)));
-                      }),
+                top: 0, right: 0,
+                child: Row(
+                  children: [
+                    ReallyBoughtPopUp(
+                      itemId: requestList.isNotEmpty
+                          ? requestList![0]['itemId']!
+                          : '-1',
+                      traderId: requestList.isNotEmpty
+                          ? requestList![0]['userId']!
+                          : '-1',
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 0),
+                      child: IconButton(
+                          icon: const Icon(Icons.search, size: 35),
+                          color: Colors.black,
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        SearchPage(list: itemList)));
+                          }),
+                    ),
+                  ],
                 ),
               ),
               //ReallyBoughtPopUp(itemId: '126', traderId: '9', itemName: '아이템제목', traderName: '거래자이름',),

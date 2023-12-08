@@ -558,6 +558,7 @@ class _SubHomePageState extends State<SubHomePage> {
                                   widget.item.itemID.toString(),
                                   widget.item.sellerName!,
                                 );
+                                print("여기" + roomID! + widget.item.sellerName!);
                                 await Navigator.push(context, MaterialPageRoute(builder: (context)=>SubChattingPage(roomID: roomID, traderName: widget.item.sellerName)));
                               }
                             })
@@ -566,62 +567,7 @@ class _SubHomePageState extends State<SubHomePage> {
                   ],
                 ),
               );
-              //   BottomAppBar(
-              //   child: Row(
-              //     children: [
-              //       IconButton(
-              //           icon: widget.item.isLiked == true
-              //               ? Icon(Icons.favorite)
-              //               : Icon(Icons.favorite_border),
-              //           onPressed: () {
-              //             setState(() {
-              //               widget.item.isLiked = !(widget.item.isLiked!);
-              //               if (widget.item.isLiked!) {
-              //                 favoritePageBuilder = liked(widget.item);
-              //               } else {
-              //                 favoritePageBuilder = unLiked(widget.item);
-              //               }
-              //             });
-              //           }),
-              //       IconButton(
-              //         icon: Icon(Icons.chat),
-              //         onPressed: () {},
-              //       ),
-              //       IconButton(
-              //         icon: Icon(Icons.more_vert),
-              //         onPressed: () {},
-              //       ),
-              //       const SizedBox(width: 120),
-              //       Expanded(
-              //           child: Padding(
-              //               padding: EdgeInsets.only(right: 10),
-              //               child: MaterialButton(
-              //                   color: postechRed,
-              //                   child: const Text(
-              //                     "채팅하기",기
-              //                     textScaleFactor: 0.9,
-              //                     style: TextStyle(
-              //                         color: Colors.white,
-              //                         fontWeight: FontWeight.bold),
-              //                   ),
-              //                   onPressed: () async {
-              //                     //채팅 목록에 추가됨기
-              //                     await getToken(widget.item.sellerUid!);
-              //                     inputInfo(
-              //                       myUserInfo.userUid!,
-              //                       itemUser!.userUid!,
-              //                       widget.item.itemID.toString(),
-              //                       widget.item.sellerName!,
-              //                     );
-              //                     await Navigator.push(
-              //                         context,
-              //                         MaterialPageRoute(
-              //                             builder: (context) =>
-              //                                 SubChattingPage(roomID: roomID)));
-              //                   }))),
-              //     ],
-              //   ),
-              // );
+
             } else {
               return const SizedBox();
             }
@@ -629,7 +575,6 @@ class _SubHomePageState extends State<SubHomePage> {
           },
         ));
   }
-
   //이미지 넘기는 슬라이더
   Widget imageSlider(url, index) => Container(
         width: 400,

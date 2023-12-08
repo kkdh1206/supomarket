@@ -63,10 +63,10 @@ class ChatBubblessState extends State<ChatBubbless> {
     return Stack(children: [
       Row(
         mainAxisAlignment:
-            isUserMessage! ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isUserMessage! ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           //내가 보낸 메세지
-          if (isUserMessage! && imageUrl == "k")
+          if (isUserMessage! && imageUrl == "NoImage")
             Row(
               children: [
                 //내 현재 시간
@@ -83,7 +83,7 @@ class ChatBubblessState extends State<ChatBubbless> {
                     //내 현재 시간
                     Container(
                       padding:
-                          const EdgeInsets.only(top: 0, left: 0, right: 3),
+                      const EdgeInsets.only(top: 0, left: 0, right: 3),
                       child: Text(
                         currentTime!,
                         style: TextStyle(
@@ -124,7 +124,7 @@ class ChatBubblessState extends State<ChatBubbless> {
             ),
 
           //내가 보낸 이미지
-          if (isUserMessage! && imageUrl != "k")
+          if (isUserMessage! && imageUrl != "NoImage")
             Row(
               children: [
                 Column(
@@ -181,8 +181,8 @@ class ChatBubblessState extends State<ChatBubbless> {
             ),
 
           //상대방이 보낸 메세지
-          if (!isUserMessage! && imageUrl == "k")
-            //상대방 프로필
+          if (!isUserMessage! && imageUrl == "NoImage")
+          //상대방 프로필
             Row(
               children: [
 
@@ -215,7 +215,7 @@ class ChatBubblessState extends State<ChatBubbless> {
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: ChatBubble(
                     clipper:
-                        ChatBubbleClipper1(type: BubbleType.receiverBubble),
+                    ChatBubbleClipper1(type: BubbleType.receiverBubble),
                     margin: EdgeInsets.only(top: 30),
                     backGroundColor: Colors.grey[700],
                     child: Container(
@@ -259,7 +259,7 @@ class ChatBubblessState extends State<ChatBubbless> {
             ),
 
           //상대방이 보낸 그림
-          if (!isUserMessage! && imageUrl != "k")
+          if (!isUserMessage! && imageUrl != "NoImage")
             Row(
               children: [
                 //상대방 프로필 이름
@@ -299,12 +299,26 @@ class ChatBubblessState extends State<ChatBubbless> {
                             margin: EdgeInsets.only(top: 10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20.0),
-                              image: DecorationImage(
-                                image: NetworkImage(imageUrl!),
-                                fit: BoxFit.cover,
-                              ),
+                            ),
+                            child: Image.network(
+                              imageUrl ?? "",
+                              fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return Center (
+                                    child: CircularProgressIndicator (
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                          : null,
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                           ),
+
                           onTap: () {
                             Navigator.push(
                               context,

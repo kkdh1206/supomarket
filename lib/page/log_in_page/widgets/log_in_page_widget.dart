@@ -231,7 +231,7 @@ class TextInputwithButtonState extends State<TextInputwithButton>{
             onChanged: onChanged,
             keyboardType: TextInputType.emailAddress,
             maxLines: 1,
-            obscureText: hintText == '비밀번호' ? true : hintText == '비밀번호 재입력'? true : false,
+            obscureText: hintText == '새 비밀번호' ? true : hintText == '새 비밀번호 확인'? true : false,
             decoration: InputDecoration(
               hintText: hintText,
               suffixText: hintText == '이메일' ? "@postech.ac.kr" : "",

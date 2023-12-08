@@ -350,28 +350,28 @@ Future<String> getSellerById(String id) async{
 //   }
 // }
 
-Future<void> deleteReqeustList(int itemId, String sellerName) async {
-
-  print("patch Request");
-
-  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-
-  Dio dio = Dio();
-  dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/auth/request';
-
-  //id인데 사실은 sellerName이라는거지 ㅇㅋ
-  var data = {'itemId' : itemId, 'sellerId' : sellerName};
-
-  try {
-    Response response = await dio.patch(url, data: data);
-  } catch (e) {
-    print('Error sending PATCH request : $e');
-  }
-
-  return;
-
-}
+// Future<void> deleteReqeustList(int itemId, String sellerName) async {
+//
+//   print("patch Request");
+//
+//   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+//
+//   Dio dio = Dio();
+//   dio.options.headers['Authorization'] = 'Bearer $token';
+//   String url = 'http://kdh.supomarket.com/auth/request';
+//
+//   //id인데 사실은 sellerName이라는거지 ㅇㅋ
+//   var data = {'itemId' : itemId, 'sellerId' : sellerName};
+//
+//   try {
+//     Response response = await dio.patch(url, data: data);
+//   } catch (e) {
+//     print('Error sending PATCH request : $e');
+//   }
+//
+//   return;
+//
+// }
 
 
 Future<AUser> getUserInfo(Item item) async {

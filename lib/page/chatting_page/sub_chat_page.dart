@@ -56,7 +56,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
   List<Chat> localMsg = [];
   final myMessage = {'nickname': '', 'message': ''};
   userData userdata =
-      userData(userID: myUserInfo.userUid, nickname: myUserInfo.userName);
+  userData(userID: myUserInfo.userUid, nickname: myUserInfo.userName);
   Time? time;
   bool? isUserMessage;
   String? image = myUserInfo.imagePath;
@@ -78,9 +78,9 @@ class _SubChattingPageState extends State<SubChattingPage> {
 
   Future getImage() async {
     final pickedFile = await picker.pickMultiImage(
-      imageQuality: 100,
-      maxHeight: 1000,
-      maxWidth: 1000
+        imageQuality: 100,
+        maxHeight: 1000,
+        maxWidth: 1000
     );
 
     if(pickedFile != null) {
@@ -89,6 +89,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
         for(int i = 0; i < count; i++) {
           _image = XFile(pickedFile[i].path);
           File file = File(_image!.path);
+          FlutterDialog();
           imageList.add(file);
         }
       });
@@ -113,7 +114,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     exitChatRoom();
   }
@@ -155,7 +156,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
   Future<bool> getData(int page) async {
     // await Future.delayed(Duration(seconds: 5));
     //Pages page = Pages(page: pageNum, pageSize: 15);
-    var data = await client!.getChatById(id: widget.roomID, page: page, pageSize: 10);
+    var data = await client!.getChatById(id: widget.roomID, page: page, pageSize: 15);
 
     setState(() {
       pastMsg = data;
@@ -193,9 +194,6 @@ class _SubChattingPageState extends State<SubChattingPage> {
         final resent = Resent(resentMessage: message, messageTime: time);
         client?.updateResent(widget.roomID, resent);
 
-        m.message = message;
-        m.nickname = nickname;
-
         if (count == 2) {
           checkRead = true.toString();
           final check = Check(
@@ -210,8 +208,8 @@ class _SubChattingPageState extends State<SubChattingPage> {
         localMsg = localMsg.reversed.toList();
         localMsg.add(Chat(
             senderID: id,
-            message: m.message!,
-            senderName: m.nickname!,
+            message: message!,
+            senderName: nickname!,
             checkRead: checkRead,
             createdAt: time,
             imageUrl: recieveImg
@@ -228,9 +226,9 @@ class _SubChattingPageState extends State<SubChattingPage> {
     });
   }
 
-  void sendMessage(String message, String myImageUrl, String sendName, String imageUrl) async {
+  void sendMessage(String message, String myImageUrl, String sendName) async {
     sendData senddata =
-        sendData(message: message, myImageUrl: myImageUrl, checkRead: 'false', imageUrl: imageUrl);
+    sendData(message: message, myImageUrl: myImageUrl, checkRead: 'false', imageUrl: "NoImage");
     String? changeData = jsonEncode(senddata);
     print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $sendName');
     print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $fcmToken');
@@ -253,7 +251,6 @@ class _SubChattingPageState extends State<SubChattingPage> {
   void enterChatRoom() async {
     sendName = myUserInfo.userName;
     print("누군가 들어옴");
-    await getData(1);
     final String? roomID = widget.roomID;
     socket!.emit('enterChatRoom', roomID);
     await getEnterSignal();
@@ -284,7 +281,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
 
   void scrollToBottom() {
     _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
+      _scrollController.position.minScrollExtent,
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
@@ -318,16 +315,17 @@ class _SubChattingPageState extends State<SubChattingPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar : AppBar(
+        flexibleSpace: Container(color: Colors.white),
         elevation: 0,
         backgroundColor: Colors.white.withOpacity(0.9),
-        title: Text(widget.traderName!, style : const TextStyle(fontSize : 28, color: Colors.black, fontFamily: 'KBO-M', fontWeight: FontWeight.w600)),
+        //title: Text(widget.traderName!, style : const TextStyle(fontSize : 28, color: Colors.black, fontFamily: 'KBO-M', fontWeight: FontWeight.w600)),
         leading : IconButton(
-            icon: const Icon(Icons.arrow_back_ios,
-                color: Colors.black),
-            onPressed: () async{
-              Navigator.pop(context);
-            },
-          ),
+          icon: const Icon(Icons.arrow_back_ios,
+              color: Colors.black),
+          onPressed: () async{
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: FutureBuilder(
           future: subChattingPageBuilder,
@@ -349,16 +347,16 @@ class _SubChattingPageState extends State<SubChattingPage> {
                           child: ListView.builder(
                             reverse: true,
                             controller: _scrollController,
-                            itemCount: localMsg.length + 1,
+                            itemCount: localMsg.length,
                             itemBuilder: (context, index){
 
-                              if(index == localMsg.length){
-                                print("scroll To bottom");
-                                WidgetsBinding.instance?.addPostFrameCallback((_) {
-                                  scrollToBottom();
-                                });
-                                return const SizedBox();
-                              }
+                              // if(index == localMsg.length){
+                              //   print("scroll To bottom");
+                              //   WidgetsBinding.instance?.addPostFrameCallback((_) {
+                              //     //scrollToBottom();
+                              //   });
+                              //   return const SizedBox();
+                              // }
 
 
                               //sendName = pastMsg[index].senderName;
@@ -399,15 +397,15 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                     showModalBottomSheet(
                                         context: context,
                                         enableDrag: true,
-                                      isDismissible: true,
-                                      barrierColor: Colors.black.withOpacity(0.1),
-                                      constraints: const BoxConstraints(
-                                        minHeight: 100,
-                                        maxHeight: 150,
-                                        minWidth: 500,
-                                        maxWidth: 500
-                                      ),
-                                      builder: (BuildContext context) {
+                                        isDismissible: true,
+                                        barrierColor: Colors.black.withOpacity(0.1),
+                                        constraints: const BoxConstraints(
+                                            minHeight: 100,
+                                            maxHeight: 150,
+                                            minWidth: 500,
+                                            maxWidth: 500
+                                        ),
+                                        builder: (BuildContext context) {
                                           return ClipRRect(
                                             borderRadius: BorderRadius.circular(30),
                                             child: Column(
@@ -419,7 +417,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                               ],
                                             ),
                                           );
-                                      }
+                                        }
                                     );
                                   },
                                   icon: Icon(Icons.add_circle_outline, color : Colors.black.withOpacity(0.7), size: 30),
@@ -455,48 +453,8 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                     if (_userEnterMessage.isNotEmpty) {
                                       _controller.clear();
                                     }
-                                    if(imageList.length != 0) {
-                                      Images? images;
-                                      FormData formData = FormData.fromMap({
-                                      });
-                                      for(int i = 0; i < imageList.length; i++) {
-                                        formData.files.add(MapEntry('image', await MultipartFile
-                                                .fromFile(
-                                            imageList[i].path, filename: 'image.jpg')));
-                                    }
-                                    print("폼데이타는 ??????????????????????");
-                                    print(imageList);
 
-                                    try {
-                                    Dio dio = Dio();
-                                    await dio.post('http://jtaeh.supomarket.com/boards/images/${widget.roomID}', data: formData);
-                                    } catch (e) {
-                                    print('Error sending Post request : $e');
-                                    }
-                                    print("전송하는 방의 아이디는::::::::::::");
-                                    print(widget.roomID);
-                                    var res = await client?.getImage(roomId: widget.roomID);
-                                    setState(() {
-                                    images = res;
-                                    });
-                                    imageUrlList = images?.imageUrl;
-                                    for(String imgUrl in imageUrlList!) {
-                                    print("받은 이미지의 유알앨은 ???????");
-                                    print(imgUrl);
-                                    // sendData send = sendData(message: "ttt", myImageUrl: image!, checkRead: 'false', imageUrl: imgUrl);
-                                    // String? changeData = jsonEncode(send);
-                                    // if(socket!.connected) {
-                                    //   socket!.emit('sendMessage', changeData);
-                                    // }
-                                      sendMessage(_userEnterMessage, image!, sendName!, imgUrl);
-                                    }
-                                    imageUrlList?.clear();
-                                    imageList.clear();
-                                    }
-                                    else{
-                                      sendMessage(_userEnterMessage, image!, sendName!, "k");
-                                    }
-
+                                    sendMessage(_userEnterMessage, image!, sendName!);
                                     scrollToBottom();
                                   },
                                   icon: const Icon(Icons.send, color : Colors.grey),
@@ -544,89 +502,77 @@ class _SubChattingPageState extends State<SubChattingPage> {
       ],
     );
   }
-
-  //Future<bool> _getChatiing(int page) async {
-  //   String? tempSellerName;
-  //   String? tempSellerSchoolNum;
-  //   int pageSize = 10;
-  //
-  //   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-  //   Dio dio = Dio();
-  //
-  //   if (page == 1) {
-  //     //itemList.clear();
-  //   }
-  //
-  //   try {
-  //     Response response = await dio.get(url);
-  //     // Map<String, dynamic> JsonData = json.decode(response.data);
-  //     dynamic jsonData = response.data;
-  //
-  //     if (jsonData.toString() != "true") {
-  //       debugPrint("List 개수 update");
-  //
-  //       setState(() {
-  //         isMoreRequesting = true;
-  //       });
-  //       await Future.delayed(Duration(milliseconds: 100));
-  //
-  //       for (var data in jsonData) {
-  //         int id = data['id'] as int;
-  //         String title = data['title'] as String;
-  //         String description = data['description'] as String;
-  //         int price = data['price'] as int;
-  //
-  //         String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
-  //         tempItemStatus = convertStringToEnum(status);
-  //
-  //         String quality = data['quality'] as String;
-  //         tempItemQuality = convertStringToEnum(quality);
-  //
-  //         String category = data['category'] as String;
-  //         tempItemType = convertStringToEnum(category);
-  //
-  //         String updatedAt = data['updatedAt'] as String;
-  //         List<String> imageUrl = List<String>.from(data['ImageUrls']);
-  //
-  //         // 사진도 받아야하는데
-  //         DateTime dateTime = DateTime.parse(updatedAt);
-  //
-  //         // 시간 어떻게 받아올지 고민하기!!!!!!
-  //         // 그리고 userId 는 현재 null 상태 해결해야함!!!
-  //         itemList.add(Item(
-  //             sellingTitle: title,
-  //             itemType: tempItemType,
-  //             itemQuality: tempItemQuality!,
-  //             sellerName: "정태형",
-  //             sellingPrice: price,
-  //             uploadDate: "10일 전",
-  //             uploadDateForCompare: dateTime,
-  //             itemDetail: description,
-  //             sellerImage:
-  //             "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
-  //             isLiked: false,
-  //             sellerSchoolNum: "20220000",
-  //             imageListA: [],
-  //             imageListB: imageUrl,
-  //             itemStatus: tempItemStatus!,
-  //             itemID: id));
-  //       }
-  //
-  //       //await moreSpaceFunction();
-  //
-  //       setState(() {
-  //         isMoreRequesting = false;
-  //       });
-  //     } else {
-  //       setState(() {
-  //         isEnded = true;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print('Error sending GET request : $e');
-  //   }
-  //
-  //   return true;
-  // }
-
+  void FlutterDialog() {
+    showDialog(
+        context: context,
+        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Column(
+              children: <Widget>[
+                new Text("이미지 전송"),
+              ],
+            ),
+            //
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "선택한 이미지를 전송하시겠습니까?",
+                ),
+              ],
+            ),
+            actions: <Widget> [
+              TextButton(
+                child: Text("취소"),
+                onPressed: () {
+                  imageList.clear();
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: new Text("확인"),
+                onPressed: () async {
+                  Images? images;
+                  FormData formData = FormData.fromMap({
+                  });
+                  for(int i = 0; i < imageList.length; i++) {
+                    formData.files.add(MapEntry('image', await MultipartFile
+                        .fromFile(
+                        imageList[i].path, filename: 'image.jpg')));
+                  }
+                  try {
+                    Dio dio = Dio();
+                    await dio.post('http://jtaeh.supomarket.com/boards/images/${widget.roomID}', data: formData);
+                  } catch (e) {
+                    print('Error sending Post request : $e');
+                  }
+                  print("전송하는 방의 아이디는::::::::::::");
+                  print(widget.roomID);
+                  var res = await client?.getImage(roomId: widget.roomID);
+                  setState(() {
+                    images = res;
+                  });
+                  imageUrlList = images?.imageUrl;
+                  for(String imgUrl in imageUrlList!) {
+                    print("받은 이미지의 유알앨은 ???????");
+                    sendData send = sendData(message: "이미지를 보냈습니다.", myImageUrl: myUserInfo.imagePath, checkRead: 'false', imageUrl: imgUrl);
+                    String? changeData = jsonEncode(send);
+                    if(socket!.connected) {
+                      socket!.emit('sendMessage', changeData);
+                    }
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+  }
 }
