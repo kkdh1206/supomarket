@@ -21,6 +21,8 @@ class Item{
   List imageListA;
   List<String> imageListB;
   ItemStatus itemStatus;
+  String? buyingDate;
+  DateTime? buyingDateForCompare;
 
   Item( //생성자
       { required this.sellingTitle,
@@ -38,7 +40,9 @@ class Item{
         required this.imageListB,
         required this.itemStatus,
         required this.itemID,
-        this.sellerUid}
+        this.sellerUid,
+        this.buyingDate,
+        this.buyingDateForCompare}
       );
 
 }

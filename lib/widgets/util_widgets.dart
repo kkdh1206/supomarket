@@ -163,15 +163,25 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
   bool isLoading = false;
   String itemName = "";
   String traderName = "";
-
   String itemId = ""; String userId = '"';
+  AUser user = AUser(email: "", userName: "", imagePath: "", isUserLogin: false, userStatus: UserStatus.NORMAL);
 
   @override
   void initState() {
     super.initState();
     itemId = widget.itemId; userId = widget.traderId;
     print("Really Bought Pop Up");
-    // 애니메이션 컨트롤러 초기화
+    print("initiate : $itemId + $userId");
+    getInitInfo();
+  }
+
+  void getInitInfo() async{
+    print("get User Info");
+    user = await getUserInfo3(itemId);
+    print("getUserInfo");
+    traderName = user.userName!;
+    itemName = await getItemById(itemId);
+    print("getItemInfo");
   }
 
   @override
@@ -200,6 +210,8 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
       print("stop");
       _bellController.stop();
     }
+
+    getInitInfo();
   }
 
   @override
@@ -273,9 +285,8 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     SubSellingPageEvaluationPage(
-                                                        userID: int.parse(widget.traderId))));
+                                                        userID: int.parse(userId))));
 
-                                        await getMyInfoRequestList();
                                         if (myUserInfo.requestList!.isEmpty && _bellController.isAnimating) { // 이거를 request 있을때로 바꾸어 줘야함
                                           _bellController.stop();
                                         } else {
@@ -291,6 +302,7 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
                                         setState(() {
                                           isLoading = true;
                                         });
+                                        print("userId : $userId");
                                         await utilUsecase.patchRequestList(userId, itemId);
                                         setState(() {
                                           isLoading = false;

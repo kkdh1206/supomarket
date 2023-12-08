@@ -59,7 +59,7 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
 
   @override
   void initState() {
-    debugPrint("Home Initiate");
+    debugPrint("My Selling Page Initiate");
     super.initState();
     initialUpdateList();
     isEnded = false; //리스트 끝에 도달함
@@ -141,6 +141,11 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
                               list![position].uploadDate = formatDate(
                                   list![position].uploadDateForCompare ??
                                       DateTime.now());
+
+                              list![position].buyingDate = formatDate(
+                                  list![position].buyingDateForCompare ??
+                                      DateTime.now());
+
                               //uploadDate를 현재 시간 기준으로 계속 업데이트하기
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 10),
@@ -173,6 +178,7 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
                                         fit: BoxFit.cover),
                                     title: list![position].sellingTitle!,
                                     date: list![position].uploadDate ?? "",
+                                    buyingDate : list![position].buyingDate ?? "",
                                     price: list![position].sellingPrice!,
                                   ),
                                 ),
@@ -225,7 +231,7 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
     if (scrollController.hasClients) {
       scrollOffset = scrollController!.position.pixels;
     }
-    await _getMyItem(page, SortType.DATEASCEND);
+    await _getMySellingItem(page, SortType.DATEASCEND);
     isListened = false;
   }
 
@@ -239,16 +245,14 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
 
   void initialUpdateList() {
     setState(() {
-      buyingPageBuilder = _getMyItem(1, SortType.DATEASCEND);
+      buyingPageBuilder = _getMySellingItem(1, SortType.DATEASCEND);
     });
   }
 
-  Future<bool> _getMyItem(int page, SortType type) async {
+  Future<bool> _getMySellingItem(int page, SortType type) async {
     ItemType? tempItemType;
     ItemStatus? tempItemStatus;
     ItemQuality? tempItemQuality;
-    String? tempSellerName;
-    String? tempSellerSchoolNum;
     int pageSize = 10;
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
@@ -264,7 +268,6 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
 
     try {
       Response response = await dio.get(url);
-      // Map<String, dynamic> JsonData = json.decode(response.data);
       dynamic jsonData = response.data;
 
       if (jsonData.toString() != "true") {
@@ -291,11 +294,14 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
           tempItemType = convertStringToEnum(category);
 
           String updatedAt = data['updatedAt'] as String;
+          String createdAt = data['createdAt'] as String;
+
           List<String> imageUrl = List<String>.from(data['ImageUrls']);
 
           // 사진도 받아야하는데
-          DateTime dateTime = DateTime.parse(updatedAt);
-
+          DateTime dateTime = DateTime.parse(createdAt);
+          DateTime dateTime2 = DateTime.parse(updatedAt);
+          
           // 시간 어떻게 받아올지 고민하기!!!!!!
           // 그리고 userId 는 현재 null 상태 해결해야함!!!
           itemList.add(Item(
@@ -306,6 +312,8 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
               sellingPrice: price,
               uploadDate: "10일 전",
               uploadDateForCompare: dateTime,
+              buyingDate: "10일 전",
+              buyingDateForCompare : dateTime2,
               itemDetail: description,
               sellerImage:
               "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",

@@ -5,30 +5,33 @@ import 'package:flutter/material.dart';
 import 'package:supo_market/page/util_function.dart';
 
 import '../../infra/users_info_data.dart';
+import '../control_page.dart';
 
 class SubSellingPageSelectionPage extends StatefulWidget {
   final List<String> nameList;
   final List<String> userUidList;
   final String itemId;
 
-  const SubSellingPageSelectionPage ({super.key, required this.nameList, required this.userUidList, required this.itemId, });
+  const SubSellingPageSelectionPage({
+    super.key,
+    required this.nameList,
+    required this.userUidList,
+    required this.itemId,
+  });
 
   @override
   State<StatefulWidget> createState() {
     return SubSellingPageSelectionPageState();
   }
-
 }
 
-class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage >{
-
+class SubSellingPageSelectionPageState
+    extends State<SubSellingPageSelectionPage> {
   bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-
     double height = MediaQuery.of(context).size.height;
-
 
     List<String> nameList = widget.nameList;
     List<String> userUidList = widget.userUidList;
@@ -39,12 +42,12 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
     int selectedIndex = 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+        backgroundColor: Colors.white,
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.white,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color : Colors.black),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
             onPressed: () {
               Navigator.popUntil(context, ModalRoute.withName('/'));
             },
@@ -59,7 +62,7 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("누구와 거래하셨나요?", style: TextStyle(fontSize : 25)),
+                    const Text("누구와 거래하셨나요?", style: TextStyle(fontSize: 25)),
                     Expanded(
                       child: CupertinoPicker(
                         itemExtent: 50,
@@ -71,16 +74,16 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
                             selectedIndex = index;
                           });
                         },
-                        children: List<Widget>.generate(nameList.length, (index) {
+                        children:
+                            List<Widget>.generate(nameList.length, (index) {
                           return Center(
                             child: Text(
-                                  nameList[index],
-                                  style: const TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black,
-                                      fontWeight:
-                                      FontWeight.bold),
-                                ),
+                              nameList[index],
+                              style: const TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           );
                         }),
                       ),
@@ -90,18 +93,24 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
                       height: 60,
                       child: TextButton(
                           onPressed: () async {
-                            if(widget.userUidList.isNotEmpty) {
+                            if (widget.userUidList.isNotEmpty) {
                               //await postRequestList(traderUid, widget.itemId);
-                              await postRequestList("gL0UtKkFd0dbMmUAcsYzzUKY7zC2", "243");
+                              await postRequestList(
+                                  "gL0UtKkFd0dbMmUAcsYzzUKY7zC2", "243");
                             }
-                            Navigator.popUntil(context, ModalRoute.withName("/"));
+                            //Navigator.popUntil(context, ModalRoute.withName("/"));
+                            Navigator.popUntil(context, ModalRoute.withName("control"));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ControlPage()));
                           },
                           style: TextButton.styleFrom(
                             backgroundColor: Color(0xFFB70001),
                             padding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius:
-                              BorderRadius.circular(15.0), // 원하는 둥근 정도 설정
+                                  BorderRadius.circular(15.0), // 원하는 둥근 정도 설정
                             ),
                           ),
                           child: const Column(
@@ -122,19 +131,21 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
                     SizedBox(height: height * 0.2),
                   ],
                 ),
-                isLoading ? const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                        ],
-                      ),
-                    ],
-                  ),
-                ) : const SizedBox(width: 0, height: 0),
+                isLoading
+                    ? const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(),
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox(width: 0, height: 0),
               ],
             ),
           ),
@@ -142,10 +153,9 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
   }
 
   Future<bool> postRequestList(String userUid, String itemId) async {
-
     print("post Request List $userUid ${int.parse(itemId)}");
 
-    if(userUid == null){
+    if (userUid == null) {
       print("uid는 Null");
       userUid = "steadfastness";
     }
@@ -160,7 +170,10 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url = 'http://kdh.supomarket.com/auth/request';
 
-    Map<String, dynamic> data = {'buyerUid' : userUid, 'itemId' : int.parse(itemId)};
+    Map<String, dynamic> data = {
+      'buyerUid': userUid,
+      'itemId': int.parse(itemId)
+    };
 
     try {
       Response response = await dio.post(url, data: data);
@@ -175,9 +188,3 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
     return true;
   }
 }
-
-
-
-
-
-

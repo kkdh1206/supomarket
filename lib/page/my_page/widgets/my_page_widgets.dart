@@ -726,13 +726,15 @@ class MyItemCard2 extends StatefulWidget {
   final String title;
   final String date;
   final int price;
+  final String buyingDate;
 
 
   MyItemCard2({Key? key,
     required this.image,
     required this.title,
     required this.date,
-    required this.price,})
+    required this.price,
+    required this.buyingDate,})
       : super(key: key);
 
   @override
@@ -846,7 +848,7 @@ class MyItemCard2State extends State<MyItemCard2>{
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    widget.date,
+                                    widget.buyingDate,
                                     style: TextStyle(
                                         color: Colors.grey[600],
                                         fontFamily: 'KBO-M',

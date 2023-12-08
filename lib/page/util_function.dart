@@ -160,25 +160,25 @@ String sellerName = "";
 
 Future<String> getItemById(String id) async{
 
-  String? itemName;
+  String itemName = "";
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   Dio dio = Dio();
-  print('getData');
+
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/id/${id}';
+  String url = 'http://kdh.supomarket.com/items/id/$id';
 
   try {
     Response response = await dio.get(url);
     // Map<String, dynamic> JsonData = json.decode(response.data);
     dynamic jsonData = response.data;
 
-    String name = jsonData['title'] as String;
+    String name = jsonData as String;
     itemName = name;
   } catch (e) {
 
     print('Error sending GET request : $e');
   }
-  return " ";
+  return itemName;
 
 }
 

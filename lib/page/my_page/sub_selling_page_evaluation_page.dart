@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:supo_market/page/util_function.dart';
 
 import '../../infra/users_info_data.dart';
+import '../control_page.dart';
 
 class SubSellingPageEvaluationPage extends StatefulWidget {
   final int userID;
@@ -20,6 +21,11 @@ class SubSellingPageEvaluationPage extends StatefulWidget {
 
 class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPage>{
 
+  @override
+  void initState() {
+    print("evaluage page initiate : ${widget.userID}");
+    super.initState();
+  }
   bool isLoading = false;
 
   @override
@@ -32,7 +38,11 @@ class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPa
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color : Colors.black),
             onPressed: () {
-              Navigator.popUntil(context, ModalRoute.withName("/"));
+              Navigator.popUntil(context, ModalRoute.withName("control"));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ControlPage()));
             },
           ),
         ),
@@ -53,7 +63,11 @@ class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPa
                   onTap: () async {
                     await patchEvaluation(widget.userID, 5);
                     isLoading = true;
-                    Navigator.popUntil(context, ModalRoute.withName("/"));
+                    Navigator.popUntil(context, ModalRoute.withName("control"));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ControlPage()));
                     isLoading = false;
                     },
                   child: Image.asset(
@@ -69,7 +83,11 @@ class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPa
                     await patchEvaluation(widget.userID, -5);
                     isLoading = false;
                    // checkRequestList(context);
-                    Navigator.popUntil(context, ModalRoute.withName("/"));
+                    Navigator.popUntil(context, ModalRoute.withName("control"));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ControlPage()));
                   },
                   child: Image.asset(
                     'assets/images/bad1.jpeg',
@@ -86,7 +104,7 @@ class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPa
 
   Future<bool> patchEvaluation(int userId, int score) async {
 
-    print("patch Evaluation");
+    print("patch Evaluation : $userId");
 
     String token = await firebaseAuth.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();

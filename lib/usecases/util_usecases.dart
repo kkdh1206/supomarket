@@ -54,7 +54,7 @@ class UtilUsecase{
   }
 
   Future<void> postBuyingList(String itemId) async {
-    print("post Buy List");
+    print("post Buy List : $itemId");
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
 
@@ -62,7 +62,7 @@ class UtilUsecase{
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url = 'http://kdh.supomarket.com/items/myHistory/add';
 
-    var data = {'itemId': itemId};
+    var data = {'id': itemId};
 
     try {
       Response response = await dio.post(url, data: data);
