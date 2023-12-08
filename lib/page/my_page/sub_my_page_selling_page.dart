@@ -288,11 +288,12 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
 
   void _isSoldOutPopUp(String goodsId) async{
     await getChatRoomNumUid(goodsId);
+
     for(int i = 0; i<userUidList!.length; i++){
       await getUserName(userUidList![i]);
     }
     String? itemId = goodsId;
-    popUpUseCase.isSoldOutPopUp(context, chatRoomNum, itemId, nameList!, userUidList!);
+    popUpUseCase.isSoldOutPopUp(context, chatRoomNum, itemId, nameList!.sublist(0,chatRoomNum), userUidList!);
     print("채팅방 개수는 $chatRoomNum");
   }
 
@@ -531,23 +532,27 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     return true;
   }
 
-  Future<void> getUserName(String userUrl) async{
+  Future<void> getUserName(String userUid) async{
+
     Dio dio = Dio();
     dio.options.responseType = ResponseType.plain; // responseType 설정
-    String url =
-        'http://kdh.supomarket.com/auth/username';
+    String url = 'http://kdh.supomarket.com/auth/userUid';
 
-    Map<String, String> data = {'userUrl': userUrl};
-
+    Map<String, String> data = {'userUid': userUid};
+    List<String> temp =[];
     try {
+      temp?.clear();
       Response response = await dio.get(url, data:data);
       dynamic jsonData = response.data;
-      userUrl = jsonData as String;
-      print("userUrl ${userUrl}을 받았습니다");
-      nameList?.add(userUrl);
+      String userName = jsonData as String;
+
+      print("userName ${userName}을 받았습니다");
+      temp?.add(userName);
     } catch (e) {
       print('Error sending GET request : $e');
     }
+
+    nameList?.add(temp[0]);
     return;
   }
 

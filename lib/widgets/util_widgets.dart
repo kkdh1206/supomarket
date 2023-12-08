@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:supo_market/page/my_page/sub_selling_page_evaluation_page.dart';
 import 'package:flutter_animated_icons/lottiefiles.dart';
 import 'package:lottie/lottie.dart';
+import '../entity/user_entity.dart';
+import '../infra/my_info_data.dart';
+import '../page/util_function.dart';
 import '../usecases/util_usecases.dart';
 
 class SupoTitle extends StatelessWidget {
@@ -146,10 +149,8 @@ class ReallyBoughtPopUp extends StatefulWidget {
 
   final String itemId;
   final String traderId;
-  final String itemName;
-  final String traderName;
 
-  const ReallyBoughtPopUp({super.key, required this.itemId, required this.traderId, required this.itemName, required this.traderName, });
+  const ReallyBoughtPopUp({super.key, required this.itemId, required this.traderId});
 
   @override
   State<StatefulWidget> createState() {
@@ -158,15 +159,18 @@ class ReallyBoughtPopUp extends StatefulWidget {
 }
 
 class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProviderStateMixin {
-  late AnimationController _bellController;
+  late AnimationController _bellController = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat();
   bool isLoading = false;
+  String itemName = "";
+  String traderName = "";
+
+  String itemId = ""; String userId = '"';
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    _bellController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1))
-          ..repeat();
+    itemId = widget.itemId; userId = widget.traderId;
+    print("Really Bought Pop Up");
     // 애니메이션 컨트롤러 초기화
   }
 
@@ -175,10 +179,38 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
     //_controller.dispose(); // 페이지가 dispose 될 때 컨트롤러 해제
     _bellController.dispose();
     super.dispose();
+    print("dispose");
+  }
+
+  @override
+  void didUpdateWidget(ReallyBoughtPopUp oldWidget) {
+    print("re build");
+    super.didUpdateWidget(oldWidget);
+    if (widget.itemId != oldWidget.itemId || widget.traderId != oldWidget.traderId) {
+      setState(() {
+        if(myUserInfo.requestList!.isNotEmpty) {
+          itemId = myUserInfo.requestList![0]['itemId']!;
+          userId = myUserInfo.requestList![0]['userId']!;
+          _bellController.repeat();
+        }
+      });
+    }
+    print("didChange : $itemId + $userId");
+    if(itemId == '-1' || userId == '=1'){
+      print("stop");
+      _bellController.stop();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+
+    if(myUserInfo.requestList!.isNotEmpty){
+      itemId = myUserInfo.requestList![0]['itemId']!;
+      userId = myUserInfo.requestList![0]['userId']!;
+    }
+
+
     return IconButton(
       splashRadius: 50,
       iconSize: 50,
@@ -187,97 +219,120 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
           height: 30,
           fit: BoxFit.cover),
 
-
-
       onPressed: () {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              if (_bellController.isAnimating) { // 이거를 request 있을때로 바꾸어 줘야함
+        if(myUserInfo.requestList!.isNotEmpty){
+          _bellController.repeat();
+          setState(() {});
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  scrollable: true,
+                  title: const Text('해당 물품을 거래하셨나요?'),
+                  content: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Form(
+                          child: Column(
+                            children: <Widget>[
+                              Row(
+                                children: [
+                                  Text('제목 :', style: TextStyle(fontFamily: 'KBO-B')),
+                                  Expanded(
+                                      child: Text(itemName)),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  Text('판매자 :',
+                                      style: TextStyle(fontFamily: 'KBO-B')),
+                                  Expanded(child: Text(traderName)),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                      child: Text("예"),
+                                      onPressed: () async {
 
-                _bellController.stop();
-                print("!!");
-                print(_bellController.status);
-                // _bellController.reset();
-              } else {
-                _bellController.repeat();
-              }
+                                        setState(() {
+                                          isLoading = true;
+                                        });
 
+                                        await utilUsecase.patchRequestList(userId, itemId);
+                                        await utilUsecase.postBuyingList(itemId);
 
-              return AlertDialog(
-                scrollable: true,
-                title: const Text('해당 물품을 거래하셨나요?'),
-                content: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Form(
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SubSellingPageEvaluationPage(
+                                                        userID: int.parse(widget.traderId))));
+
+                                        await getMyInfoRequestList();
+                                        if (myUserInfo.requestList!.isEmpty && _bellController.isAnimating) { // 이거를 request 있을때로 바꾸어 줘야함
+                                          _bellController.stop();
+                                        } else {
+                                          _bellController.repeat();
+                                        }
+                                      }
+                                      ),
+
+                                  const SizedBox(width: 10),
+                                  ElevatedButton(
+                                      child: Text("아니오"),
+                                      onPressed: () async{
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        await utilUsecase.patchRequestList(userId, itemId);
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+
+                                        await getMyInfoRequestList();
+                                        if (myUserInfo.requestList!.isEmpty && _bellController.isAnimating) { // 이거를 request 있을때로 바꾸어 줘야함
+                                          _bellController.stop();
+                                        } else {
+                                          _bellController.repeat();
+                                        }
+
+                                        Navigator.pop(context);
+                                      })
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      isLoading ? const Center(
                         child: Column(
-                          children: <Widget>[
-                            Row(
-                              children: [
-                                Text('제목 :', style: TextStyle(fontFamily: 'KBO-B')),
-                                Expanded(
-                                    child: Text(widget.itemName)),
-                              ],
-                            ),
-                            const SizedBox(height: 5),
-                            Row(
-                              children: [
-                                Text('판매자 :',
-                                    style: TextStyle(fontFamily: 'KBO-B')),
-                                Expanded(child: Text(widget.traderName)),
-                              ],
-                            ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                ElevatedButton(
-                                    child: Text("예"),
-                                    onPressed: () async {
-                                      setState(() {
-                                        isLoading = true;
-                                      });
-                                      await utilUsecase.postReallyBought('9','9');
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  SubSellingPageEvaluationPage(
-                                                      userID: int.parse(widget.traderId))));
-                                    }),
-                                const SizedBox(width: 10),
-                                ElevatedButton(
-                                    child: Text("아니오"),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    })
+                                CircularProgressIndicator(),
                               ],
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    isLoading ? const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircularProgressIndicator(),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ) : const SizedBox(width: 0, height: 0),
-                  ],
-                ),
-              );
-            });
+                      ) : const SizedBox(width: 0, height: 0),
+                    ],
+                  ),
+                );
+              });
+        }else{
+          _bellController.stop();
+          print("stop");
+          setState(() {});
+        }
       },
     );
   }

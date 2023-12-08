@@ -49,19 +49,21 @@ class ControlPage extends StatefulWidget {
   _ControlPageState createState() => _ControlPageState();
 }
 
-class _ControlPageState extends State<ControlPage>
-    with SingleTickerProviderStateMixin {
+class _ControlPageState extends State<ControlPage> with SingleTickerProviderStateMixin {
   //singleTickerProviderState를 상속에 추가하지 않으면 해당 클래스에서 애니메이션을 처리할 수 없다.
   TabController? controller;
   List<ChatRoom> chatRoomList = List.empty(growable: true);
   late AUser otherUser;
+  AUser requestTrader = AUser(email: '', userName: '', imagePath: '', isUserLogin: null, userStatus: UserStatus.NORMAL);
   //late AnimationController _bellController;
+  List<Map<String, String>> requestList = [];
 
   @override
   void initState() {
     super.initState();
     debugPrint("control_initiate");
     controller = TabController(length: 5, vsync: this);
+    controller!.addListener(addListener);
     otherUser = AUser(
         userName: "정태형",
         isUserLogin: true,
@@ -83,24 +85,28 @@ class _ControlPageState extends State<ControlPage>
     setState(() {
       myUserInfo.userItemNum ??= 0; //널이면 0 초기화
     });
-
+    requestList = myUserInfo.requestList??[];
    // _bellController = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat();
   }
 
   @override
   addListener() {
     //컨트롤러를 통해 탭의 위치나 애니메이션 상태 등을 알 수 있고 추가할 수 있다.
+    print("add Listner");
     if (controller!.indexIsChanging) {
       print("previous page : ${controller?.previousIndex}");
       print("current page : ${controller?.index}");
     }
+
+    setState(() {
+      requestList = myUserInfo.requestList??[];
+    });
   }
 
   @override
   void dispose() {
     debugPrint("control_dispose");
     controller!.dispose();
-  //  _bellController.dispose();
     super.dispose();
   }
 
@@ -115,9 +121,16 @@ class _ControlPageState extends State<ControlPage>
             children: [
               SupoTitle2(),
               Positioned(
-                right : 30,
-                top : -7,
-                child: ReallyBoughtPopUp(itemId: '126', traderId: '9', itemName: '아이템제목', traderName: '거래자이름',),
+                right : 40,
+                top : 0,
+                child: ReallyBoughtPopUp(
+                  itemId: requestList.isNotEmpty
+                      ? requestList![0]['itemId']!
+                      : '-1',
+                  traderId: requestList.isNotEmpty
+                      ? requestList![0]['userId']!
+                      : '-1',
+                ),
               ),
               Positioned(
                 right: 0,
@@ -140,9 +153,6 @@ class _ControlPageState extends State<ControlPage>
               //ReallyBoughtPopUp(itemId: '126', traderId: '9', itemName: '아이템제목', traderName: '거래자이름',),
             ],
           ),
-          actions : [
-
-          ],
           backgroundColor: Colors.white),
       floatingActionButton: FloatingActionButton(
         elevation: 0,
@@ -216,6 +226,11 @@ class _ControlPageState extends State<ControlPage>
     setState(() {
       homePageBuilder = getItem(1, SortType.DATEASCEND, ItemStatus.TRADING);
     });
+  }
+
+  void getNameById(String itemId) async{
+    requestTrader = await getUserInfo3(itemId);
+    return;
   }
 
 

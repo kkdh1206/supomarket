@@ -18,6 +18,7 @@ import '../../entity/util_entity.dart';
 import '../../infra/item_list_data.dart';
 import '../../notification.dart';
 import '../../provider/socket_provider.dart';
+import '../../widgets/util_widgets.dart';
 import '../util_function.dart';
 
 class HomePage extends StatefulWidget {
@@ -77,11 +78,12 @@ class _HomePageState extends State<HomePage> {
     isListened = false; //progress가 돌아가고 있으면 추가로 요청하지 않기 (한번만)
 
     Request();
-    //checkRequestList(context);
   }
 
   void Request() async{
+    print("request home page");
     await getMyInfoRequestList();
+    print(myUserInfo.requestList.toString());
   }
 
 

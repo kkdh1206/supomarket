@@ -34,8 +34,8 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
     List<String> userUidList = widget.userUidList;
 
     String traderName = nameList[0];
+    print("nameList $nameList");
     String traderUid = userUidList[0];
-
     int selectedIndex = 0;
 
     return Scaffold(
@@ -91,7 +91,8 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
                       child: TextButton(
                           onPressed: () async {
                             if(widget.userUidList.isNotEmpty) {
-                              await postRequestList(traderUid, widget.itemId);
+                              //await postRequestList(traderUid, widget.itemId);
+                              await postRequestList("gL0UtKkFd0dbMmUAcsYzzUKY7zC2", "243");
                             }
                             Navigator.popUntil(context, ModalRoute.withName("/"));
                           },
@@ -150,7 +151,6 @@ class SubSellingPageSelectionPageState extends State<SubSellingPageSelectionPage
     }
 
     //없애기 이부분
-    userUid = "E3GFCEbDoyTfjKbt3MkTlsOzRph2";
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     setState(() {
       isLoading = true;

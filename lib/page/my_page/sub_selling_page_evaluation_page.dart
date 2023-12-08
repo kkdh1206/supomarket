@@ -20,6 +20,8 @@ class SubSellingPageEvaluationPage extends StatefulWidget {
 
 class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPage>{
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,9 +52,10 @@ class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPa
                 InkWell(
                   onTap: () async {
                     await patchEvaluation(widget.userID, 5);
-                    checkRequestList(context);
+                    isLoading = true;
                     Navigator.popUntil(context, ModalRoute.withName("/"));
-                  },
+                    isLoading = false;
+                    },
                   child: Image.asset(
                     'assets/images/good1.jpeg',
                     width: 150,
@@ -62,8 +65,10 @@ class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPa
                 const SizedBox(width: 5),
                 InkWell(
                   onTap: () async {
+                    isLoading = true;
                     await patchEvaluation(widget.userID, -5);
-                    checkRequestList(context);
+                    isLoading = false;
+                   // checkRequestList(context);
                     Navigator.popUntil(context, ModalRoute.withName("/"));
                   },
                   child: Image.asset(

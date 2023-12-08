@@ -32,16 +32,37 @@ class UtilUsecase{
     );
   }
 
-  Future<void> postReallyBought(String userId, String itemId) async{
-    print("post Really Bought");
+  Future<void> patchRequestList(String userId, String itemId) async{
+
+    print("patch Really Bought : userId ${userId} itemId ${itemId}");
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myAlarmCategory';
+    String url = 'http://kdh.supomarket.com/auth/request';
 
-    var data = {'userId': userId, 'itemId' : itemId};
+    var data = {'sellerId': userId, 'itemId' : itemId};
+
+    try {
+      Response response = await dio.patch(url, data: data);
+    } catch (e) {
+      print('Error sending PATCH request : $e');
+    }
+
+    return;
+  }
+
+  Future<void> postBuyingList(String itemId) async {
+    print("post Buy List");
+
+    String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $token';
+    String url = 'http://kdh.supomarket.com/items/myHistory/add';
+
+    var data = {'itemId': itemId};
 
     try {
       Response response = await dio.post(url, data: data);

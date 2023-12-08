@@ -205,94 +205,94 @@ Future<String> getSellerById(String id) async{
   return " ";
 
 }
-
-void checkRequestList(BuildContext context){
-  bool isLoading = false;
-
-  if(myUserInfo.requestList!.isNotEmpty){
-    for(int i=0; i<myUserInfo.requestList!.length; i++){
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              scrollable: true,
-              title: const Text('해당 물품을 거래하셨나요?'),
-              content: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Form(
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: [
-                              Text('제목 :', style: TextStyle(fontFamily: 'KBO-B')),
-                              Expanded(
-                                  child: Text(itemName)),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              Text('판매자 :',
-                                  style: TextStyle(fontFamily: 'KBO-B')),
-                              Expanded(child: Text(sellerName)),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                  child: Text("예"),
-                                  onPressed: () async {
-                                    isLoading = true;
-
-                                    await utilUsecase.postReallyBought('9','9');
-
-                                    isLoading = false;
-
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                SubSellingPageEvaluationPage(
-                                                    userID: int.parse(myUserInfo.requestList![0]['userId']!))));
-                                    //맨 앞 없애기
-                                    myUserInfo.requestList?.removeAt(0);
-                                  }),
-                              const SizedBox(width: 10),
-                              ElevatedButton(
-                                  child: Text("아니오"),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  })
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  isLoading ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ) : const SizedBox(width: 0, height: 0),
-                ],
-              ),
-            );
-          });
-    }
-
-  }
-}
+//
+// void checkRequestList(BuildContext context){
+//   bool isLoading = false;
+//
+//   if(myUserInfo.requestList!.isNotEmpty){
+//     for(int i=0; i<myUserInfo.requestList!.length; i++){
+//       showDialog(
+//           context: context,
+//           builder: (BuildContext context) {
+//             return AlertDialog(
+//               scrollable: true,
+//               title: const Text('해당 물품을 거래하셨나요?'),
+//               content: Stack(
+//                 children: [
+//                   Padding(
+//                     padding: const EdgeInsets.all(8.0),
+//                     child: Form(
+//                       child: Column(
+//                         children: <Widget>[
+//                           Row(
+//                             children: [
+//                               Text('제목 :', style: TextStyle(fontFamily: 'KBO-B')),
+//                               Expanded(
+//                                   child: Text(itemName)),
+//                             ],
+//                           ),
+//                           const SizedBox(height: 5),
+//                           Row(
+//                             children: [
+//                               Text('판매자 :',
+//                                   style: TextStyle(fontFamily: 'KBO-B')),
+//                               Expanded(child: Text(sellerName)),
+//                             ],
+//                           ),
+//                           Row(
+//                             mainAxisAlignment: MainAxisAlignment.center,
+//                             children: [
+//                               ElevatedButton(
+//                                   child: Text("예"),
+//                                   onPressed: () async {
+//                                     isLoading = true;
+//
+//                                     await utilUsecase.patchRequestList('9','9');
+//
+//                                     isLoading = false;
+//
+//                                     Navigator.push(
+//                                         context,
+//                                         MaterialPageRoute(
+//                                             builder: (context) =>
+//                                                 SubSellingPageEvaluationPage(
+//                                                     userID: int.parse(myUserInfo.requestList![0]['userId']!))));
+//                                     //맨 앞 없애기
+//                                     myUserInfo.requestList?.removeAt(0);
+//                                   }),
+//                               const SizedBox(width: 10),
+//                               ElevatedButton(
+//                                   child: Text("아니오"),
+//                                   onPressed: () {
+//                                     Navigator.pop(context);
+//                                   })
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                   isLoading ? const Center(
+//                     child: Column(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         Row(
+//                           mainAxisAlignment: MainAxisAlignment.center,
+//                           children: [
+//                             CircularProgressIndicator(),
+//                           ],
+//                         ),
+//                       ],
+//                     ),
+//                   ) : const SizedBox(width: 0, height: 0),
+//                 ],
+//               ),
+//             );
+//           });
+//     }
+//
+//   }
+// }
 
 Future<void> deleteReqeustList(int itemId, String sellerName) async {
 
@@ -356,6 +356,38 @@ Future<AUser> getUserInfo2(Board board) async {
   print('getUserData in Board');
   dio.options.headers['Authorization'] = 'Bearer $token';
   String url = 'http://kdh.supomarket.com/boards/boardId/${board.id}';
+
+
+  try {
+    Response response = await dio.get(url);
+    // Map<String, dynamic> JsonData = json.decode(response.data);
+    dynamic jsonData = response.data;
+
+    int id = jsonData['id'] as int;
+    String Email = jsonData['Email'] as String;
+    String username = jsonData['username'] as String;
+    String userstatus = jsonData['userstatus'] as String;
+    String imageUrl = jsonData['imageUrl'] as String;
+    List<dynamic> interestedId = jsonData['interestedId'] as List<dynamic>;
+    String studentNumber = jsonData['studentNumber'] as String;
+    String uid = jsonData['uid'] as String;
+
+    return AUser(id: id, email: Email, userName: username, imagePath: imageUrl, isUserLogin: true, userStatus: convertStringToEnum(userstatus), userStudentNumber: studentNumber, userInterestedId: interestedId, userUid : uid);
+
+  } catch (e) {
+
+    print('Error sending GET request : $e');
+    return AUser(id: 0, email: "", userName : "", imagePath: "", isUserLogin: false, userStatus: UserStatus.NORMAL, userStudentNumber: "", userInterestedId: [], userUid : "");
+
+  }
+}
+
+Future<AUser> getUserInfo3(String itemId) async {
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+  print('getUserData');
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/items/itemId/${itemId}';
 
 
   try {
@@ -681,8 +713,6 @@ Future<bool> getMyInfoRequestList() async {
 
   try {
 
-    debugPrint("Get Request List");
-
     Response response = await dio.get(url);
     dynamic jsonData = response.data;
 
@@ -690,14 +720,13 @@ Future<bool> getMyInfoRequestList() async {
 
       List<dynamic> requestList = jsonData as List<dynamic>;
       String inputString = "";
-      Map<String, String> map = Map();
 
       for(int i = 0; i<requestList.length; i++){
+        Map<String, String> map = Map();
         inputString = requestList[i];
         List<String> userIdList = inputString.split(' ');
-        print(userIdList[0]);
-        map['itemId'] = userIdList[0];
-        map['userId'] = userIdList[1];
+        map['itemId'] = userIdList[0]; print(userIdList[0]);
+        map['userId'] = userIdList[1]; print(userIdList[1]);
         myUserInfo.requestList?.add(map);
       }
       print(myUserInfo.requestList.toString());
@@ -706,6 +735,5 @@ Future<bool> getMyInfoRequestList() async {
   } catch (e) {
     print('Error sending GET request : $e');
   }
-
   return true;
 }

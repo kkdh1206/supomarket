@@ -9,7 +9,6 @@ import '../my_page/widgets/board_page_widgets.dart';
 import '../util_function.dart';
 
 class SubSubHomePageCommentsPage extends StatefulWidget {
-
   final int itemID;
 
   const SubSubHomePageCommentsPage({super.key, required this.itemID});
@@ -18,11 +17,10 @@ class SubSubHomePageCommentsPage extends StatefulWidget {
   State<StatefulWidget> createState() {
     return SubSubHomePageCommentsPageState();
   }
-
 }
 
-class SubSubHomePageCommentsPageState extends State<SubSubHomePageCommentsPage> {
-
+class SubSubHomePageCommentsPageState
+    extends State<SubSubHomePageCommentsPage> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController comment = TextEditingController();
   List<Map<String, dynamic>> commentList = [];
@@ -36,10 +34,7 @@ class SubSubHomePageCommentsPageState extends State<SubSubHomePageCommentsPage> 
   }
 
   void scrollToBottom(BuildContext context) {
-    final isKeyboardOpen = MediaQuery
-        .of(context)
-        .viewInsets
-        .bottom > 0;
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
     // if (isKeyboardOpen) {
     Future.delayed(Duration(milliseconds: 100), () {
@@ -79,11 +74,11 @@ class SubSubHomePageCommentsPageState extends State<SubSubHomePageCommentsPage> 
                                           left: 10, right: 10),
                                       child: CommentCard(
                                         writer: commentList[position]
-                                        ['username'],
+                                            ['username'],
                                         date: formatDate(
                                             commentList[position]['dateTime']),
                                         content: commentList[position]
-                                        ['content'],
+                                            ['content'],
                                       ),
                                     );
                                   },
@@ -94,62 +89,67 @@ class SubSubHomePageCommentsPageState extends State<SubSubHomePageCommentsPage> 
                     ],
                   ),
                   Positioned(
-                      left: 10, top: 20,
-                      child: IconButton(onPressed: () {
-                        Navigator.pop(context);
-                      },
-                          icon: const Icon(
-                              Icons.arrow_back_ios, color: Colors.black),
-                          iconSize: 30)
-                  ),
+                      left: 10,
+                      top: 20,
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.arrow_back_ios,
+                              color: Colors.black),
+                          iconSize: 30)),
                 ],
               );
             } else {
               return const Center(
                   child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                        ],
-                      )
+                      CircularProgressIndicator(),
                     ],
-                  ));
+                  )
+                ],
+              ));
             }
           }),
-      bottomNavigationBar: BottomAppBar(
-        height: 55,
-        color: Colors.white,
+      bottomNavigationBar: Padding(
+        padding: MediaQuery.of(context).viewInsets,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            BottomAppBar(
-              elevation: 0,
-              child: CommentInput(
-                onChanged: (text) {
-                  print("변경!!!");
-                  setState(() {
-                    inputText = text;
-                  });
-                },
-                onSubmitted: (text) {
-                  print("다음!!!");
-                  setState(() {
-                    comment.text = text + '\n';
-                    comment.selection = TextSelection.fromPosition(
-                        TextPosition(offset: comment.text.length));
-                    inputText = comment.text;
-                  });
-                },
-                onPressed: () async {
-                  await _postComment(inputText, widget.itemID.toString());
-                  await _getComment();
-                  comment.clear();
-                  scrollToBottom(context);
-                },
-                controller: comment,
+            Container(
+              color: Colors.white,
+              child: new ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 300.0,
+                ),
+                child: CommentInput(
+                  onChanged: (text) {
+                    print("변경!!!");
+                    setState(() {
+                      inputText = text;
+                    });
+                  },
+                  onSubmitted: (text) {
+                    print("다음!!!");
+                    setState(() {
+                      comment.text = text + '\n';
+                      comment.selection = TextSelection.fromPosition(
+                          TextPosition(offset: comment.text.length));
+                      inputText = comment.text;
+                    });
+                  },
+                  onPressed: () async {
+                    await _postComment(inputText, widget.itemID.toString());
+                    await _getComment();
+                    comment.clear();
+                    scrollToBottom(context);
+                  },
+                  controller: comment,
+                ),
               ),
             ),
           ],
@@ -157,7 +157,6 @@ class SubSubHomePageCommentsPageState extends State<SubSubHomePageCommentsPage> 
       ),
     );
   }
-
 
   Future<bool> _postComment(String content, String itemID) async {
     String token = await firebaseAuth.currentUser?.getIdToken() ?? '';
@@ -185,7 +184,6 @@ class SubSubHomePageCommentsPageState extends State<SubSubHomePageCommentsPage> 
   }
 
   Future<bool> _getComment() async {
-
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
@@ -198,7 +196,6 @@ class SubSubHomePageCommentsPageState extends State<SubSubHomePageCommentsPage> 
       print(response);
 
       if (jsonData.toString() != "true") {
-
         commentList = [];
         for (var data in jsonData) {
           int id = data['id'] as int;

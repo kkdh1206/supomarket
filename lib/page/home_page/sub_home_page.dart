@@ -244,19 +244,23 @@ class _SubHomePageState extends State<SubHomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        left: 6, top: 5, bottom: 4, right: 4),
-                                    color: Color(0xffB70001),
-                                    height: 25,
-                                    width: 50,
-                                    child: Text(
-                                      "판매자",
-                                      style: TextStyle(
-                                        color: Colors.white,
+                                  child: Center(
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                          left: 6, top: 5, bottom: 4, right: 4),
+                                      color: Color(0xffB70001),
+                                      height: 25,
+                                      width: 60,
+                                      child: Text(
+                                        "판매자",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontFamily: 'KBO-M'
+                                        ),
                                       ),
                                     ),
                                   ),

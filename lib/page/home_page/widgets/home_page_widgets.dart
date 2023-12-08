@@ -23,6 +23,7 @@ class ItemCard extends StatelessWidget {
         height: 110,
         child: Card(
           color: Colors.white,
+          elevation: 0.4,
           margin: const EdgeInsets.symmetric(
               vertical: 10, horizontal: 10
           ),

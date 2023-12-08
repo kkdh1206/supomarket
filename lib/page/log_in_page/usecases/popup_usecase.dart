@@ -112,6 +112,7 @@ class PopUpUseCase {
 
   void isSoldOutPopUp(BuildContext context, int? chatRoomNum, String itemId, List<String> nameList, List<String> userUidList) {
 
+    print("isSoldOutPopUp : ${nameList.toString()}");
     showDialog(
       context: context,
       barrierDismissible: false, //여백을 눌러도 닫히지 않음
@@ -125,16 +126,16 @@ class PopUpUseCase {
                 TextButton(
                   child: const Text("예"),
                   onPressed: () {
-                    if (!nameList.isEmpty) {
+                    if (nameList.isEmpty) {
                       Navigator.popUntil(context, ModalRoute.withName("/"));
                     } else {
                       Navigator.push(context, PageRouteBuilder(
                           pageBuilder: (context, animation,
                               secondaryAnimation) {
                             //여기서 상대방 ID 줘야함 ㅁㄴㅇㄹ
-                            nameList = ['김도형'];
-                            userUidList = ['asdfafafsf'];
-                            itemId = '9';
+                            // nameList = ['김도형'];
+                            // userUidList = ['asdfafafsf'];
+                            // itemId = '9';
                             return SubSellingPageSelectionPage(
                               nameList: nameList, userUidList: userUidList, itemId: itemId); // 화면을 반환하는 부분
                           }));
