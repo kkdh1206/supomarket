@@ -49,6 +49,7 @@ class SubSellingPageSelectionPageState
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
             onPressed: () {
+              print("ㅁㄴㅇㄹ");
               Navigator.popUntil(context, ModalRoute.withName('/'));
             },
           ),
@@ -94,9 +95,8 @@ class SubSellingPageSelectionPageState
                       child: TextButton(
                           onPressed: () async {
                             if (widget.userUidList.isNotEmpty) {
-                              //await postRequestList(traderUid, widget.itemId);
-                              await postRequestList(
-                                  "gL0UtKkFd0dbMmUAcsYzzUKY7zC2", "243");
+                              await postRequestList(traderUid, widget.itemId);
+                              //await postRequestList("gL0UtKkFd0dbMmUAcsYzzUKY7zC2", "243");
                             }
                             //Navigator.popUntil(context, ModalRoute.withName("/"));
                             Navigator.popUntil(context, ModalRoute.withName("control"));

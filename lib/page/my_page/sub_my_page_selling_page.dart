@@ -62,7 +62,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
 
   RestClient? client;
   List<String>? nameList;
-  List<String>?userUidList;
+  List<String>? userUidList;
   int chatRoomNum = 0;
 
   @override
@@ -110,6 +110,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         //automaticallyImplyLeading: false,
+        flexibleSpace: Container(color: Colors.white),
         backgroundColor: Colors.white,
         elevation: 0,
         titleSpacing: 0,
@@ -125,8 +126,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
           future: sellingPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-
-              if(list!.isEmpty){
+              if (list!.isEmpty) {
                 return const Center(
                   child: Text("판매한 물품이 없습니다"),
                 );
@@ -186,8 +186,18 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
                                     title: list![position].sellingTitle!,
                                     date: list![position].uploadDate ?? "",
                                     price: list![position].sellingPrice!,
-                                    stateText : list![position].itemStatus == ItemStatus.TRADING ? "판매 중" : list![position].itemStatus == ItemStatus.RESERVED ? "예약 중" : list![position].itemStatus == ItemStatus.SOLDOUT ? "판매 완료" : "급처분 중",
-                                    isFastSell : list![position].itemStatus == ItemStatus.USERFASTSELL,
+                                    stateText: list![position].itemStatus ==
+                                            ItemStatus.TRADING
+                                        ? "판매 중"
+                                        : list![position].itemStatus ==
+                                                ItemStatus.RESERVED
+                                            ? "예약 중"
+                                            : list![position].itemStatus ==
+                                                    ItemStatus.SOLDOUT
+                                                ? "판매 완료"
+                                                : "급처분 중",
+                                    isFastSell: list![position].itemStatus ==
+                                        ItemStatus.USERFASTSELL,
                                     modify: () async {
                                       final newData = await Navigator.push(
                                           context,
@@ -207,7 +217,8 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
                                             isLiked: true,
                                             sellerSchoolNum: "20000000",
                                             uploadDate: "",
-                                            uploadDateForCompare: DateTime.now(),
+                                            uploadDateForCompare:
+                                                DateTime.now(),
                                             imageListA: newData.imageListA,
                                             imageListB: newData.imageListB,
                                             itemStatus: newData.itemStatus,
@@ -225,9 +236,9 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
                                                 ItemStatus.TRADING;
                                             break;
                                           case (1):
-                                          list![position].itemStatus =
-                                              ItemStatus.RESERVED;
-                                          break;
+                                            list![position].itemStatus =
+                                                ItemStatus.RESERVED;
+                                            break;
                                           case (2):
                                             list![position].itemStatus =
                                                 ItemStatus.USERFASTSELL;
@@ -235,7 +246,9 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
                                           case (3):
                                             list![position].itemStatus =
                                                 ItemStatus.SOLDOUT;
-                                            _isSoldOutPopUp(list![position].itemID.toString());
+                                            _isSoldOutPopUp(list![position]
+                                                .itemID
+                                                .toString());
                                             break;
                                         }
                                       });
@@ -286,14 +299,15 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     );
   }
 
-  void _isSoldOutPopUp(String goodsId) async{
+  void _isSoldOutPopUp(String goodsId) async {
     await getChatRoomNumUid(goodsId);
 
-    for(int i = 0; i<userUidList!.length; i++){
+    for (int i = 0; i < userUidList!.length; i++) {
       await getUserName(userUidList![i]);
     }
     String? itemId = goodsId;
-    popUpUseCase.isSoldOutPopUp(context, chatRoomNum, itemId, nameList!.sublist(0,chatRoomNum), userUidList!);
+    popUpUseCase.isSoldOutPopUp(context, chatRoomNum, itemId,
+        nameList!.sublist(0, chatRoomNum), userUidList!);
     print("채팅방 개수는 $chatRoomNum");
   }
 
@@ -302,18 +316,18 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     print("22222222222");
     List<Room>? getNum;
     print("goodsId : $goodsId, userName : ${myUserInfo.userUid.toString()}");
-    var res = await client?.getReqRoomNum(myUserInfo.userUid.toString(), goodsId);
+    var res =
+        await client?.getReqRoomNum(myUserInfo.userUid.toString(), goodsId);
     setState(() {
       getNum = res;
     });
 
-    if(getNum?.length == null) {
+    if (getNum?.length == null) {
       chatRoomNum = 0;
-    }
-    else{
+    } else {
       chatRoomNum = getNum!.length;
       print("========================");
-      for(int i = 0; i < chatRoomNum; i++) {
+      for (int i = 0; i < chatRoomNum; i++) {
         String? buyUid;
         print(chatRoomNum);
         print(getNum?[i].buyerID);
@@ -321,7 +335,6 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
         userUidList?.add(buyUid!);
       }
     }
-
   }
 
   void updateList() async {
@@ -419,7 +432,6 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
               itemStatus: tempItemStatus!,
               itemID: id));
         }
-
 
         setState(() {
           isMoreRequesting = false;
@@ -532,17 +544,16 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     return true;
   }
 
-  Future<void> getUserName(String userUid) async{
-
+  Future<void> getUserName(String userUid) async {
     Dio dio = Dio();
     dio.options.responseType = ResponseType.plain; // responseType 설정
     String url = 'http://kdh.supomarket.com/auth/userUid';
 
     Map<String, String> data = {'userUid': userUid};
-    List<String> temp =[];
+    List<String> temp = [];
     try {
       temp?.clear();
-      Response response = await dio.get(url, data:data);
+      Response response = await dio.get(url, data: data);
       dynamic jsonData = response.data;
       String userName = jsonData as String;
 
@@ -555,5 +566,4 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     nameList?.add(temp[0]);
     return;
   }
-
 }

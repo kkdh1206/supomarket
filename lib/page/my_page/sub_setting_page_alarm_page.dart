@@ -23,6 +23,7 @@ class SubSettingPageAlarmPage extends StatefulWidget {
 class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
   FixedExtentScrollController? thirdController;
 
+  bool isLoading = false;
   bool _isLoading = false;
 
   @override
@@ -124,13 +125,17 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     KeywordAlarm(text: "냉장고",
-                                        isClicked: isClicked.contains("냉장고")),
+                                        isClicked: isClicked.contains("냉장고"),
+                                        delay: delay,
+                                    ),
                                     const SizedBox(width: 5),
                                     KeywordAlarm(text: "의류",
-                                        isClicked: isClicked.contains("의류")),
+                                        isClicked: isClicked.contains("의류"),
+                                      delay: delay),
                                     const SizedBox(width: 5),
                                     KeywordAlarm(text: "자취방",
-                                        isClicked: isClicked.contains("자취방")),
+                                        isClicked: isClicked.contains("자취방"),
+                                      delay: delay,),
                                   ]),
                             ),
                           ),
@@ -142,20 +147,39 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     KeywordAlarm(text: "책",
-                                        isClicked: isClicked.contains("책")),
+                                        isClicked: isClicked.contains("책"),
+                                      delay: delay,),
                                     const SizedBox(width: 5),
                                     KeywordAlarm(text: "모니터",
-                                        isClicked: isClicked.contains("모니터")),
+                                        isClicked: isClicked.contains("모니터"),
+                                      delay: delay,),
                                     const SizedBox(width: 5),
                                     KeywordAlarm(text: "기타",
-                                        isClicked: isClicked.contains("기타")),
+                                        isClicked: isClicked.contains("기타"),
+                                      delay: delay,),
                                   ]),
                             ),
                           ),
                         ],
                       ),
                     )
-                  ])
+                  ]),
+                  isLoading ? Container(
+                    color: Colors.transparent,
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ) : const SizedBox(width: 0, height: 0),
                 ],
               );
             } else {
@@ -163,6 +187,17 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
             }
           }),
     );
+  }
+
+  void delay() async{
+    setState(() {
+      isLoading = true;
+    });
+    await Future.delayed(Duration(seconds: 1), (){
+      setState(() {
+        isLoading = false;
+      });
+    });
   }
 
   Future<void> patchCategoryAlarm() async {

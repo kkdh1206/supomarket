@@ -5,6 +5,7 @@ import 'package:supo_market/page/my_page/usecases/my_page_usecases.dart';
 import '../../../entity/item_entity.dart';
 import '../../../entity/util_entity.dart';
 import '../../../infra/my_info_data.dart';
+import '../../../usecases/util_usecases.dart';
 import '../sub_my_info_page_change_password_page.dart';
 import '../sub_my_info_page_change_profile_page.dart';
 import '../sub_my_page_buying_page.dart';
@@ -435,8 +436,9 @@ class AlarmTitle extends StatelessWidget {
 class KeywordAlarm extends StatefulWidget {
   final bool isClicked;
   final String text;
+  final Function() delay;
 
-  const KeywordAlarm({Key? key, required this.isClicked, required this.text})
+  const KeywordAlarm({Key? key, required this.isClicked, required this.text, required this.delay})
       : super(key: key);
 
   @override
@@ -470,10 +472,24 @@ class KeywordAlarmState extends State<KeywordAlarm> {
             isClicked = !isClicked!;
           });
 
+          // String english = "";
+          // switch(widget.text){
+          //   case('냉장고') : english = "REFRIGERATOR";
+          //   case('의류') : english = "CLOTHES";
+          //   case('자취방') : english = "ROOM";
+          //   case('책') : english = "BOOK";
+          //   case('모니터') : english = "MONITOR";
+          //   case('기타') : english = "ETC";
+          // }
+
           if (isClicked!) {
+            //myPageUsecase.postKeyword(english);
             myPageUsecase.postKeyword(widget.text);
+            widget.delay();
           } else {
+            //myPageUsecase.patchKeyword(english);
             myPageUsecase.patchKeyword(widget.text);
+            widget.delay();
           }
         },
         child: Center(
@@ -525,6 +541,7 @@ class MyItemCardState extends State<MyItemCard>{
 
   FixedExtentScrollController? firstController;
   int initialIndex= 0;
+  int selectedIndex = 0;
 
   @override
   void initState() {
@@ -662,6 +679,7 @@ class MyItemCardState extends State<MyItemCard>{
                                     height: 400,
                                     width: 400,
                                     child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Expanded(
                                           child: CupertinoPicker(
@@ -669,7 +687,9 @@ class MyItemCardState extends State<MyItemCard>{
                                             backgroundColor: Colors.white,
                                             scrollController: firstController,
                                             onSelectedItemChanged: (index) {
-                                              widget.stateChange(index);
+                                              setState(() {
+                                                selectedIndex = index;
+                                              });
                                             },
                                             children: List<Widget>.generate(4, (index) {
                                               return Center(
@@ -694,6 +714,37 @@ class MyItemCardState extends State<MyItemCard>{
                                               );
                                             }),
                                           ),
+                                        ),
+                                        Container(
+                                          width: MediaQuery.of(context).size.width * 1,
+                                          height: 60,
+                                          color: Colors.white,
+                                          child: TextButton(
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Color(0xFFB70001),
+                                                padding: EdgeInsets.zero,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                  BorderRadius.circular(0), // 원하는 둥근 정도 설정
+                                                ),
+                                              ),
+                                              onPressed: () {
+                                                widget.stateChange(selectedIndex);
+                                              },
+                                              child: const Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    '확인',
+                                                    // textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontFamily: 'KBO-M',
+                                                        fontWeight: FontWeight.w800,
+                                                        fontSize: 23),
+                                                  )
+                                                ],
+                                              )),
                                         ),
                                       ],
                                     ),
@@ -727,6 +778,7 @@ class MyItemCard2 extends StatefulWidget {
   final String date;
   final int price;
   final String buyingDate;
+  final String itemId;
 
 
   MyItemCard2({Key? key,
@@ -734,7 +786,7 @@ class MyItemCard2 extends StatefulWidget {
     required this.title,
     required this.date,
     required this.price,
-    required this.buyingDate,})
+    required this.buyingDate, required this.itemId,})
       : super(key: key);
 
   @override
@@ -764,6 +816,15 @@ class MyItemCard2State extends State<MyItemCard2>{
         ),
         child: Stack(
           children: [
+            // Positioned(
+            //     top: 5,right: 5,
+            //     child: IconButton(
+            //       onPressed: () async{
+            //         await utilUsecase.patchBuyingList(widget.itemId);
+            //         setState(() {});
+            //       },
+            //       icon: Icon(CupertinoIcons.clear),
+            //     )),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -867,3 +928,4 @@ class MyItemCard2State extends State<MyItemCard2>{
     );
   }
 }
+

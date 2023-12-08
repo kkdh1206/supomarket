@@ -32,7 +32,9 @@ Future<bool>? qnaSearchPageBuilder;
 Future<bool>? boardPageBuilder;
 Future<bool>? myQnaPageBuilder;
 Future<bool>? subChattingPageBuilder;
+Future<bool>? chattingPageBuilder;
 Future<bool>? subSubHomePageCommentsPageBuilder;
+
 
 String? fcmToken;
 
@@ -160,6 +162,7 @@ String sellerName = "";
 
 Future<String> getItemById(String id) async{
 
+  print("getItemById : $id");
   String itemName = "";
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   Dio dio = Dio();
@@ -178,8 +181,61 @@ Future<String> getItemById(String id) async{
 
     print('Error sending GET request : $e');
   }
+  print("getItemById : $itemName");
   return itemName;
 
+}
+
+Future<List<dynamic>> getItemNameById(List<String> id) async{
+
+  print("getItemNameById : $id");
+
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/items/idList';
+  List<dynamic> nameList = [];
+
+  try {
+    var data = {'id' : id};
+    Response response = await dio.get(url, data: data);
+    dynamic jsonData = response.data;
+
+    nameList = jsonData as List<dynamic>;
+    print(nameList);
+
+  } catch (e) {
+    print('Error sending GET request : $e');
+  }
+
+  return nameList;
+}
+
+Future<List<dynamic>> getItemImageById(List<String> id) async{
+
+  print("getItemImageById : $id");
+
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'http://kdh.supomarket.com/items/imgList';
+  List<dynamic> imageList = [];
+
+  try {
+    var data = {'id' : id};
+    Response response = await dio.get(url, data: data);
+    dynamic jsonData = response.data;
+
+    imageList = jsonData as List<dynamic>;
+    print(imageList);
+
+  } catch (e) {
+    print('Error sending GET request : $e');
+  }
+
+  return imageList;
 }
 
 Future<String> getSellerById(String id) async{
@@ -383,9 +439,12 @@ Future<AUser> getUserInfo2(Board board) async {
 }
 
 Future<AUser> getUserInfo3(String itemId) async {
+
+
+
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   Dio dio = Dio();
-  print('getUserData');
+  print('getUserData');   print("itemId" + itemId);
   dio.options.headers['Authorization'] = 'Bearer $token';
   String url = 'http://kdh.supomarket.com/items/itemId/${itemId}';
 

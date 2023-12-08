@@ -96,6 +96,7 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        flexibleSpace: Container(color: Colors.white),
         //automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -180,6 +181,7 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
                                     date: list![position].uploadDate ?? "",
                                     buyingDate : list![position].buyingDate ?? "",
                                     price: list![position].sellingPrice!,
+                                    itemId: list![position].itemID!.toString(),
                                   ),
                                 ),
                               );

@@ -5,8 +5,10 @@ import 'package:supo_market/page/chatting_page/sub_chat_page.dart';
 import 'package:supo_market/page/chatting_page/sub_chatting_page_chatbot_page.dart';
 import 'package:supo_market/page/chatting_page/widgets/chatting_page_widgets.dart';
 import '../../entity/chat_room_entity.dart';
+import '../../entity/user_entity.dart';
 import '../../infra/my_info_data.dart';
 import '../../retrofit/RestClient.dart';
+import '../util_function.dart';
 
 class ChattingPage extends StatefulWidget {
   final List<ChatRoom>? list;
@@ -26,6 +28,16 @@ class ChattingPageState extends State<ChattingPage> {
   String? EnterText;
   List<ChatRoom> list = [];
 
+  //이름 받아오기
+  AUser user = AUser(
+      email: "",
+      userName: "",
+      imagePath: "",
+      isUserLogin: false,
+      userStatus: UserStatus.NORMAL);
+  List<dynamic> roomNameList = [];
+  List<dynamic> roomImageList = [];
+
   @override
   void initState() {
     super.initState();
@@ -42,30 +54,49 @@ class ChattingPageState extends State<ChattingPage> {
     print("userUid" + myUserInfo.userUid!);
   }
 
-  void inputInfo(String sss) async {
-    final buyerID = '345601';
-    final sellerID = '50508';
-    final goodsID = '91751';
+  Future<bool> initRoomInfo() async {
 
-    final roomData = RoomData(
-      buyerID: buyerID,
-      sellerID: sellerID,
-      goodsID: goodsID,
-      id: buyerID + sellerID + goodsID,
-      roomName: sss,
-    );
+    print("initRoomInfo : ${roomList.length}");
 
-    await client!.postRoomDetail(roomData);
+    roomImageList.clear();
+    roomNameList.clear();
 
-    roomList.add(Room(
-        id: roomData.id,
-        buyerID: roomData.buyerID,
-        sellerID: roomData.sellerID,
-        goodsID: roomData.goodsID,
-        roomName: roomData.roomName));
+    List<String> idList = [];
 
-    setState(() {});
+    for(int i = 0; i<roomList.length; i++) {
+      idList.add(roomList[i].goodsID!);
+    }
+
+    roomNameList = await getItemNameById(idList);
+    roomImageList = await getItemImageById(idList);
+
+    return true;
   }
+
+  // void inputInfo(String sss) async {
+  //   final buyerID = '345601';
+  //   final sellerID = '50508';
+  //   final goodsID = '91751';
+  //
+  //   final roomData = RoomData(
+  //     buyerID: buyerID,
+  //     sellerID: sellerID,
+  //     goodsID: goodsID,
+  //     id: buyerID + sellerID + goodsID,
+  //     roomName: sss,
+  //   );
+  //
+  //   await client!.postRoomDetail(roomData);
+  //
+  //   roomList.add(Room(
+  //       id: roomData.id,
+  //       buyerID: roomData.buyerID,
+  //       sellerID: roomData.sellerID,
+  //       goodsID: roomData.goodsID,
+  //       roomName: roomData.roomName));
+  //
+  //   setState(() {});
+  // }
 
   void getChatRoomId(String uid) async {
     var res = await client!.getRoomById(id: uid);
@@ -74,146 +105,180 @@ class ChattingPageState extends State<ChattingPage> {
       roomList = res;
     });
     print(roomList.length.toString() + "!!!!!");
+    chattingPageBuilder = initRoomInfo();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: const Color(0xffffffff),
-        body: Stack(
-          children: [
-            Container(
-              child: Center(
-                child: ListView.builder(
-                  itemCount: roomList.length + 1,
-                  itemBuilder: (context, position) {
-                    //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
-                    return GestureDetector(
-                      onTap: () {
-                        if (position == roomList.length) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    SubChattingPageChatbotPage(),
-                              ));
-                        } else
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SubChattingPage(
-                                        roomID: roomList[position].id,
-                                        traderName: roomList[position].roomName,
-                                      ))).then((value) {
-                            getChatRoomId(myUserInfo.userUid!);
-                          });
-                      },
-                      child: Stack(
-                        children: [
-                          Card(
-                            elevation: 0,
-                            margin: EdgeInsets.only(
-                                top: 5, bottom: 5, left: 20, right: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 7, bottom: 7, left: 7, right: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(50.0),
-                                    child: position == roomList.length
-                                        ? Image.asset("assets/images/supi_logo.jpeg",
-                                            width: 65,
-                                            height: 65,
-                                            fit: BoxFit.contain)
-                                        : Image.asset(
-                                            'assets/images/icons/product.png',
-                                            //Image.network(
-                                            //roomList[position].sellerID..sellerImage,
-                                            width: 65,
-                                            height: 65,
-                                            fit: BoxFit.contain),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Column(
+        body: FutureBuilder(
+            future: chattingPageBuilder,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Stack(
+                  children: [
+                    Container(
+                      child: Center(
+                        child: ListView.builder(
+                          itemCount: roomList.length + 1,
+                          itemBuilder: (context, position) {
+                            //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
+                            return GestureDetector(
+                              onTap: () {
+                                if (position == roomList.length) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            SubChattingPageChatbotPage(),
+                                      ));
+                                } else
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SubChattingPage(
+                                                roomID: roomList[position].id,
+                                                traderName: roomList[position].roomName,
+                                              ))).then((value) {
+                                    getChatRoomId(myUserInfo.userUid!);
+                                  });
+                              },
+                              child: Stack(
+                                children: [
+                                  Card(
+                                    elevation: 0,
+                                    margin: EdgeInsets.only(
+                                        top: 5, bottom: 5, left: 20, right: 20),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: [
-                                        Row(
-                                          children: [
-                                            if (position == roomList.length)
-                                              const Text(
-                                                "Supi",
-                                                style: TextStyle(
-                                                    fontSize: 25,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                                overflow: TextOverflow.ellipsis,
-                                              )
-                                            else
-                                              Text(
-                                                roomList[position].roomName ??
-                                                    "익명",
-                                                style: const TextStyle(
-                                                    fontSize: 25,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                          ],
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 7,
+                                              bottom: 7,
+                                              left: 7,
+                                              right: 10),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(50.0),
+                                            child: position == roomList.length
+                                                ? Image.asset(
+                                                    "assets/images/supi_logo.jpeg",
+                                                    width: 65,
+                                                    height: 65,
+                                                    fit: BoxFit.contain)
+                                                // : Image.asset(
+                                                //     'assets/images/icons/product.png',
+                                                //     //Image.network(
+                                                //     //roomList[position].sellerID..sellerImage,
+                                                //     width: 65,
+                                                //     height: 65,
+                                                //     fit: BoxFit.contain),
+                                            : Image.network(
+                                                roomImageList[position][0] ?? "",
+                                                //Image.network(
+                                                //roomList[position].sellerID..sellerImage,
+                                                width: 65,
+                                                height: 65,
+                                                fit: BoxFit.cover),
+                                          ),
                                         ),
-                                        const SizedBox(height: 7),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                position == roomList.length
-                                                    ? "챗봇입니다"
-                                                    : roomList[position]
-                                                            .resentMessage ??
-                                                        "",
-                                                style: const TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    overflow:
-                                                        TextOverflow.ellipsis),
-                                              ),
+                                        Expanded(
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    if (position ==
+                                                        roomList.length)
+                                                      const Text(
+                                                        "Supi",
+                                                        style: TextStyle(
+                                                            fontSize: 25,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      )
+                                                    else
+                                                      Container(
+                                                        width : MediaQuery.of(context).size.width * 0.5,
+                                                        child: Text(
+                                                          roomNameList[position] ??
+                                                              "익명",
+                                                          style: const TextStyle(
+                                                              fontSize: 25,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 7),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        position ==
+                                                                roomList.length
+                                                            ? "챗봇입니다"
+                                                            : roomList[position]
+                                                                    .resentMessage ??
+                                                                "",
+                                                        style: const TextStyle(
+                                                            fontSize: 13,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            right: 3,
-                            top: 3,
-                            child: IconButton(
-                              icon: const Icon(Icons.close,
-                                  color: Colors.black45),
-                              onPressed: () async {
-                                popUp("정말로 삭제하시겠습니까?", position);
-                              },
-                            ),
-                          ),
-                        ],
+                                  Positioned(
+                                    right: 3,
+                                    top: 3,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.close,
+                                          color: Colors.black45),
+                                      onPressed: () async {
+                                        popUp("정말로 삭제하시겠습니까?", position);
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        ));
+                    ),
+                  ],
+                );
+              } else {
+                return const SizedBox();
+              }
+            }
+            ));
   }
 
   void popUp(String value, int position) {

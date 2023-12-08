@@ -175,13 +175,17 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
     getInitInfo();
   }
 
-  void getInitInfo() async{
-    print("get User Info");
-    user = await getUserInfo3(itemId);
-    print("getUserInfo");
-    traderName = user.userName!;
-    itemName = await getItemById(itemId);
-    print("getItemInfo");
+  void getInitInfo() async {
+    if (myUserInfo.requestList != null && myUserInfo.requestList!.isNotEmpty) {
+      print("get User Info");
+      user = await getUserInfo3(itemId);
+      print("getUserInfo");
+      traderName = user.userName!;
+      itemName = await getItemById(itemId);
+      print("getItemInfo : $itemName + $traderName");
+
+      setState(() {});
+    }
   }
 
   @override
@@ -194,7 +198,7 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
 
   @override
   void didUpdateWidget(ReallyBoughtPopUp oldWidget) {
-    print("re build");
+
     super.didUpdateWidget(oldWidget);
     if (widget.itemId != oldWidget.itemId || widget.traderId != oldWidget.traderId) {
       setState(() {
@@ -206,16 +210,21 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
       });
     }
     print("didChange : $itemId + $userId");
-    if(itemId == '-1' || userId == '=1'){
+    if(itemId == '-1' || userId == '-1'){
       print("stop");
-      _bellController.stop();
+      setState(() {
+        _bellController.stop();
+      });
     }
 
     getInitInfo();
+    print("didChange ItemName: $itemName");
   }
 
   @override
   Widget build(BuildContext context) {
+
+    print("re build : $itemName");
 
     if(myUserInfo.requestList!.isNotEmpty){
       itemId = myUserInfo.requestList![0]['itemId']!;
@@ -232,114 +241,114 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
           fit: BoxFit.cover),
 
       onPressed: () {
-        if(myUserInfo.requestList!.isNotEmpty){
-          _bellController.repeat();
-          setState(() {});
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  scrollable: true,
-                  title: const Text('해당 물품을 거래하셨나요?'),
-                  content: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Form(
+        if(_bellController.isAnimating){
+          if(myUserInfo.requestList!.isNotEmpty){
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    scrollable: true,
+                    title: const Text('해당 물품을 거래하셨나요?'),
+                    content: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Form(
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: [
+                                    Text('제목 :', style: TextStyle(fontFamily: 'KBO-B')),
+                                    Expanded(
+                                        child: Text(itemName)),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Text('판매자 :',
+                                        style: TextStyle(fontFamily: 'KBO-B')),
+                                    Expanded(child: Text(traderName)),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ElevatedButton(
+                                        child: Text("예"),
+                                        onPressed: () async {
+
+                                          setState(() {
+                                            isLoading = true;
+                                          });
+
+                                          await utilUsecase.patchRequestList(userId, itemId);
+                                          await utilUsecase.postBuyingList(itemId);
+
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+                                          await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SubSellingPageEvaluationPage(
+                                                          userID: int.parse(userId))));
+
+                                          if (myUserInfo.requestList!.isEmpty && _bellController.isAnimating) { // 이거를 request 있을때로 바꾸어 줘야함
+                                            _bellController.stop();
+                                          } else {
+                                            _bellController.repeat();
+                                          }
+                                        }
+                                    ),
+
+                                    const SizedBox(width: 10),
+                                    ElevatedButton(
+                                        child: Text("아니오"),
+                                        onPressed: () async{
+                                          setState(() {
+                                            isLoading = true;
+                                          });
+                                          print("userId : $userId");
+                                          await utilUsecase.patchRequestList(userId, itemId);
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+
+                                          await getMyInfoRequestList();
+                                          if (myUserInfo.requestList!.isEmpty && _bellController.isAnimating) { // 이거를 request 있을때로 바꾸어 줘야함
+                                            _bellController.stop();
+                                          } else {
+                                            _bellController.repeat();
+                                          }
+                                          setState(() {});
+                                          Navigator.pop(context);
+                                        })
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        isLoading ? const Center(
                           child: Column(
-                            children: <Widget>[
-                              Row(
-                                children: [
-                                  Text('제목 :', style: TextStyle(fontFamily: 'KBO-B')),
-                                  Expanded(
-                                      child: Text(itemName)),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  Text('판매자 :',
-                                      style: TextStyle(fontFamily: 'KBO-B')),
-                                  Expanded(child: Text(traderName)),
-                                ],
-                              ),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  ElevatedButton(
-                                      child: Text("예"),
-                                      onPressed: () async {
-
-                                        setState(() {
-                                          isLoading = true;
-                                        });
-
-                                        await utilUsecase.patchRequestList(userId, itemId);
-                                        await utilUsecase.postBuyingList(itemId);
-
-                                        setState(() {
-                                          isLoading = false;
-                                        });
-                                        await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    SubSellingPageEvaluationPage(
-                                                        userID: int.parse(userId))));
-
-                                        if (myUserInfo.requestList!.isEmpty && _bellController.isAnimating) { // 이거를 request 있을때로 바꾸어 줘야함
-                                          _bellController.stop();
-                                        } else {
-                                          _bellController.repeat();
-                                        }
-                                      }
-                                      ),
-
-                                  const SizedBox(width: 10),
-                                  ElevatedButton(
-                                      child: Text("아니오"),
-                                      onPressed: () async{
-                                        setState(() {
-                                          isLoading = true;
-                                        });
-                                        print("userId : $userId");
-                                        await utilUsecase.patchRequestList(userId, itemId);
-                                        setState(() {
-                                          isLoading = false;
-                                        });
-
-                                        await getMyInfoRequestList();
-                                        if (myUserInfo.requestList!.isEmpty && _bellController.isAnimating) { // 이거를 request 있을때로 바꾸어 줘야함
-                                          _bellController.stop();
-                                        } else {
-                                          _bellController.repeat();
-                                        }
-
-                                        Navigator.pop(context);
-                                      })
+                                  CircularProgressIndicator(),
                                 ],
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                      isLoading ? const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ) : const SizedBox(width: 0, height: 0),
-                    ],
-                  ),
-                );
-              });
+                        ) : const SizedBox(width: 0, height: 0),
+                      ],
+                    ),
+                  );
+                });
+        }
         }else{
           _bellController.stop();
           print("stop");

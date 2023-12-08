@@ -73,4 +73,24 @@ class UtilUsecase{
     return;
   }
 
+  Future<void> patchBuyingList(String itemId) async {
+    print("delete Buy List : $itemId");
+
+    String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $token';
+    String url = 'http://kdh.supomarket.com/items/myHistory/delete';
+
+    var data = {'id': itemId};
+
+    try {
+      Response response = await dio.patch(url, data: data);
+
+    } catch (e) {
+      print('Error sending Patch request : $e');
+    }
+
+    return;
+  }
 }

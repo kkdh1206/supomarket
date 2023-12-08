@@ -3,6 +3,7 @@ import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/my_page/sub_selling_page_evaluation_page.dart';
 
 import '../../../retrofit/RestClient.dart';
+import '../../control_page.dart';
 import '../../home_page/home_page.dart';
 import '../../my_page/sub_selling_page_selection_page.dart';
 
@@ -127,8 +128,13 @@ class PopUpUseCase {
                   child: const Text("예"),
                   onPressed: () {
                     if (nameList.isEmpty) {
-                      Navigator.popUntil(context, ModalRoute.withName("/"));
+                      Navigator.popUntil(context, ModalRoute.withName("control"));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ControlPage()));
                     } else {
+                      Navigator.popUntil(context, ModalRoute.withName("control"));
                       Navigator.push(context, PageRouteBuilder(
                           pageBuilder: (context, animation,
                               secondaryAnimation) {

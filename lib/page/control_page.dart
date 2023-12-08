@@ -96,11 +96,12 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
     if (controller!.indexIsChanging) {
       print("previous page : ${controller?.previousIndex}");
       print("current page : ${controller?.index}");
-    }
 
-    setState(() {
-      requestList = myUserInfo.requestList??[];
-    });
+      setState(() {
+        requestList = myUserInfo.requestList??[];
+        print("request List Listener $requestList");
+      });
+    }
   }
 
   @override

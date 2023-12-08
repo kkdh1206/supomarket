@@ -12,6 +12,7 @@ import 'package:supo_market/entity/util_entity.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/util_function.dart';
+import 'package:supo_market/page/entity/util_entity.dart';
 import '../entity/item_entity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -114,6 +115,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
   }
 
   bool completed = true; // --> 이런식으로 외부에 선언해야 초기화 안되고 막음
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -161,14 +163,12 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                       newItem.itemDetail!.length < 10) {
                     popUp("세부 내용을 10글자 이상 작성해 주세요");
                   } else {
-                    completed = false;
-                    //print(completed);
-                    //print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                    //doubleRequest = true; // setState 안에쓰면 여러번 누르면 에러뜸
+                    setState(() {
+                      isLoading = true;
+                      completed = false;
+                    });
 
                     setState(() {
-                      //DataTime format으로 등록 시간을 받고, control page에서 현재 시간과 비교 및 제출
-
                       newItem.uploadDate = "방금 전";
                       newItem.uploadDateForCompare = DateTime.now();
                     });
@@ -209,19 +209,19 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                     } catch (e) {
                       print('Error sending POST request : $e');
                     }
-
                     //--도형 코드---
-
+                    setState(() {
+                      isLoading = false;
+                    });
                     Navigator.pop(
                         context, ReturnData(item: newItem, returnType: "add"));
+
                   }
                 }finally {
                   completed = true;
                 }
               }
-
-
-
+              
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -240,339 +240,361 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
           const SizedBox(width: 10),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          const SizedBox(height: 10),
-          Flexible(
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                  alignment: Alignment.center,
-                  width: 350.0,
-                  height: 80.0,
-                  padding: EdgeInsets.all(5),
-                  child: Stack(
-                    children: [
-                      TextField(
-                        onChanged: (text) {
-                          setState(() {
-                            newItem.sellingTitle = text;
-                          });
-                        },
-                        keyboardType: TextInputType.text,
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          hintText: '판매 제목을 작성하세요',
-                          hintStyle: TextStyle(
-                            color: Colors.grey[600], // labelText의 텍스트 색상
-                            fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
-                            fontFamily: 'KBO-L', // 알아서 변경할 것!!
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color(0xFFB70001),
-                                width: 5), // 활성 상태일 때 밑줄 색상
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color(0xFFB70001),
-                                width: 5), // 포커스 상태일 때 밑줄 색상
-                          ),
-                        ),
-                      ),
-                    ],
-                  ))
-            ]),
-          ),
-          const SizedBox(height: 5),
-
-          //사진 추가 위젯
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+          Column(
             children: [
-              const SizedBox(width: 20),
-              LoadImageButton(),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          //Cupertino Button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(width: 20),
-              SizedBox(
-                width: 150,
-                child: CupertinoButton(
-                  minSize: 0,
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                  color: mainColor,
-                  onPressed: () {
-                    showCupertinoModalPopup(
-                        context: context,
-                        builder: (context) {
-                          return SizedBox(
-                            height: 400,
-                            width: 400,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: CupertinoPicker(
-                                    itemExtent: 50,
-                                    backgroundColor: Colors.white,
-                                    scrollController: firstController,
-                                    onSelectedItemChanged: (index) {
-                                      setState(() {
-                                        switch (index) {
-                                          case (0):
-                                            newItem.itemType =
-                                                ItemType.REFRIGERATOR;
-                                          case (1):
-                                            newItem.itemType = ItemType.CLOTHES;
-                                          case (2):
-                                            newItem.itemType = ItemType.ROOM;
-                                          case (3):
-                                            newItem.itemType = ItemType.MONITOR;
-                                          case (4):
-                                            newItem.itemType = ItemType.BOOK;
-                                          case (5):
-                                            newItem.itemType = ItemType.ETC;
-                                        }
-                                      });
-                                    },
-                                    children: List<Widget>.generate(6, (index) {
-                                      return Center(
-                                        child: TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text(
-                                              index == 0
-                                                  ? "냉장고"
-                                                  : index == 1
-                                                  ? "의류"
-                                                  : index == 2
-                                                  ? "자취방"
-                                                  : index == 3
-                                                  ? "모니터"
-                                                  : index == 4
-                                                  ? "책"
-                                                  : "기타",
-                                              style: const TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                              ],
+              const SizedBox(height: 10),
+              Flexible(
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Container(
+                      alignment: Alignment.center,
+                      width: 350.0,
+                      height: 80.0,
+                      padding: EdgeInsets.all(5),
+                      child: Stack(
+                        children: [
+                          TextField(
+                            onChanged: (text) {
+                              setState(() {
+                                newItem.sellingTitle = text;
+                              });
+                            },
+                            keyboardType: TextInputType.text,
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              hintText: '판매 제목을 작성하세요',
+                              hintStyle: TextStyle(
+                                color: Colors.grey[600], // labelText의 텍스트 색상
+                                fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
+                                fontFamily: 'KBO-L', // 알아서 변경할 것!!
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color(0xFFB70001),
+                                    width: 5), // 활성 상태일 때 밑줄 색상
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color(0xFFB70001),
+                                    width: 5), // 포커스 상태일 때 밑줄 색상
+                              ),
                             ),
-                          );
-                        });
-                  },
-                  child: Text(
-                    "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "냉장고" : newItem.itemType == ItemType.MONITOR ? "모니터" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "의류" : "기타"}",
-                    textScaleFactor: 1.0,
-                    style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              SizedBox(
-                width: 100,
-                child: CupertinoButton(
-                  minSize: 0,
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                  color: mainColor,
-                  onPressed: () {
-                    showCupertinoModalPopup(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            height: 400,
-                            width: 400,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: CupertinoPicker(
-                                    itemExtent: 50,
-                                    backgroundColor: Colors.white,
-                                    scrollController: secondController,
-                                    onSelectedItemChanged: (Index) {
-                                      setState(() {
-                                        switch (Index) {
-                                          case (0):
-                                            newItem.itemQuality =
-                                                ItemQuality.HIGH;
-                                          case (1):
-                                            newItem.itemQuality =
-                                                ItemQuality.MID;
-                                          case (2):
-                                            newItem.itemQuality =
-                                                ItemQuality.LOW;
-                                        }
-                                      });
-                                    },
-                                    children: List<Widget>.generate(3, (Index) {
-                                      return Center(
-                                        child: TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text(
-                                              Index == 0
-                                                  ? "상"
-                                                  : Index == 1
-                                                  ? "중"
-                                                  : "하",
-                                              style: const TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        });
-                  },
-                  child: Text(
-                    "품질 : ${newItem.itemQuality == ItemQuality.HIGH ? "상" : newItem.itemQuality == ItemQuality.MID ? "중" : "하"}",
-                    style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          //급처분 버튼
-          Row(
-            children: [
-              const SizedBox(width: 20),
-              const Text("급처분 : ",
-                  style: TextStyle(fontFamily: 'KBO-B', fontSize: 18)),
-              CupertinoSwitch(
-                // 급처분 여부
-                value: isFastSellForToggle,
-                activeColor: mainColor,
-                onChanged: (bool? value) {
-                  // 스위치가 토글될 때 실행될 코드
-                  setState(() {
-                    newItem.itemStatus = (value == true
-                        ? ItemStatus.USERFASTSELL
-                        : ItemStatus.TRADING);
-                    isFastSellForToggle = value ?? false;
-                  });
-                },
-              ),
-            ],
-          ),
-
-          //가격
-          Flexible(
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                  alignment: Alignment.center,
-                  width: 350.0,
-                  height: 80.0,
-                  padding: EdgeInsets.all(5),
-                  child: Stack(
-                    children: [
-                      TextFormField(
-                        maxLength: 12,
-                        keyboardType: TextInputType.number,
-                        onChanged: (text) {
-                          setState(() {
-                            temp = text;
-                            if (temp != "") {
-                              newItem.sellingPrice = int.parse(
-                                  temp.replaceAll('￦', '').replaceAll(',', ''));
-                            } else {
-                              newItem.sellingPrice = -1;
-                            }
-                          });
-                        },
-                        inputFormatters: <TextInputFormatter>[
-                          CurrencyTextInputFormatter(
-                            locale: 'ko',
-                            decimalDigits: 0,
-                            symbol: '￦',
                           ),
                         ],
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          hintText: '가격(원)',
-                          hintStyle: TextStyle(
-                            color: Colors.grey[600], // labelText의 텍스트 색상
-                            fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
-                            fontFamily: 'KBO-L', // 알아서 변경할 것!!
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color(0xFFB70001),
-                                width: 5), // 활성 상태일 때 밑줄 색상
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color(0xFFB70001),
-                                width: 5), // 포커스 상태일 때 밑줄 색상
-                          ),
-                        ),
-                      )
-                    ],
-                  ))
-            ]),
+                      ))
+                ]),
+              ),
+              const SizedBox(height: 5),
+
+              //사진 추가 위젯
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(width: 20),
+                  LoadImageButton(),
+                ],
+              ),
+              const SizedBox(height: 10),
+
+              //Cupertino Button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(width: 20),
+                  SizedBox(
+                    width: 150,
+                    child: CupertinoButton(
+                      minSize: 0,
+                      padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                      color: mainColor,
+                      onPressed: () {
+                        showCupertinoModalPopup(
+                            context: context,
+                            builder: (context) {
+                              return SizedBox(
+                                height: 400,
+                                width: 400,
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: CupertinoPicker(
+                                        itemExtent: 50,
+                                        backgroundColor: Colors.white,
+                                        scrollController: firstController,
+                                        onSelectedItemChanged: (index) {
+                                          setState(() {
+                                            switch (index) {
+                                              case (0):
+                                                newItem.itemType =
+                                                    ItemType.REFRIGERATOR;
+                                              case (1):
+                                                newItem.itemType = ItemType.CLOTHES;
+                                              case (2):
+                                                newItem.itemType = ItemType.ROOM;
+                                              case (3):
+                                                newItem.itemType = ItemType.MONITOR;
+                                              case (4):
+                                                newItem.itemType = ItemType.BOOK;
+                                              case (5):
+                                                newItem.itemType = ItemType.ETC;
+                                            }
+                                          });
+                                        },
+                                        children: List<Widget>.generate(6, (index) {
+                                          return Center(
+                                            child: TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text(
+                                                  index == 0
+                                                      ? "냉장고"
+                                                      : index == 1
+                                                      ? "의류"
+                                                      : index == 2
+                                                      ? "자취방"
+                                                      : index == 3
+                                                      ? "모니터"
+                                                      : index == 4
+                                                      ? "책"
+                                                      : "기타",
+                                                  style: const TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.bold),
+                                                )),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                      },
+                      child: Text(
+                        "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "냉장고" : newItem.itemType == ItemType.MONITOR ? "모니터" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "의류" : "기타"}",
+                        textScaleFactor: 1.0,
+                        style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 100,
+                    child: CupertinoButton(
+                      minSize: 0,
+                      padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                      color: mainColor,
+                      onPressed: () {
+                        showCupertinoModalPopup(
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                height: 400,
+                                width: 400,
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: CupertinoPicker(
+                                        itemExtent: 50,
+                                        backgroundColor: Colors.white,
+                                        scrollController: secondController,
+                                        onSelectedItemChanged: (Index) {
+                                          setState(() {
+                                            switch (Index) {
+                                              case (0):
+                                                newItem.itemQuality =
+                                                    ItemQuality.HIGH;
+                                              case (1):
+                                                newItem.itemQuality =
+                                                    ItemQuality.MID;
+                                              case (2):
+                                                newItem.itemQuality =
+                                                    ItemQuality.LOW;
+                                            }
+                                          });
+                                        },
+                                        children: List<Widget>.generate(3, (Index) {
+                                          return Center(
+                                            child: TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text(
+                                                  Index == 0
+                                                      ? "상"
+                                                      : Index == 1
+                                                      ? "중"
+                                                      : "하",
+                                                  style: const TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.bold),
+                                                )),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                      },
+                      child: Text(
+                        "품질 : ${newItem.itemQuality == ItemQuality.HIGH ? "상" : newItem.itemQuality == ItemQuality.MID ? "중" : "하"}",
+                        style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+
+              //급처분 버튼
+              Row(
+                children: [
+                  const SizedBox(width: 20),
+                  const Text("급처분 : ",
+                      style: TextStyle(fontFamily: 'KBO-B', fontSize: 18)),
+                  CupertinoSwitch(
+                    // 급처분 여부
+                    value: isFastSellForToggle,
+                    activeColor: mainColor,
+                    onChanged: (bool? value) {
+                      // 스위치가 토글될 때 실행될 코드
+                      setState(() {
+                        newItem.itemStatus = (value == true
+                            ? ItemStatus.USERFASTSELL
+                            : ItemStatus.TRADING);
+                        isFastSellForToggle = value ?? false;
+                      });
+                    },
+                  ),
+                ],
+              ),
+
+              //가격
+              Flexible(
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Container(
+                      alignment: Alignment.center,
+                      width: 350.0,
+                      height: 80.0,
+                      padding: EdgeInsets.all(5),
+                      child: Stack(
+                        children: [
+                          TextFormField(
+                            maxLength: 12,
+                            keyboardType: TextInputType.number,
+                            onChanged: (text) {
+                              setState(() {
+                                temp = text;
+                                if (temp != "") {
+                                  newItem.sellingPrice = int.parse(
+                                      temp.replaceAll('￦', '').replaceAll(',', ''));
+                                } else {
+                                  newItem.sellingPrice = -1;
+                                }
+                              });
+                            },
+                            inputFormatters: <TextInputFormatter>[
+                              CurrencyTextInputFormatter(
+                                locale: 'ko',
+                                decimalDigits: 0,
+                                symbol: '￦',
+                              ),
+                            ],
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              hintText: '가격(원)',
+                              hintStyle: TextStyle(
+                                color: Colors.grey[600], // labelText의 텍스트 색상
+                                fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
+                                fontFamily: 'KBO-L', // 알아서 변경할 것!!
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color(0xFFB70001),
+                                    width: 5), // 활성 상태일 때 밑줄 색상
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color(0xFFB70001),
+                                    width: 5), // 포커스 상태일 때 밑줄 색상
+                              ),
+                            ),
+                          )
+                        ],
+                      ))
+                ]),
+              ),
+              const SizedBox(height: 10),
+              //내용
+              Flexible(
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Container(
+                      alignment: Alignment.center,
+                      width: 350.0,
+                      height: 200.0,
+                      // 이렇게만 해도 여백이 생겨버리네 (textField라는게 부모 높이 따라가는듯)
+                      padding: EdgeInsets.all(5),
+                      child: Stack(
+                        children: [
+                          TextField(
+                            onChanged: (text) {
+                              setState(() {
+                                newItem.itemDetail = text;
+                              });
+                            },
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 10,
+                            decoration: InputDecoration(
+                              hintText: '추가로 알리고 싶은 내용을 적어주세요.',
+                              hintStyle: TextStyle(
+                                color: Colors.grey[600], // labelText의 텍스트 색상
+                                fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
+                                fontFamily: 'KBO-L', // 알아서 변경할 것!!
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color(0xFFB70001),
+                                    width: 5), // 활성 상태일 때 밑줄 색상
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color(0xFFB70001),
+                                    width: 5), // 포커스 상태일 때 밑줄 색상
+                              ),
+                            ),
+                          )
+                        ],
+                      ))
+                ]),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          //내용
-          Flexible(
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                  alignment: Alignment.center,
-                  width: 350.0,
-                  height: 200.0,
-                  // 이렇게만 해도 여백이 생겨버리네 (textField라는게 부모 높이 따라가는듯)
-                  padding: EdgeInsets.all(5),
-                  child: Stack(
+          isLoading ? Container(
+            color: Colors.transparent,
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextField(
-                        onChanged: (text) {
-                          setState(() {
-                            newItem.itemDetail = text;
-                          });
-                        },
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 10,
-                        decoration: InputDecoration(
-                          hintText: '추가로 알리고 싶은 내용을 적어주세요.',
-                          hintStyle: TextStyle(
-                            color: Colors.grey[600], // labelText의 텍스트 색상
-                            fontSize: 18.0, // labelText의 텍스트 크기 -> 이것
-                            fontFamily: 'KBO-L', // 알아서 변경할 것!!
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color(0xFFB70001),
-                                width: 5), // 활성 상태일 때 밑줄 색상
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color(0xFFB70001),
-                                width: 5), // 포커스 상태일 때 밑줄 색상
-                          ),
-                        ),
-                      )
+                      CircularProgressIndicator(
+                        color: const Color(0xFFB70001),
+                      ),
                     ],
-                  ))
-            ]),
-          ),
+                  ),
+                ],
+              ),
+            ),
+          ) : const SizedBox(width: 0, height: 0),
         ],
       ),
     );
