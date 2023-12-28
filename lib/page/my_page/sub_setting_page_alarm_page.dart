@@ -211,7 +211,7 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/auth/patch/userinformation/username';
+        'https://kdh.supomarket.com/auth/patch/userinformation/username';
 
     var data = {'selectedCategory': mySetting.selectedCategoryAlarm};
 

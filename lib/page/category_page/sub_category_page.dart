@@ -325,7 +325,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
 
   void setURL() {
     url =
-        'http://kdh.supomarket.com/items/category?sort=${ConvertEnumToString(selectedOption1)}&status=${ConvertEnumToString(selectedOption2)}&page=${page}&pageSize=${pageSize}';
+        'https://kdh.supomarket.com/items/category?sort=${ConvertEnumToString(selectedOption1)}&status=${ConvertEnumToString(selectedOption2)}&page=${page}&pageSize=${pageSize}';
     if (type == '냉장고') {
       data = {'category': 'REFRIGERATOR'};
     } else if (type == '의류') {

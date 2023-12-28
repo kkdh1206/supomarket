@@ -268,7 +268,7 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/myHistory?sort=${ConvertEnumToString(
+        'https://kdh.supomarket.com/items/myHistory?sort=${ConvertEnumToString(
         type)}&page=${page}&pageSize=${pageSize}';
 
     if (page == 1) {
@@ -362,7 +362,7 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
+        'https://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
 
     var data = {'status': "DELETED"};
 

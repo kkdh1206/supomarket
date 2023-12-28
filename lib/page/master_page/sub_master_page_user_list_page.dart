@@ -203,7 +203,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageUserListPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     // dio.options.responseType = ResponseType.plain; // responseType 설정
-    String url = 'http://kdh.supomarket.com/auth/allUser';
+    String url = 'https://kdh.supomarket.com/auth/allUser';
 
     if (page == 1) {
       list.clear();

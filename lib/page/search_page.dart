@@ -383,7 +383,7 @@ class _SearchPageState extends State<SearchPage> {
 
     print('get Searched Data');
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/search?title=${input}&sort=${ConvertEnumToString(type)}&status=${ConvertEnumToString(status)}&page=${page}&pageSize=${pageSize}';
+    String url = 'https://kdh.supomarket.com/items/search?title=${input}&sort=${ConvertEnumToString(type)}&status=${ConvertEnumToString(status)}&page=${page}&pageSize=${pageSize}';
 
     if(page == 1){
       searchList.clear();

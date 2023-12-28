@@ -321,7 +321,7 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     print(id);
-    String url = 'http://kdh.supomarket.com/boards/status/$id';
+    String url = 'https://kdh.supomarket.com/boards/status/$id';
 
     setState(() {
       isLoading = true;
@@ -347,7 +347,7 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/boards/myBoards';
+    String url = 'https://kdh.supomarket.com/boards/myBoards';
 
     setState(() {
       isLoading = true;
@@ -408,7 +408,7 @@ class SubQnaPageMyPageState extends State<SubQnaPageMyPage> {
     Dio dio = Dio();
     print('add Item To Server');
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/boards/myBoards/${boardId}';
+    String url = 'https://kdh.supomarket.com/boards/myBoards/${boardId}';
 
     var data = {
       "title": title,

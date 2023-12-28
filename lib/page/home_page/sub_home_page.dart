@@ -97,7 +97,7 @@ class _SubHomePageState extends State<SubHomePage> {
     print('getData');
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/myInterestedItem/${item.itemID}';
+        'https://kdh.supomarket.com/items/myInterestedItem/${item.itemID}';
 
     try {
       Response response = await dio.post(url);
@@ -118,7 +118,7 @@ class _SubHomePageState extends State<SubHomePage> {
     print('getData');
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/myInterestedItem/${item.itemID}';
+        'https://kdh.supomarket.com/items/myInterestedItem/${item.itemID}';
 
     try {
       Response response = await dio.patch(url);

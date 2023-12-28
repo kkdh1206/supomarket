@@ -56,7 +56,7 @@ class MyPageUsecase{
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myAlarmCategory';
+    String url = 'https://kdh.supomarket.com/items/myAlarmCategory';
 
     var data = {'category': text};
 
@@ -77,7 +77,7 @@ class MyPageUsecase{
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myAlarmCategory';
+    String url = 'https://kdh.supomarket.com/items/myAlarmCategory';
 
     var data = {'category': text};
 
@@ -97,7 +97,7 @@ class MyPageUsecase{
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myAlarmCategory';
+    String url = 'https://kdh.supomarket.com/items/myAlarmCategory';
 
     list.clear();
 

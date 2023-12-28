@@ -52,36 +52,43 @@ class _RegisterPageState extends State<RegisterPage> {
     checkForArrive = false;
   }
 
-  //비밀번호 7자리 이상, 아이디는 이메일 폼
+  // 비밀번호 7자리 이상, 아이디는 이메일 폼
   Future<void> createEmailAndPassword(String id, String password,
       String userName, String newUserSchoolNum) async {
-    try {
-      final credential = await firebaseAuth.createUserWithEmailAndPassword(
-        email: id,
-        password: password,
-      );
-      if (credential.user != null) {
-        allUserList.add(credential);
-        credential.user?.updateDisplayName(newNickName);
-        checkForArrive = true;
-        return;
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        _weakPasswordPopUp();
-        print('The password provided is too weak.');
-        isPressed = false;
-      } else if (e.code == 'email-already-in-use') {
-        _alreadyExistPopUp();
-        print('The account already exists for that email.');
-        isPressed = false;
-      }
-    } catch (e) {
-      print(e);
+    if(isChecked==false){
+      print("닉네임 중복 확인안함");
+      _checkNickNamePopUp();
+      isPressed = false;
     }
+    else {
+      try {
+        final credential = await firebaseAuth.createUserWithEmailAndPassword(
+          email: id,
+          password: password,
+        );
+        if (credential.user != null) {
+          allUserList.add(credential);
+          credential.user?.updateDisplayName(newNickName);
+          checkForArrive = true;
+          return;
+        }
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          _weakPasswordPopUp();
+          print('비밀번호는 8자리 이상이어야 합니다.');
+          isPressed = false;
+        } else if (e.code == 'email-already-in-use') {
+          _alreadyExistPopUp();
+          print('이미 존재하는 이메일 입니다.');
+          isPressed = false;
+        }
+      } catch (e) {
+        print(e);
+      }
 
-    checkForArrive = false;
-    return;
+      checkForArrive = false;
+      return;
+    }
   }
 
   @override
@@ -135,6 +142,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             onChanged: (text) {
                               setState(() {
                                 newNickName = text;
+                                isChecked = false; // 바꾸면 false 로 계속 업데이트를 해줌
                               });
                             }),
                         Positioned(
@@ -204,17 +212,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                         newRealName,
                                         newUserSchoolNum);
                                     String token = await firebaseAuth
-                                            .currentUser
-                                            ?.getIdToken() ??
+                                        .currentUser
+                                        ?.getIdToken() ??
                                         '';
 
                                     Dio dio = Dio();
 
                                     try {
                                       dio.options.headers['Authorization'] =
-                                          'Bearer $token';
+                                      'Bearer $token';
                                       String url =
-                                          'http://kdh.supomarket.com/auth/signup'; // 여기에 api 랑 endpoint 추가해야됨
+                                          'https://kdh.supomarket.com/auth/signup'; // 여기에 api 랑 endpoint 추가해야됨
 
                                       Map<String, String> data = {
                                         'Email': newID,
@@ -223,7 +231,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         'studentNumber': newUserSchoolNum
                                       };
                                       Response response =
-                                          await dio.post(url, data: data);
+                                      await dio.post(url, data: data);
 
                                       setState(() {
                                         isPressed = false;
@@ -236,8 +244,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                               MaterialPageRoute(
                                                   builder:
                                                       (BuildContext context) =>
-                                                          AuthEmailPage()),
-                                              (route) => false);
+                                                      AuthEmailPage()),
+                                                  (route) => false);
                                         }
                                       });
                                     } catch (e) {
@@ -284,9 +292,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   iconSize: 30)),
           isPressed == true
               ? const Align(
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                )
+            alignment: Alignment.center,
+            child: CircularProgressIndicator(),
+          )
               : const SizedBox(width: 0, height: 0),
         ],
       ),
@@ -327,12 +335,14 @@ class _RegisterPageState extends State<RegisterPage> {
         ..showSnackBar(
           SnackBar(content: Text('사용 가능한 username 입니다')),
         );
+      isChecked = true;
     }
 
     else if (await checkUsername(name) == false) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text('이미 존재하는 username 입니다')));
+      isChecked = false;
     }
   }
 
@@ -340,7 +350,7 @@ class _RegisterPageState extends State<RegisterPage> {
     Dio dio = Dio();
     dio.options.responseType = ResponseType.plain; // responseType 설정
     String url =
-        'http://kdh.supomarket.com/auth/username';
+        'https://kdh.supomarket.com/auth/username';
 
     //빈칸이면 오류나서 이렇게 보낼게
     username = username==""?'ㅈㅓㅇㅇㅠㅈㅣㄴ':username;
@@ -400,6 +410,31 @@ class _RegisterPageState extends State<RegisterPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: const SingleChildScrollView(child: Text("너무 비밀번호가 약합니다")),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _checkNickNamePopUp() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const SingleChildScrollView(child: Text("닉네임 중복확인을 확인해주세요")),
           actions: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

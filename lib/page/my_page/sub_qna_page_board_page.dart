@@ -244,7 +244,7 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
 
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/comment'; // 여기에 api 랑 endpoint 추가해야됨
+        'https://kdh.supomarket.com/comment'; // 여기에 api 랑 endpoint 추가해야됨
 
     if (content != "") {
       Map<String, dynamic> data = {
@@ -275,7 +275,7 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
 
-    String url = 'http://kdh.supomarket.com/boards/comment/${board.id}';
+    String url = 'https://kdh.supomarket.com/boards/comment/${board.id}';
 
     try {
       Response response = await dio.get(url);

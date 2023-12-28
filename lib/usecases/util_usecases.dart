@@ -40,7 +40,7 @@ class UtilUsecase{
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/auth/request';
+    String url = 'https://kdh.supomarket.com/auth/request';
 
     var data = {'sellerId': userId, 'itemId' : itemId};
 
@@ -60,7 +60,7 @@ class UtilUsecase{
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myHistory/add';
+    String url = 'https://kdh.supomarket.com/items/myHistory/add';
 
     var data = {'id': itemId};
 
@@ -80,7 +80,7 @@ class UtilUsecase{
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myHistory/delete';
+    String url = 'https://kdh.supomarket.com/items/myHistory/delete';
 
     var data = {'id': itemId};
 

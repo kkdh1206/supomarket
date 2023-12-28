@@ -582,7 +582,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
     print('add Item To Server');
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/myItems/patch/image/${item.itemID}';
+        'https://kdh.supomarket.com/items/myItems/patch/image/${item.itemID}';
 
     var data = {"image": imageUrl};
 

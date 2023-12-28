@@ -34,6 +34,7 @@ Future<bool>? myQnaPageBuilder;
 Future<bool>? subChattingPageBuilder;
 Future<bool>? chattingPageBuilder;
 Future<bool>? subSubHomePageCommentsPageBuilder;
+Future<bool>? mainPageBuilder;
 
 
 String? fcmToken;
@@ -88,7 +89,7 @@ Future<bool> getMyInfo() async{
   Dio dio = Dio();
   dio.options.headers['Authorization'] = 'Bearer $token';
   // dio.options.responseType = ResponseType.plain; // responseType 설정
-  String url = 'http://kdh.supomarket.com/auth/userInfo'; // 수정요망 (https://) 일단 뺌  --> 앞에 http든 https 든 꼭 있어야되구나!!
+  String url = 'https://kdh.supomarket.com/auth/userInfo'; // 수정요망 (https://) 일단 뺌  --> 앞에 http든 https 든 꼭 있어야되구나!!
 
   try {
     Response response = await dio.get(url);
@@ -134,7 +135,7 @@ Future<bool> getMyInfo() async{
 //
 //   Dio dio = Dio();
 //   dio.options.headers['Authorization'] = 'Bearer $token';
-//   String url = 'http://kdh.supomarket.com/auth/request';
+//   String url = 'https://kdh.supomarket.com/auth/request';
 //
 //   try {
 //     Response response = await dio.get(url);
@@ -168,7 +169,7 @@ Future<String> getItemById(String id) async{
   Dio dio = Dio();
 
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/id/$id';
+  String url = 'https://kdh.supomarket.com/items/id/$id';
 
   try {
     Response response = await dio.get(url);
@@ -194,7 +195,7 @@ Future<List<dynamic>> getItemNameById(List<String> id) async{
   Dio dio = Dio();
 
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/idList';
+  String url = 'https://kdh.supomarket.com/items/idList';
   List<dynamic> nameList = [];
 
   try {
@@ -220,7 +221,7 @@ Future<List<dynamic>> getItemImageById(List<String> id) async{
   Dio dio = Dio();
 
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/imgList';
+  String url = 'https://kdh.supomarket.com/items/imgList';
   List<dynamic> imageList = [];
 
   try {
@@ -245,7 +246,7 @@ Future<String> getSellerById(String id) async{
   Dio dio = Dio();
   print('getData');
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/id/${id}';
+  String url = 'https://kdh.supomarket.com/items/id/${id}';
 
   try {
     Response response = await dio.get(url);
@@ -358,7 +359,7 @@ Future<String> getSellerById(String id) async{
 //
 //   Dio dio = Dio();
 //   dio.options.headers['Authorization'] = 'Bearer $token';
-//   String url = 'http://kdh.supomarket.com/auth/request';
+//   String url = 'https://kdh.supomarket.com/auth/request';
 //
 //   //id인데 사실은 sellerName이라는거지 ㅇㅋ
 //   var data = {'itemId' : itemId, 'sellerId' : sellerName};
@@ -379,7 +380,7 @@ Future<AUser> getUserInfo(Item item) async {
   Dio dio = Dio();
   print('getUserData');
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/itemId/${item.itemID}';
+  String url = 'https://kdh.supomarket.com/items/itemId/${item.itemID}';
 
 
   try {
@@ -411,7 +412,7 @@ Future<AUser> getUserInfo2(Board board) async {
   Dio dio = Dio();
   print('getUserData in Board');
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/boards/boardId/${board.id}';
+  String url = 'https://kdh.supomarket.com/boards/boardId/${board.id}';
 
 
   try {
@@ -446,7 +447,7 @@ Future<AUser> getUserInfo3(String itemId) async {
   Dio dio = Dio();
   print('getUserData');   print("itemId" + itemId);
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items/itemId/${itemId}';
+  String url = 'https://kdh.supomarket.com/items/itemId/${itemId}';
 
 
   try {
@@ -486,7 +487,7 @@ Future<bool> getItem(int page, SortType type, ItemStatus status) async{
   Dio dio = Dio();
   print('getData');
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&status=${ConvertEnumToString(status)}&pageSize=${pageSize}';
+  String url = 'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&status=${ConvertEnumToString(status)}&pageSize=${pageSize}';
 
   if(page == 1){
     itemList.clear();
@@ -713,7 +714,7 @@ Future<void> patchToken(String fcmToken) async{
 
   Dio dio = Dio();
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/auth/fcmToken';
+  String url = 'https://kdh.supomarket.com/auth/fcmToken';
 
   var data = {'fcmToken' : fcmToken};
 
@@ -733,7 +734,7 @@ Future<String> getToken(String uid) async{
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   Dio dio = Dio();
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/auth/fcmToken';
+  String url = 'https://kdh.supomarket.com/auth/fcmToken';
 
   var data = {'uid' : uid};
 
@@ -768,7 +769,7 @@ Future<bool> getMyInfoRequestList() async {
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   Dio dio = Dio();
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'http://kdh.supomarket.com/auth/request';
+  String url = 'https://kdh.supomarket.com/auth/request';
 
   try {
 
@@ -794,5 +795,10 @@ Future<bool> getMyInfoRequestList() async {
   } catch (e) {
     print('Error sending GET request : $e');
   }
+  return true;
+}
+
+Future<bool> assignTrue() async{
+  print("assign True");
   return true;
 }

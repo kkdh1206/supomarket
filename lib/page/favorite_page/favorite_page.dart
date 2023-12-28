@@ -176,7 +176,7 @@ class _FavoritePageState extends State<FavoritePage>{
     Dio dio = Dio();
     print('getItemFavorite');
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myInterestedItem?sort=${ConvertEnumToString(type)}&page=${page}&pageSize=${pageSize}';
+    String url = 'https://kdh.supomarket.com/items/myInterestedItem?sort=${ConvertEnumToString(type)}&page=${page}&pageSize=${pageSize}';
     if (page == 1) {
       itemList.clear();
     }

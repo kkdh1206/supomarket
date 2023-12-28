@@ -476,7 +476,7 @@ class _SubMasterPageQuickSellItemListPageState extends State<SubMasterPageQuickS
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/fastsell?page=${page}&pageSize=${pageSize}';
+        'https://kdh.supomarket.com/items/fastsell?page=${page}&pageSize=${pageSize}';
 
     if (page == 1) {
       itemList.clear();
@@ -575,7 +575,7 @@ class _SubMasterPageQuickSellItemListPageState extends State<SubMasterPageQuickS
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems/patch/status/${item
+    String url = 'https://kdh.supomarket.com/items/myItems/patch/status/${item
         .itemID}';
 
     var data = {'status': ConvertEnumToString(item.itemStatus) ?? "TRADING"};
@@ -600,7 +600,7 @@ class _SubMasterPageQuickSellItemListPageState extends State<SubMasterPageQuickS
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems/patch/status/${item
+    String url = 'https://kdh.supomarket.com/items/myItems/patch/status/${item
         .itemID}';
 
     var data = {'status': "DELETED"};
@@ -630,7 +630,7 @@ class _SubMasterPageQuickSellItemListPageState extends State<SubMasterPageQuickS
     Dio dio = Dio();
     print('add Item To Server');
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems/patch/item/${item
+    String url = 'https://kdh.supomarket.com/items/myItems/patch/item/${item
         .itemID}';
 
 

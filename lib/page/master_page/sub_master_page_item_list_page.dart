@@ -586,7 +586,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items?sort=${ConvertEnumToString(
+        'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(
         type)}&status=${ConvertEnumToString(
         status)}&page=${page}&pageSize=${pageSize}';
 
@@ -688,7 +688,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems/patch/status/${item
+    String url = 'https://kdh.supomarket.com/items/myItems/patch/status/${item
         .itemID}';
 
     var data = {'status': ConvertEnumToString(item.itemStatus) ?? "TRADING"};
@@ -713,7 +713,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems/patch/status/${item
+    String url = 'https://kdh.supomarket.com/items/myItems/patch/status/${item
         .itemID}';
 
     var data = {'status': "DELETED"};
@@ -743,7 +743,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
     Dio dio = Dio();
     print('add Item To Server');
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/items/myItems/patch/item/${item
+    String url = 'https://kdh.supomarket.com/items/myItems/patch/item/${item
         .itemID}';
 
 

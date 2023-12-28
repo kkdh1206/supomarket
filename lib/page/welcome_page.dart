@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io' show Platform;
@@ -40,13 +39,13 @@ class SplashScreen extends StatelessWidget {
                       Image.asset('assets/images/main_logo.png'),
                     ],
                   ),
-                  const SizedBox(height : 50),
+                  const SizedBox(height: 50),
                 ],
               ),
               const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height : 140),
+                  const SizedBox(height: 140),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -97,7 +96,7 @@ class MyAppState extends State<MyApp> {
     //initNotification();
 
     myUserInfo.imagePath =
-    "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
+        "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
     myUserInfo.password = "";
     myUserInfo.isUserLogin = false;
 
@@ -119,22 +118,21 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-       // ChangeNotifierProvider(create: (_)=> LoginModel()),
+        // ChangeNotifierProvider(create: (_)=> LoginModel()),
         ChangeNotifierProvider(create: (_) => SocketProvider()),
       ],
       child: MaterialApp(
         theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFB70001)),
             fontFamily: 'KBO-M'),
-        home: FutureBuilder(
-          future: Future.delayed(const Duration(seconds: 3), () => "completed"),
-          builder: (context, snapshot) {
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 1000),
-              child: SplashConditionWidget(snapshot),
-            );
-          },
-        ),
+        home: ((myUserInfo.isUserLogin == true) &&
+                (firebaseAuth.currentUser?.emailVerified == true) &&
+                (myUserInfo.userStatus == UserStatus.BANNED))
+            ? WelcomePage()
+            : ((myUserInfo.isUserLogin == true) &&
+                    (firebaseAuth.currentUser?.emailVerified == true))
+                ? ControlPage()
+                : WelcomePage(),
         initialRoute: '/',
         routes: {
           '/control': (context) => ControlPage(),
@@ -176,18 +174,18 @@ class WelcomePage extends StatelessWidget {
         body: Center(
           child: Stack(
             children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/images/main_logo.png'),
-                      ],
-                    ),
-                    const SizedBox(height : 50),
-                  ],
-                ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/images/main_logo.png'),
+                    ],
+                  ),
+                  const SizedBox(height: 50),
+                ],
+              ),
               Positioned(
                 bottom: 360,
                 left: 138,

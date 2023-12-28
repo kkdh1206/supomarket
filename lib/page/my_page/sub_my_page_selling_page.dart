@@ -371,7 +371,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/myItems?sort=${ConvertEnumToString(type)}&page=${page}&pageSize=${pageSize}';
+        'https://kdh.supomarket.com/items/myItems?sort=${ConvertEnumToString(type)}&page=${page}&pageSize=${pageSize}';
 
     if (page == 1) {
       itemList.clear();
@@ -453,7 +453,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
+        'https://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
 
     var data = {'status': ConvertEnumToString(item.itemStatus) ?? "TRADING"};
 
@@ -478,7 +478,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
+        'https://kdh.supomarket.com/items/myItems/patch/status/${item.itemID}';
 
     var data = {'status': "DELETED"};
 
@@ -510,7 +510,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     print('add Item To Server');
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items/myItems/patch/item/${item.itemID}';
+        'https://kdh.supomarket.com/items/myItems/patch/item/${item.itemID}';
 
     FormData formData = FormData.fromMap({
       'title': item.sellingTitle ?? "무제",
@@ -546,7 +546,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
   Future<void> getUserName(String userUid) async {
     Dio dio = Dio();
     dio.options.responseType = ResponseType.plain; // responseType 설정
-    String url = 'http://kdh.supomarket.com/auth/userUid';
+    String url = 'https://kdh.supomarket.com/auth/userUid';
 
     Map<String, String> data = {'userUid': userUid};
     List<String> temp = [];

@@ -181,7 +181,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                     Dio dio = Dio();
                     print('add Item To Server');
                     dio.options.headers['Authorization'] = 'Bearer $token';
-                    String url = 'http://kdh.supomarket.com/items';
+                    String url = 'https://kdh.supomarket.com/items';
 
                     print("itemQauilty : ${newItem.itemQuality}");
                     FormData formData = FormData.fromMap({
@@ -720,7 +720,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
   //   Dio dio = Dio();
   //   print('add Item To Server');
   //   dio.options.headers['Authorization'] = 'Bearer $token';
-  //   String url = 'http://kdh.supomarket.com/items';
+  //   String url = 'https://kdh.supomarket.com/items';
   //
   //   print("itemQauilty : ${newItem.itemQuality}");
   //   FormData formData = FormData.fromMap({

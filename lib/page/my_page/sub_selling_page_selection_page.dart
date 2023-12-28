@@ -168,7 +168,7 @@ class SubSellingPageSelectionPageState
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/auth/request';
+    String url = 'https://kdh.supomarket.com/auth/request';
 
     Map<String, dynamic> data = {
       'buyerUid': userUid,

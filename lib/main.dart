@@ -23,9 +23,9 @@ import '../provider/socket_provider.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
 
-void main() async {
+Future<void> main() async {
   //firebase 사용을 위한 호출들
-
+  print("main start");
   WidgetsFlutterBinding.ensureInitialized();
   //안드로이드 권한 허용
   // flutterLocalNotificationsPlugin
@@ -37,8 +37,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  FirebaseMessaging.instance
-    ..requestPermission(badge: true, alert: true, sound: true);
+  await Future.delayed(Duration(seconds: 1)); //이거 안해주면 흰색화면뜸
+
+  FirebaseMessaging.instance..requestPermission(badge: true, alert: true, sound: true);
 
   FirebaseMessaging fbMsg = FirebaseMessaging.instance;
   fcmToken = await fbMsg.getToken();
@@ -49,8 +50,10 @@ void main() async {
 
   //IOS 알람 권한 요청
   if(Platform.isIOS) await reqIOSPermission(fbMsg);
+  mainPageBuilder = assignTrue();
 
   runApp(const MyApp());
+  print("runApp");
 
   RemoteMessage? initialMessage =
   await FirebaseMessaging.instance.getInitialMessage();
@@ -60,7 +63,6 @@ void main() async {
   //알림 받기 설정
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-    print("실행됨?");
 
     if (message != null) {
       if (message.notification != null) {

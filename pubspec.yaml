@@ -61,6 +61,7 @@ dependencies:
   firebase_messaging: ^14.6.7
   flutter_animated_icons: ^1.0.1
   lottie: ^1.4.3
+  flutter_native_splash: ^2.3.8
 
 
 
@@ -175,6 +176,7 @@ flutter:
     - assets/images/main_logo_2.png
     - assets/images/main_logo_3.png
     - assets/images/main_logo_4.png
+    - assets/images/main_logo_5.png
     - assets/images/supi_logo.jpeg
     - assets/images/icons/setting.png
     - assets/images/icons/log-out.png

@@ -379,7 +379,7 @@ class _HomePageState extends State<HomePage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&status=${ConvertEnumToString(status)}&page=${page}&pageSize=${pageSize}';
+        'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&status=${ConvertEnumToString(status)}&page=${page}&pageSize=${pageSize}';
 
     if (page == 1) {
       itemList.clear();

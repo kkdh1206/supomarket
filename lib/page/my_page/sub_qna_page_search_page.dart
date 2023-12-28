@@ -350,7 +350,7 @@ class _SubQnAPageSearchPageState extends State<SubQnAPageSearchPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/boards/search?title=${input}&page=${page}&pageSize=${pageSize}';
+        'https://kdh.supomarket.com/boards/search?title=${input}&page=${page}&pageSize=${pageSize}';
 
     searchList?.clear();
 
@@ -417,7 +417,7 @@ class _SubQnAPageSearchPageState extends State<SubQnAPageSearchPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/boards/search/count?title=${newTitle}';
+        'https://kdh.supomarket.com/boards/search/count?title=${newTitle}';
 
     try {
       Response response = await dio.get(url);

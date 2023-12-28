@@ -164,7 +164,7 @@ class SubSubHomePageCommentsPageState
 
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/itemComment'; // 여기에 api 랑 endpoint 추가해야됨
+        'https://kdh.supomarket.com/itemComment'; // 여기에 api 랑 endpoint 추가해야됨
 
     Map<String, dynamic> data = {
       'content': content,
@@ -188,7 +188,7 @@ class SubSubHomePageCommentsPageState
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
 
-    String url = 'http://kdh.supomarket.com/items/comment/${widget.itemID}';
+    String url = 'https://kdh.supomarket.com/items/comment/${widget.itemID}';
 
     try {
       Response response = await dio.get(url);

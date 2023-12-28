@@ -403,7 +403,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'http://kdh.supomarket.com/boards?&page=${page}&pageSize=${pageSize}';
+        'https://kdh.supomarket.com/boards?&page=${page}&pageSize=${pageSize}';
 
     setState(() {
       isLoading = true;
@@ -460,7 +460,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/boards/count';
+    String url = 'https://kdh.supomarket.com/boards/count';
 
     try {
       Response response = await dio.get(url);
@@ -487,7 +487,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
     Dio dio = Dio();
 
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'http://kdh.supomarket.com/boards'; // 여기에 api 랑 endpoint 추가해야됨
+    String url = 'https://kdh.supomarket.com/boards'; // 여기에 api 랑 endpoint 추가해야됨
 
     Map<String, String> data = {
       'title': newTitle,

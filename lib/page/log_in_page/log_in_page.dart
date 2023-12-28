@@ -90,7 +90,7 @@ class _LogInPageState extends State<LogInPage> {
                       var token = await firebaseAuth.currentUser?.getIdToken();
                       Dio dio = Dio();
                       dio.options.headers['Authorization'] = 'Bearer $token';
-                      String url = 'http://kdh.supomarket.com/auth/signin';
+                      String url = 'https://kdh.supomarket.com/auth/signin';
                       try {
                         Response response = await dio
                             .post(url); // 근데 이걸 post로 해야하는지는 확신이 안서네 ;;

@@ -110,7 +110,7 @@ class SubSellingPageEvaluationPageState extends State<SubSellingPageEvaluationPa
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
 
-    String url = 'http://kdh.supomarket.com/auth/userScore/$userId';
+    String url = 'https://kdh.supomarket.com/auth/userScore/$userId';
 
 
     var data = {'score': score};
