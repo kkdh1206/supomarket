@@ -117,12 +117,15 @@ class ChattingPageState extends State<ChattingPage> {
   }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         backgroundColor: const Color(0xffffffff),
         body: FutureBuilder(
             future: chattingPageBuilder,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
+
+                print("build chatting page");
 
                 if(roomList.isEmpty){
                   return GestureDetector(
@@ -406,13 +409,14 @@ class ChattingPageState extends State<ChattingPage> {
                 TextButton(
                   child: const Text("확인"),
                   onPressed: () async {
-                    await client!
-                        .deleteRoom(DeleteId(id: roomList[position].id));
+                    await client!.deleteRoom(DeleteId(id: roomList[position].id));
                     List<Room> updatedList = List.from(roomList);
                     updatedList.removeAt(position);
                     setState(() {
                       roomList = updatedList;
                     });
+                    chattingPageBuilder = assignTrue();
+                    setState(() {});
                     Navigator.pop(context);
                   },
                 ),

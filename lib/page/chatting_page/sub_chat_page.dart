@@ -135,7 +135,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
   }
 
   void socketInit() async {
-    print("init");
+    print("socket init");
     socket = io.io(
         'http://jtaeh.supomarket.com/',
         OptionBuilder()
@@ -157,8 +157,12 @@ class _SubChattingPageState extends State<SubChattingPage> {
     });
 
     final response = await client?.getTokenById(roomId: widget.roomID);
-    final token = Token(
-        buyerToken: response?.buyerToken, sellerToken: response?.sellerToken);
+    final token = Token(buyerToken: response?.buyerToken, sellerToken: response?.sellerToken);
+
+    print("sellerToken ${token.sellerToken}");
+    print("buyerToken ${token.buyerToken}");
+    print("my Token ${fcmToken}");
+
     if (token.buyerToken != fcmToken) {
       sendToken = token.buyerToken;
     } else if (token.sellerToken != fcmToken) {
@@ -261,16 +265,18 @@ class _SubChattingPageState extends State<SubChattingPage> {
   }
 
   void sendMessage(String message, String myImageUrl, String sendName) async {
+    print("send Message");
     sendData senddata = sendData(
         message: message,
         myImageUrl: myImageUrl,
         checkRead: 'false',
         imageUrl: "NoImage");
     String? changeData = jsonEncode(senddata);
-    print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $sendName');
-    print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $fcmToken');
-    print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $message');
-    print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: ${widget.roomID}');
+    // print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $sendName');
+    // print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $fcmToken');
+    // print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $message');
+    // print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: ${widget.roomID}');
+    print("서버로 전달하는 토큰: $sendToken");
     final notification = Notificate(
       token: sendToken,
       title: sendName,
@@ -353,6 +359,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       // resizeToAvoidBottomInset: false,
+      appBar : AppBar(backgroundColor: Colors.white, leading : Container(), toolbarHeight: 20, flexibleSpace: Container(color: Colors.white),),
       body: FutureBuilder(
           future: subChattingPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -367,6 +374,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                 child: Stack(
                   children: [
                     Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Expanded(
                           child: ListView.builder(
@@ -415,119 +423,105 @@ class _SubChattingPageState extends State<SubChattingPage> {
                           ),
                         ),
                         Container(
-                          color : Colors.black,
-                          margin: EdgeInsets.only(top: 0),
-                          padding: EdgeInsets.all(8),
-                          child: SafeArea(
-                            child: Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        enableDrag: true,
-                                        isDismissible: true,
-                                        barrierColor:
-                                            Colors.black.withOpacity(0.1),
-                                        constraints: const BoxConstraints(
-                                            minHeight: 100,
-                                            maxHeight: 150,
-                                            minWidth: 500,
-                                            maxWidth: 500),
-                                        builder: (BuildContext context) {
-                                          return ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                CameraGalleryButton(
-                                                    "갤러리 열기",
-                                                    const Icon(
-                                                      Icons.image,
-                                                      color: Colors.black45,
-                                                    )),
-                                              ],
-                                            ),
-                                          );
-                                        });
-                                  },
-                                  icon: Icon(Icons.add_circle_outline,
-                                      color: Colors.black.withOpacity(0.7),
-                                      size: 30),
-                                  color: Colors.blue,
-                                ),
-                                //ExpandImage(""),
-                                Expanded(
-                                  child: TextField(
-                                    maxLines: null,
-                                    controller: _controller,
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor:
-                                          Colors.grey.withOpacity(0.3),
-                                      contentPadding: const EdgeInsets.only(
-                                          left: 14.0,
-                                          bottom: 8.0,
-                                          top: 8.0),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.white),
-                                        borderRadius:
-                                            BorderRadius.circular(25.7),
-                                      ),
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.white),
-                                        borderRadius:
-                                            BorderRadius.circular(25.7),
-                                      ),
-                                      hintText: '메시지를 입력하세요',
-                                      hintStyle:
-                                          TextStyle(color: Colors.grey),
+                          margin: EdgeInsets.only(top: 0, bottom : 20),
+                          padding: EdgeInsets.only(top : 20, left : 8, right : 8, bottom: 8),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      enableDrag: true,
+                                      isDismissible: true,
+                                      barrierColor:
+                                          Colors.black.withOpacity(0.1),
+                                      constraints: const BoxConstraints(
+                                          minHeight: 100,
+                                          maxHeight: 150,
+                                          minWidth: 500,
+                                          maxWidth: 500),
+                                      builder: (BuildContext context) {
+                                        return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              CameraGalleryButton(
+                                                  "갤러리 열기",
+                                                  const Icon(
+                                                    Icons.image,
+                                                    color: Colors.black45,
+                                                  )),
+                                            ],
+                                          ),
+                                        );
+                                      });
+                                },
+                                icon: Icon(Icons.add_circle_outline,
+                                    color: Colors.black.withOpacity(0.7),
+                                    size: 30),
+                                color: Colors.blue,
+                              ),
+                              //ExpandImage(""),
+                              Expanded(
+                                child: TextField(
+                                  maxLines: null,
+                                  controller: _controller,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor:
+                                        Colors.grey.withOpacity(0.3),
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 14.0,
+                                        bottom: 8.0,
+                                        top: 8.0),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white),
+                                      borderRadius:
+                                          BorderRadius.circular(25.7),
                                     ),
-                                    onChanged: (value) {
-                                      _userEnterMessage = value;
-                                    },
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white),
+                                      borderRadius:
+                                          BorderRadius.circular(25.7),
+                                    ),
+                                    hintText: '메시지를 입력하세요',
+                                    hintStyle:
+                                        TextStyle(color: Colors.grey),
                                   ),
-                                ),
-                                IconButton(
-                                  onPressed: () async {
-                                    if (_userEnterMessage.isNotEmpty) {
-                                      _controller.clear();
-                                    }
-
-                                    sendMessage(_userEnterMessage, image!,
-                                        sendName!);
-                                    scrollToBottom();
+                                  onChanged: (value) {
+                                    _userEnterMessage = value;
                                   },
-                                  icon: const Icon(Icons.send,
-                                      color: Colors.grey),
-                                  color: Colors.blue,
                                 ),
-                              ],
-                            ),
+                              ),
+                              IconButton(
+                                onPressed: () async {
+                                  if (_userEnterMessage.isNotEmpty) {
+                                    _controller.clear();
+                                  }
+
+                                  sendMessage(_userEnterMessage, image!,
+                                      sendName!);
+                                  scrollToBottom();
+                                },
+                                icon: const Icon(Icons.send,
+                                    color: Colors.grey),
+                                color: Colors.blue,
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                     Positioned(
-                      top : 55,
-                      left : 10,
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-                        onPressed: () async {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      top: 60,
                       left : 10,
                       right : 10,
                       child: Container(
-                        //color : Colors.black,
+                        color : Colors.white,
                         width : MediaQuery.of(context).size.width * 0.8,
                         child: Align(
                           alignment : Alignment.center,
@@ -538,6 +532,15 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                   fontFamily: 'KBO-M',
                                   fontWeight: FontWeight.w600)),
                         ),
+                      ),
+                    ),
+                    Positioned(
+                      left : 10,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+                        onPressed: () async {
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
                   ],

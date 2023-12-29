@@ -44,16 +44,13 @@ Future<void> main() async {
   FirebaseMessaging fbMsg = FirebaseMessaging.instance;
   fcmToken = await fbMsg.getToken();
   print("fcmToken : ${fcmToken}을 받았습니다");
-  if (firebaseAuth.currentUser != null) {
-    await patchToken(fcmToken!); //서버에 해당 토큰을 저장 및 수정하는 로직 구현
-  }
+  // if (firebaseAuth.currentUser != null) {
+  await patchToken(fcmToken!); //서버에 해당 토큰을 저장 및 수정하는 로직 구현
+  // }
 
   //IOS 알람 권한 요청
   if(Platform.isIOS) await reqIOSPermission(fbMsg);
   mainPageBuilder = assignTrue();
-
-  runApp(const MyApp());
-  print("runApp");
 
   RemoteMessage? initialMessage =
   await FirebaseMessaging.instance.getInitialMessage();
@@ -85,6 +82,9 @@ Future<void> main() async {
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) {
     _handleMessage(message!);
   });
+
+  runApp(const MyApp());
+  print("runApp");
 }
 
 void _handleMessage(RemoteMessage message) {

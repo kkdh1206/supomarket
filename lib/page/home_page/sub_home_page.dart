@@ -250,16 +250,17 @@ class _SubHomePageState extends State<SubHomePage> {
                                   borderRadius: BorderRadius.circular(10),
                                   child: Center(
                                     child: Container(
-                                      padding: EdgeInsets.only(
-                                          left: 6, top: 5, bottom: 4, right: 4),
+                                      padding: EdgeInsets.all(1.0),
                                       color: Color(0xffB70001),
                                       height: 25,
                                       width: 60,
-                                      child: Text(
-                                        "판매자",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontFamily: 'KBO-M'
+                                      child: Center(
+                                        child: Text(
+                                          "판매자",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'KBO-M'
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -281,13 +282,13 @@ class _SubHomePageState extends State<SubHomePage> {
                               ],
                             ),
                             const SizedBox(height: 5),
-                            const Text(
-                              "추가 상세 정보",
-                              style: TextStyle(
-                                fontFamily: 'KBO-L',
-                                fontSize: 18,
-                              ),
-                            ),
+                           // const Text(
+                           //    "추가 상세 정보",
+                           //    style: TextStyle(
+                           //      fontFamily: 'KBO-L',
+                           //      fontSize: 18,
+                           //    ),
+                           //  ),
                           ],
                         ),
                       ],
@@ -506,7 +507,7 @@ class _SubHomePageState extends State<SubHomePage> {
                               });
                             },
                       child: Container(
-                        padding: EdgeInsets.only(left: 15),
+                        padding: EdgeInsets.only(left: 0),
                         height: 42,
                         width: 42,
                         child: widget.item.isLiked == true? Image.asset("assets/images/icons/heart.png", color : mainColor)
@@ -518,7 +519,7 @@ class _SubHomePageState extends State<SubHomePage> {
                         Navigator.push(context, MaterialPageRoute(builder: (context)=>SubSubHomePageCommentsPage(itemID: widget.item.itemID!)));
                       },
                       child: Container(
-                        padding: EdgeInsets.only(left: 15),
+                        padding: EdgeInsets.only(left: 10),
                         height: 42,
                         width: 42,
                         child: Image.asset("assets/images/icons/comment.png"),

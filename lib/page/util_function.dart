@@ -240,6 +240,32 @@ Future<List<dynamic>> getItemImageById(List<String> id) async{
   return imageList;
 }
 
+Future<List<dynamic>> patchItemImageById(List<String> id, int index) async{
+
+  print("patchItemImageById : $id");
+
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'https://kdh.supomarket.com/items/imgList';
+  List<dynamic> imageList = [];
+
+  try {
+    var data = {'id' : id};
+    Response response = await dio.get(url, data: data);
+    dynamic jsonData = response.data;
+
+    imageList = jsonData as List<dynamic>;
+    print(imageList);
+
+  } catch (e) {
+    print('Error sending GET request : $e');
+  }
+
+  return imageList;
+}
+
 Future<String> getSellerById(String id) async{
 
   String? itemName;

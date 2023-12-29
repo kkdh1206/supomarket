@@ -55,7 +55,12 @@ class _RegisterPageState extends State<RegisterPage> {
   // 비밀번호 7자리 이상, 아이디는 이메일 폼
   Future<void> createEmailAndPassword(String id, String password,
       String userName, String newUserSchoolNum) async {
-    if(isChecked==false){
+    if(newUserSchoolNum == "" || id == "" || password == "" || userName == ""){
+      print("입력 하나를 안함");
+      _checkAllthing();
+      isPressed = false;
+    }
+    else if(isChecked==false){
       print("닉네임 중복 확인안함");
       _checkNickNamePopUp();
       isPressed = false;
@@ -435,6 +440,31 @@ class _RegisterPageState extends State<RegisterPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: const SingleChildScrollView(child: Text("닉네임 중복확인을 확인해주세요")),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _checkAllthing() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const SingleChildScrollView(child: Text("모든 정보를 입력해주세요")),
           actions: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

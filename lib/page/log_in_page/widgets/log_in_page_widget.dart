@@ -228,7 +228,7 @@ class TextInputwithButtonState extends State<TextInputwithButton>{
         SizedBox(
           width: 320,
           child: TextField(
-            maxLength: hintText == '닉네임'? 6 : 100,
+            maxLength: hintText == '닉네임'? 6 : null,
             onChanged: onChanged,
             keyboardType: TextInputType.emailAddress,
             maxLines: 1,
