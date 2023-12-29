@@ -1,11 +1,11 @@
 class Setting {
-  bool? chattingAlarm;
+  bool? alarmOnOff;
   Map? categoryAlarms;
   String? selectedCategoryAlarm;
 
   Setting
       ({
-    required this.chattingAlarm,
+    required this.alarmOnOff,
     required this.categoryAlarms,
     required this.selectedCategoryAlarm,
   });

@@ -418,6 +418,7 @@ class _HomePageState extends State<HomePage> {
 
           // 사진도 받아야하는데
           DateTime dateTime = DateTime.parse(updatedAt);
+          print("date" + dateTime.toString());
 
           // 시간 어떻게 받아올지 고민하기!!!!!!
           // 그리고 userId 는 현재 null 상태 해결해야함!!!

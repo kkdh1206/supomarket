@@ -542,7 +542,7 @@ class _SubHomePageState extends State<SubHomePage> {
                               borderRadius: BorderRadius.circular(11.0),
                             ),
                             child: const Text(
-                              "채팅하기", textScaleFactor: 1.7, style: TextStyle(
+                              "채팅하기", textScaleFactor: 1.2, style: TextStyle(
                               fontFamily: 'KBO-B',
                                 color: Colors.white, fontWeight: FontWeight.bold),
                             ),
@@ -559,7 +559,10 @@ class _SubHomePageState extends State<SubHomePage> {
                                   widget.item.sellerName!,
                                 );
                                 print("여기" + roomID! + widget.item.sellerName!);
-                                await Navigator.push(context, MaterialPageRoute(builder: (context)=>SubChattingPage(roomID: roomID, traderName: widget.item.sellerName)));
+                                await Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                                    SubChattingPage(roomID: roomID,
+                                        traderName: widget.item.sellerName,
+                                    buyerID : myUserInfo.userUid!, sellerID : itemUser!.userUid!)));
                               }
                             })
                     )

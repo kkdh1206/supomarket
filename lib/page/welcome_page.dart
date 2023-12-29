@@ -122,6 +122,8 @@ class MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => SocketProvider()),
       ],
       child: MaterialApp(
+        title : "슈포마켓",
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFB70001)),
             fontFamily: 'KBO-M'),
@@ -141,25 +143,6 @@ class MyAppState extends State<MyApp> {
       ),
     );
   }
-
-  Widget SplashConditionWidget(AsyncSnapshot<Object?> snapshot) {
-    if (snapshot.hasError) {
-      return const Text("Error!!");
-    } else if (snapshot.hasData) {
-      if ((myUserInfo.isUserLogin == true) &&
-          (firebaseAuth.currentUser?.emailVerified == true)) {
-        if (myUserInfo.userStatus == UserStatus.BANNED) {
-          return WelcomePage();
-        } else {
-          return ControlPage();
-        }
-      } else {
-        return WelcomePage();
-      }
-    } else {
-      return SplashScreen();
-    }
-  }
 }
 
 class WelcomePage extends StatelessWidget {
@@ -168,6 +151,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'KBO-M'),
       home: Scaffold(
         backgroundColor: mainColor,

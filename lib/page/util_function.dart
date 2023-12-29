@@ -35,6 +35,7 @@ Future<bool>? subChattingPageBuilder;
 Future<bool>? chattingPageBuilder;
 Future<bool>? subSubHomePageCommentsPageBuilder;
 Future<bool>? mainPageBuilder;
+Future<bool>? managementPageBuilder;
 
 
 String? fcmToken;
@@ -43,7 +44,7 @@ Future<bool> setAlarmInDevice (bool check) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   debugPrint("set alarm in device");
   pref.setBool('isAlarm', check);
-  mySetting.chattingAlarm = await getAlarmInDevice();
+  mySetting.alarmOnOff = await getAlarmInDevice();
   return true;
 }
 
@@ -688,13 +689,21 @@ dynamic ConvertEnumToString(dynamic ENUM){
 //(현재 Date) - (등록 Data) => 업로드 시간 표시
 String formatDate(DateTime date) {
   final now = DateTime.now();
-  final difference = now.difference(date);
-  if (difference.inMinutes < 1) {
+  Duration differences = now.difference(date);
+  int hour = differences.inHours;
+  int minute = differences.inMinutes;
+  int second = differences.inSeconds;
+
+  int gap = hour*3600 + minute*60 + second;
+  gap = gap + 93505;
+
+  if (gap<0){gap = -gap;}
+  if (0<=gap&& gap<=60) {
     return '방금 전';
-  } else if (difference.inHours < 1) {
-    return '${difference.inMinutes} 분 전';
-  } else if (difference.inDays < 1) {
-    return '${difference.inHours} 시간 전';
+  } else if (gap < 3600) {
+    return '${(gap/60).floor()} 분 전';
+  } else if (gap<24*3600) {
+    return '${(gap/3600).floor()} 시간 전';
   } else {
     return '${date.year}.${date.month}.${date.day}';
   }
@@ -801,4 +810,25 @@ Future<bool> getMyInfoRequestList() async {
 Future<bool> assignTrue() async{
   print("assign True");
   return true;
+}
+
+Future<String> getUserName(String userUid) async {
+  Dio dio = Dio();
+  dio.options.responseType = ResponseType.plain; // responseType 설정
+  String url = 'https://kdh.supomarket.com/auth/userUid';
+
+  Map<String, String> data = {'userUid': userUid};
+  try {
+
+    Response response = await dio.get(url, data: data);
+    dynamic jsonData = response.data;
+    String userName = jsonData as String;
+
+    print("userName ${userName}을 받았습니다");
+    return userName;
+
+  } catch (e) {
+    print('Error sending GET request : $e');
+    return "error";
+  }
 }

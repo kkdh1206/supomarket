@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:supo_market/page/my_page/sub_my_page_management_page.dart';
 import 'package:supo_market/page/my_page/usecases/my_page_usecases.dart';
+import 'package:supo_market/page/util_function.dart';
 
 import '../../../entity/item_entity.dart';
 import '../../../entity/util_entity.dart';
@@ -217,12 +219,20 @@ class MyBoughtButtonState extends State<MyBoughtButton> {
 }
 
 class MyInfoChangeButton extends StatefulWidget {
+
+  final VoidCallback callback;
+  MyInfoChangeButton({super.key, required this.callback});
+
   @override
   MyInfoChangeButtonState createState() => MyInfoChangeButtonState();
 }
 
 class MyInfoChangeButtonState extends State<MyInfoChangeButton> {
-  // 여기에 상태를 나타내는 변수들을 선언하세요.
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +245,8 @@ class MyInfoChangeButtonState extends State<MyInfoChangeButton> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => SubMyPageMyInfoPage()));
-              setState(() {});
+              await getMyInfo();
+              widget.callback();
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -278,11 +289,15 @@ class PlusButtonState extends State<PlusButton> {
 }
 
 class NameNumber extends StatelessWidget {
+  String name;
+  NameNumber({super.key, required this.name});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 120,
-      child: Text('${myUserInfo.userStudentNumber!}\n${myUserInfo.userName!}',
+      child: //Text('${myUserInfo.userStudentNumber!}\n${myUserInfo.userName!}',
+      Text("${myUserInfo.userStudentNumber!}\n${name}",
           // 여기 정보는 받아서 알아서 넣어줘
           style: const TextStyle(
               color: Colors.black,
@@ -300,36 +315,6 @@ class UserGrade extends StatelessWidget {
       child: Image.asset("assets/images/${myUserInfo.userGrade ?? "F"}.jpeg",
           scale: 10),
     );
-  }
-}
-
-class ProfileImage extends StatefulWidget {
-  @override
-  ProfileImageState createState() => ProfileImageState();
-}
-
-class ProfileImageState extends State<ProfileImage> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: InkWell(
-      onTap: () {
-        // 프로필 사진 수정기능?? 그런거 넣자
-      },
-      child: Container(
-        width: 80, // 박스의 너비
-        height: 80, // 박스의 높이
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(40.0),
-          image: DecorationImage(
-            image: NetworkImage(myUserInfo.imagePath!),
-            // 이미지 경로
-            fit: BoxFit.cover, // 이미지가 박스에 꽉 차도록 설정
-          ),
-        ),
-        //  실제로는 서버에서 받아와야함
-      ),
-    ));
   }
 }
 
@@ -940,5 +925,45 @@ class MyItemCard2State extends State<MyItemCard2> {
         ),
       ),
     );
+  }
+}
+
+
+class ManagementButton extends StatefulWidget {
+  final List<Item> list;
+
+  const ManagementButton(this.list, {super.key});
+
+  @override
+  ManagementButtonState createState() => ManagementButtonState();
+}
+
+class ManagementButtonState extends State<ManagementButton> {
+  // 여기에 상태를 나타내는 변수들을 선언하세요.
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 50,
+        width: 350,
+        child: InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SubMyPageManagementPage(
+                          list: widget.list, user: myUserInfo!)));
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.monitor),
+                Text(
+                  '  관리자 페이지',
+                  style: TextStyle(fontFamily: 'Arial', fontSize: 17),
+                )
+              ],
+            )));
   }
 }

@@ -35,8 +35,7 @@ class SubAddItemPage extends StatefulWidget {
 class _SubAddItemPageState extends State<SubAddItemPage> {
   List<Item>? list;
   bool isFastSellForToggle = false;
-  FixedExtentScrollController? firstController;
-  FixedExtentScrollController? secondController;
+
   Item newItem = Item(
     sellingTitle: "",
     itemType: ItemType.REFRIGERATOR,
@@ -53,6 +52,9 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
     itemStatus: ItemStatus.TRADING,
     itemID: 4,
   );
+
+  int firstNum = 0;
+  int secondNum = 0;
 
   final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter();
   final picker = ImagePicker();
@@ -103,8 +105,6 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
     // newItem.imageList[0].path = "assets/images/main_logo.jpg";
     newItem.sellerImage = myUserInfo!.imagePath!;
     newItem.sellerImage = myUserInfo!.userName!;
-    firstController = FixedExtentScrollController(initialItem: 0);
-    secondController = FixedExtentScrollController(initialItem: 0);
     list = widget.list;
   }
 
@@ -322,23 +322,29 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                       child: CupertinoPicker(
                                         itemExtent: 50,
                                         backgroundColor: Colors.white,
-                                        scrollController: firstController,
+                                        scrollController: FixedExtentScrollController(initialItem: secondNum),
                                         onSelectedItemChanged: (index) {
                                           setState(() {
                                             switch (index) {
                                               case (0):
                                                 newItem.itemType =
                                                     ItemType.REFRIGERATOR;
+                                                secondNum = 0;
                                               case (1):
                                                 newItem.itemType = ItemType.CLOTHES;
+                                                secondNum = 1;
                                               case (2):
                                                 newItem.itemType = ItemType.ROOM;
+                                                secondNum = 2;
                                               case (3):
                                                 newItem.itemType = ItemType.MONITOR;
+                                                secondNum = 3;
                                               case (4):
                                                 newItem.itemType = ItemType.BOOK;
+                                                secondNum = 4;
                                               case (5):
                                                 newItem.itemType = ItemType.ETC;
+                                                secondNum = 5;
                                             }
                                           });
                                         },
@@ -402,19 +408,22 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                       child: CupertinoPicker(
                                         itemExtent: 50,
                                         backgroundColor: Colors.white,
-                                        scrollController: secondController,
+                                        scrollController: FixedExtentScrollController(initialItem: firstNum),
                                         onSelectedItemChanged: (Index) {
                                           setState(() {
                                             switch (Index) {
                                               case (0):
                                                 newItem.itemQuality =
                                                     ItemQuality.HIGH;
+                                                firstNum = 0;
                                               case (1):
                                                 newItem.itemQuality =
                                                     ItemQuality.MID;
+                                                firstNum = 1;
                                               case (2):
                                                 newItem.itemQuality =
                                                     ItemQuality.LOW;
+                                                firstNum = 2;
                                             }
                                           });
                                         },

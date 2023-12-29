@@ -32,14 +32,25 @@ class MyPage extends StatefulWidget{
 
 class _MyPageState extends State<MyPage> {
 
+  String? name;
+  String? url;
   List<Item>? list;
 
   @override
   void initState() {
     list = widget.list;
+    name = myUserInfo.userName;
+    url =  myUserInfo.imagePath;
     super.initState();
     debugPrint("학번은 ${myUserInfo.userStudentNumber.toString()}");
     debugPrint("${myUserInfo!.userStatus}");
+  }
+
+  @override
+  void didUpdateWidget(Widget oldWidget){
+    print("didChangeDependencies : ${myUserInfo.imagePath??""}");
+    name = myUserInfo.userName??"익명";
+    url = myUserInfo.imagePath??"";
   }
 
   @override
@@ -57,9 +68,21 @@ class _MyPageState extends State<MyPage> {
           Row(
             children: [
               const SizedBox(width: 20),
-              ProfileImage(),
+              Container(
+                width: 80, // 박스의 너비
+                height: 80, // 박스의 높이
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(40.0),
+                  image: DecorationImage(
+                    image: NetworkImage(url??""),
+                    // 이미지 경로
+                    fit: BoxFit.cover, // 이미지가 박스에 꽉 차도록 설정
+                  ),
+                ),
+                //  실제로는 서버에서 받아와야함
+              ),
               const SizedBox(width: 20),
-              NameNumber(),
+              NameNumber(name : name??"익명"),
               const SizedBox(width: 20),
               UserGrade(),
             ],
@@ -70,7 +93,13 @@ class _MyPageState extends State<MyPage> {
           QnAButton(),
           MySoldButton(list!),
           MyBoughtButton(list!),
-          MyInfoChangeButton(),
+          MyInfoChangeButton(callback: (){
+            setState(() {
+            name = myUserInfo.userName!;
+            url = myUserInfo.imagePath!;
+          });
+          }),
+          myUserInfo.userStatus == UserStatus.ADMIN? ManagementButton(list!) : const SizedBox(),
         ],
       ),
     );

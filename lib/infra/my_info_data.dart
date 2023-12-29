@@ -2,7 +2,7 @@ import '../entity/setting_entity.dart';
 import '../entity/user_entity.dart';
 
 var mySetting = Setting(
-  chattingAlarm: false,
+  alarmOnOff: false,
   categoryAlarms:
   {"냉장고" : true,
     "의류" : false,

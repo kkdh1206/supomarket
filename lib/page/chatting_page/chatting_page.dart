@@ -24,7 +24,6 @@ class ChattingPage extends StatefulWidget {
 
 class ChattingPageState extends State<ChattingPage> {
   RestClient? client;
-  List<Room> roomList = [];
   String? InputRoomName;
   String? EnterText;
   List<ChatRoom> list = [];
@@ -36,6 +35,8 @@ class ChattingPageState extends State<ChattingPage> {
       imagePath: "",
       isUserLogin: false,
       userStatus: UserStatus.NORMAL);
+
+  List<Room> roomList = [];
   List<dynamic> roomNameList = [];
   List<dynamic> roomImageList = [];
 
@@ -124,9 +125,100 @@ class ChattingPageState extends State<ChattingPage> {
               if (snapshot.connectionState == ConnectionState.done) {
 
                 if(roomList.isEmpty){
-                  return const Center(
-                    child: Text("채팅이 없습니다"),
+                  return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SubChattingPageChatbotPage(),
+                            ));
+                      },
+                      child: Stack(
+                        children: [
+
+                          Card(
+                            elevation: 0,
+                            margin: EdgeInsets.only(
+                                top: 5, bottom: 5, left: 20, right: 20),
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 7,
+                                      bottom: 7,
+                                      left: 7,
+                                      right: 10),
+                                  child: ClipRRect(
+                                      borderRadius:
+                                      BorderRadius.circular(50.0),
+                                      child:  Image.asset(
+                                          "assets/images/supi_logo.jpeg",
+                                          width: 65,
+                                          height: 65,
+                                          fit: BoxFit.contain)
+
+
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    height: 70,
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+
+                                              const Text(
+                                                "Supi",
+                                                style: TextStyle(
+                                                    fontSize: 25,
+                                                    fontWeight:
+                                                    FontWeight
+                                                        .bold),
+                                                overflow: TextOverflow
+                                                    .ellipsis,
+                                              ),
+
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 7),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  "챗봇 입니다",
+                                                  style: const TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                      FontWeight
+                                                          .normal,
+                                                      overflow:
+                                                      TextOverflow
+                                                          .ellipsis),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
                   );
+
                 }
 
                 return Stack(
@@ -137,6 +229,7 @@ class ChattingPageState extends State<ChattingPage> {
                           itemCount: roomList.length + 1,
                           itemBuilder: (context, position) {
                             //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
+
                             return GestureDetector(
                               onTap: () {
                                 if (position == roomList.length) {
@@ -151,9 +244,11 @@ class ChattingPageState extends State<ChattingPage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => SubChattingPage(
-                                                roomID: roomList[position].id,
-                                                traderName: roomList[position].roomName,
-                                              ))).then((value) {
+                                            roomID: roomList[position].id,
+                                            traderName: roomList[position].roomName,
+                                            buyerID : roomList[position].buyerID,
+                                            sellerID : roomList[position].sellerID,
+                                          ))).then((value) {
                                     getChatRoomId(myUserInfo.userUid!);
                                   });
                               },
@@ -165,7 +260,7 @@ class ChattingPageState extends State<ChattingPage> {
                                         top: 5, bottom: 5, left: 20, right: 20),
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                      MainAxisAlignment.start,
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.only(
@@ -175,21 +270,21 @@ class ChattingPageState extends State<ChattingPage> {
                                               right: 10),
                                           child: ClipRRect(
                                             borderRadius:
-                                                BorderRadius.circular(50.0),
+                                            BorderRadius.circular(50.0),
                                             child: position == roomList.length
                                                 ? Image.asset(
-                                                    "assets/images/supi_logo.jpeg",
-                                                    width: 65,
-                                                    height: 65,
-                                                    fit: BoxFit.contain)
-                                                // : Image.asset(
-                                                //     'assets/images/icons/product.png',
-                                                //     //Image.network(
-                                                //     //roomList[position].sellerID..sellerImage,
-                                                //     width: 65,
-                                                //     height: 65,
-                                                //     fit: BoxFit.contain),
-                                            : Image.network(
+                                                "assets/images/supi_logo.jpeg",
+                                                width: 65,
+                                                height: 65,
+                                                fit: BoxFit.contain)
+                                            // : Image.asset(
+                                            //     'assets/images/icons/product.png',
+                                            //     //Image.network(
+                                            //     //roomList[position].sellerID..sellerImage,
+                                            //     width: 65,
+                                            //     height: 65,
+                                            //     fit: BoxFit.contain),
+                                                : Image.network(
                                                 roomImageList[position][0] ?? "",
                                                 //Image.network(
                                                 //roomList[position].sellerID..sellerImage,
@@ -212,8 +307,8 @@ class ChattingPageState extends State<ChattingPage> {
                                                         style: TextStyle(
                                                             fontSize: 25,
                                                             fontWeight:
-                                                                FontWeight
-                                                                    .bold),
+                                                            FontWeight
+                                                                .bold),
                                                         overflow: TextOverflow
                                                             .ellipsis,
                                                       )
@@ -226,8 +321,8 @@ class ChattingPageState extends State<ChattingPage> {
                                                           style: const TextStyle(
                                                               fontSize: 25,
                                                               fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
+                                                              FontWeight
+                                                                  .bold),
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                         ),
@@ -243,19 +338,19 @@ class ChattingPageState extends State<ChattingPage> {
                                                     Expanded(
                                                       child: Text(
                                                         position ==
-                                                                roomList.length
+                                                            roomList.length
                                                             ? "챗봇입니다"
                                                             : roomList[position]
-                                                                    .resentMessage ??
-                                                                "",
+                                                            .resentMessage ??
+                                                            "",
                                                         style: const TextStyle(
                                                             fontSize: 13,
                                                             fontWeight:
-                                                                FontWeight
-                                                                    .normal,
+                                                            FontWeight
+                                                                .normal,
                                                             overflow:
-                                                                TextOverflow
-                                                                    .ellipsis),
+                                                            TextOverflow
+                                                                .ellipsis),
                                                       ),
                                                     ),
                                                   ],
@@ -267,8 +362,8 @@ class ChattingPageState extends State<ChattingPage> {
                                       ],
                                     ),
                                   ),
-                                  Positioned(
-                                    right: 3,
+                                  position != roomList.length? Positioned(
+                                    right: 10,
                                     top: 3,
                                     child: IconButton(
                                       icon: const Icon(Icons.close,
@@ -277,7 +372,7 @@ class ChattingPageState extends State<ChattingPage> {
                                         popUp("정말로 삭제하시겠습니까?", position);
                                       },
                                     ),
-                                  ),
+                                  ) : const SizedBox(),
                                 ],
                               ),
                             );
@@ -293,8 +388,9 @@ class ChattingPageState extends State<ChattingPage> {
                 );
               }
             }
-            ));
+        ));
   }
+
 
   void popUp(String value, int position) {
     showDialog(

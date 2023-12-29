@@ -28,17 +28,24 @@ class MessageEntity {
 }
 
 class SubChattingPage extends StatefulWidget {
-  const SubChattingPage({Key? key, required this.roomID, this.traderName}) : super(key: key);
+  const SubChattingPage(
+      {Key? key,
+      required this.roomID,
+      this.traderName,
+      this.buyerID,
+      this.sellerID})
+      : super(key: key);
   final String? roomID;
   final String? traderName;
+  final String? buyerID;
+  final String? sellerID;
 
   @override
   State<SubChattingPage> createState() => _SubChattingPageState();
 }
 
 class _SubChattingPageState extends State<SubChattingPage> {
-
-
+  String real_traderName = "";
   io.Socket? socket;
   RestClient? client;
   final _controller = TextEditingController();
@@ -56,10 +63,10 @@ class _SubChattingPageState extends State<SubChattingPage> {
   List<Chat> localMsg = [];
   final myMessage = {'nickname': '', 'message': ''};
   userData userdata =
-  userData(userID: myUserInfo.userUid, nickname: myUserInfo.userName);
+      userData(userID: myUserInfo.userUid, nickname: myUserInfo.userName);
   Time? time;
   bool? isUserMessage;
-  String? image = myUserInfo.imagePath;
+  String? image;
   ScrollController _scrollController = ScrollController();
   String? checkRead;
   String? sendName;
@@ -70,23 +77,20 @@ class _SubChattingPageState extends State<SubChattingPage> {
   List<String>? imageUrlList;
   bool? isListened;
   bool? isEnded;
+
   //Future<bool>? subChattingPageBuilder;
 
   int page = 1;
   int pageSize = 10;
 
-
   Future getImage() async {
     final pickedFile = await picker.pickMultiImage(
-        imageQuality: 100,
-        maxHeight: 1000,
-        maxWidth: 1000
-    );
+        imageQuality: 100, maxHeight: 1000, maxWidth: 1000);
 
-    if(pickedFile != null) {
+    if (pickedFile != null) {
       setState(() {
         int count = pickedFile.length;
-        for(int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
           _image = XFile(pickedFile[i].path);
           File file = File(_image!.path);
           FlutterDialog();
@@ -99,17 +103,28 @@ class _SubChattingPageState extends State<SubChattingPage> {
   @override
   void initState() {
     super.initState();
+    print("sub chat page : buyer ${widget.buyerID} seller ${widget.sellerID}");
     Dio dio = Dio();
     client = RestClient(dio);
     subChattingPageBuilder = getData(page);
     socketInit();
     enterChatRoom();
+    socket?.on('enterMessage', (data) async {
+      int? count = data['userNum'];
+      print("지금 들어온 사람 수: $count");
+
+      if (count == 2) {
+        readAll();
+        if (mounted) setState(() {});
+      }
+    });
     getMessage();
     fcmToken;
     isListened = false;
     isEnded = false;
     page = 1;
     pageSize = 10;
+    image = myUserInfo.imagePath;
     _scrollController!.addListener(scrollListener);
   }
 
@@ -118,7 +133,6 @@ class _SubChattingPageState extends State<SubChattingPage> {
     super.dispose();
     exitChatRoom();
   }
-
 
   void socketInit() async {
     print("init");
@@ -143,11 +157,11 @@ class _SubChattingPageState extends State<SubChattingPage> {
     });
 
     final response = await client?.getTokenById(roomId: widget.roomID);
-    final token = Token(buyerToken: response?.buyerToken, sellerToken: response?.sellerToken);
-    if(token.buyerToken != fcmToken) {
+    final token = Token(
+        buyerToken: response?.buyerToken, sellerToken: response?.sellerToken);
+    if (token.buyerToken != fcmToken) {
       sendToken = token.buyerToken;
-    }
-    else if(token.sellerToken != fcmToken) {
+    } else if (token.sellerToken != fcmToken) {
       sendToken = token.sellerToken;
     }
     print("sendToken: .....$sendToken");
@@ -156,23 +170,43 @@ class _SubChattingPageState extends State<SubChattingPage> {
   Future<bool> getData(int page) async {
     // await Future.delayed(Duration(seconds: 5));
     //Pages page = Pages(page: pageNum, pageSize: 15);
-    var data = await client!.getChatById(id: widget.roomID, page: page, pageSize: 15);
+
+    //상대 이름 받기
+    if (widget.buyerID == myUserInfo.userUid) {
+      real_traderName = await getUserName(widget.sellerID!);
+    } else {
+      real_traderName = await getUserName(widget.buyerID!);
+    }
+
+    var data =
+        await client!.getChatById(id: widget.roomID, page: page, pageSize: 15);
 
     setState(() {
       pastMsg = data;
     });
 
-    for(int index = 0; index < pastMsg.length; index++) {
+    for (int index = 0; index < pastMsg.length; index++) {
       localMsg.add(pastMsg[index]);
     }
+
+    if (widget.buyerID == myUserInfo.userUid) {
+      String name = await getUserName(widget.sellerID!);
+      print("buyer name ${name}을 받았습니다.");
+      await _getImageByID(name);
+    } else {
+      String name = await getUserName(widget.buyerID!);
+      print("seler name ${name}을 받았습니다.");
+      await _getImageByID(name);
+    }
+
     return true;
   }
 
-  readAll() {
-    for (var data in pastMsg) {
+  void readAll() {
+    for (var data in localMsg) {
       data.checkRead = "true";
     }
-    if(mounted){
+    if (mounted) {
       setState(() {});
     }
   }
@@ -212,14 +246,14 @@ class _SubChattingPageState extends State<SubChattingPage> {
             senderName: nickname!,
             checkRead: checkRead,
             createdAt: time,
-            imageUrl: recieveImg
-        ));
+            imageUrl: recieveImg));
         localMsg = localMsg.reversed.toList();
 
-        if(mounted) setState(() {
-          // myMessage['message'] = m.message!;
-          // myMessage['nickname'] = m.nickname!;
-        });
+        if (mounted)
+          setState(() {
+            // myMessage['message'] = m.message!;
+            // myMessage['nickname'] = m.nickname!;
+          });
       } catch (e) {
         print('Error during data processing: $e');
       }
@@ -227,8 +261,11 @@ class _SubChattingPageState extends State<SubChattingPage> {
   }
 
   void sendMessage(String message, String myImageUrl, String sendName) async {
-    sendData senddata =
-    sendData(message: message, myImageUrl: myImageUrl, checkRead: 'false', imageUrl: "NoImage");
+    sendData senddata = sendData(
+        message: message,
+        myImageUrl: myImageUrl,
+        checkRead: 'false',
+        imageUrl: "NoImage");
     String? changeData = jsonEncode(senddata);
     print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $sendName');
     print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $fcmToken');
@@ -273,8 +310,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
 
       if (count == 2) {
         readAll();
-        // await getData();
-        if(mounted) setState(() {});
+        if (mounted) setState(() {});
       }
     });
   }
@@ -293,45 +329,34 @@ class _SubChattingPageState extends State<SubChattingPage> {
   }
 
   void scrollListener() {
-    if(_scrollController!.offset + 500 >= _scrollController!.position.maxScrollExtent &&
-        !_scrollController!.position.outOfRange && !isListened!) {
+    if (_scrollController!.offset + 500 >=
+            _scrollController!.position.maxScrollExtent &&
+        !_scrollController!.position.outOfRange &&
+        !isListened!) {
       page++;
       isListened = true;
       updateList();
     }
   }
 
-  void updateList() async{
+  void updateList() async {
     await getData(page);
     isListened = false;
   }
+
   // void setInitialData() {
   //   final nickname = '플러터 유저'; // 초기 설정에 사용할 닉네임 (변경 가능)
   //   socket?.emit('setInit', {'nickname': nickname});
   // }
 
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar : AppBar(
-        flexibleSpace: Container(color: Colors.white),
-        elevation: 0,
-        backgroundColor: Colors.white.withOpacity(0.9),
-        //title: Text(widget.traderName!, style : const TextStyle(fontSize : 28, color: Colors.black, fontFamily: 'KBO-M', fontWeight: FontWeight.w600)),
-        leading : IconButton(
-          icon: const Icon(Icons.arrow_back_ios,
-              color: Colors.black),
-          onPressed: () async{
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      // resizeToAvoidBottomInset: false,
       body: FutureBuilder(
           future: subChattingPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-
               return WillPopScope(
                 onWillPop: () async {
                   //exitChatRoom();
@@ -348,8 +373,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                             reverse: true,
                             controller: _scrollController,
                             itemCount: localMsg.length,
-                            itemBuilder: (context, index){
-
+                            itemBuilder: (context, index) {
                               // if(index == localMsg.length){
                               //   print("scroll To bottom");
                               //   WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -358,21 +382,25 @@ class _SubChattingPageState extends State<SubChattingPage> {
                               //   return const SizedBox();
                               // }
 
-
                               //sendName = pastMsg[index].senderName;
                               DateTime parseTime = DateTime.parse(localMsg[index].createdAt!);
-                              String showTime = DateFormat('HH:mm').format(parseTime);
-                              if (myUserInfo.userUid == localMsg[index].senderID) {
+                              String showTime =
+                                  DateFormat('HH:mm').format(parseTime);
+                              if (myUserInfo.userUid ==
+                                  localMsg[index].senderID) {
                                 isUserMessage = true;
                               } else {
                                 isUserMessage = false;
                               }
-                              if (localMsg[index].senderID != myUserInfo.userUid && localMsg[index].checkRead == 'false') {
+                              if (localMsg[index].senderID !=
+                                      myUserInfo.userUid &&
+                                  localMsg[index].checkRead == 'false') {
                                 localMsg[index].checkRead = true.toString();
                                 final check = Check(
                                   checkRead: 'true',
                                 );
-                                client?.updateCheck(pastMsg[index].message, check);
+                                client?.updateCheck(
+                                    pastMsg[index].message, check);
                               }
                               return ChatBubbless(
                                 localMsg[index].message!,
@@ -387,7 +415,8 @@ class _SubChattingPageState extends State<SubChattingPage> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: 8),
+                          color : Colors.black,
+                          margin: EdgeInsets.only(top: 0),
                           padding: EdgeInsets.all(8),
                           child: SafeArea(
                             child: Row(
@@ -398,29 +427,35 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                         context: context,
                                         enableDrag: true,
                                         isDismissible: true,
-                                        barrierColor: Colors.black.withOpacity(0.1),
+                                        barrierColor:
+                                            Colors.black.withOpacity(0.1),
                                         constraints: const BoxConstraints(
                                             minHeight: 100,
                                             maxHeight: 150,
                                             minWidth: 500,
-                                            maxWidth: 500
-                                        ),
+                                            maxWidth: 500),
                                         builder: (BuildContext context) {
                                           return ClipRRect(
-                                            borderRadius: BorderRadius.circular(30),
+                                            borderRadius:
+                                                BorderRadius.circular(30),
                                             child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
-                                                CameraGalleryButton("갤러리 열기",
-                                                    const Icon(Icons.image, color: Colors.black45,)
-                                                ),
+                                                CameraGalleryButton(
+                                                    "갤러리 열기",
+                                                    const Icon(
+                                                      Icons.image,
+                                                      color: Colors.black45,
+                                                    )),
                                               ],
                                             ),
                                           );
-                                        }
-                                    );
+                                        });
                                   },
-                                  icon: Icon(Icons.add_circle_outline, color : Colors.black.withOpacity(0.7), size: 30),
+                                  icon: Icon(Icons.add_circle_outline,
+                                      color: Colors.black.withOpacity(0.7),
+                                      size: 30),
                                   color: Colors.blue,
                                 ),
                                 //ExpandImage(""),
@@ -430,18 +465,27 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                     controller: _controller,
                                     decoration: InputDecoration(
                                       filled: true,
-                                      fillColor: Colors.grey.withOpacity(0.3),
-                                      contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                      fillColor:
+                                          Colors.grey.withOpacity(0.3),
+                                      contentPadding: const EdgeInsets.only(
+                                          left: 14.0,
+                                          bottom: 8.0,
+                                          top: 8.0),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.white),
-                                        borderRadius: BorderRadius.circular(25.7),
+                                        borderSide:
+                                            BorderSide(color: Colors.white),
+                                        borderRadius:
+                                            BorderRadius.circular(25.7),
                                       ),
                                       enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.white),
-                                        borderRadius: BorderRadius.circular(25.7),
+                                        borderSide:
+                                            BorderSide(color: Colors.white),
+                                        borderRadius:
+                                            BorderRadius.circular(25.7),
                                       ),
                                       hintText: '메시지를 입력하세요',
-                                      hintStyle : TextStyle(color: Colors.grey),
+                                      hintStyle:
+                                          TextStyle(color: Colors.grey),
                                     ),
                                     onChanged: (value) {
                                       _userEnterMessage = value;
@@ -454,10 +498,12 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                       _controller.clear();
                                     }
 
-                                    sendMessage(_userEnterMessage, image!, sendName!);
+                                    sendMessage(_userEnterMessage, image!,
+                                        sendName!);
                                     scrollToBottom();
                                   },
-                                  icon: const Icon(Icons.send, color : Colors.grey),
+                                  icon: const Icon(Icons.send,
+                                      color: Colors.grey),
                                   color: Colors.blue,
                                 ),
                               ],
@@ -466,27 +512,52 @@ class _SubChattingPageState extends State<SubChattingPage> {
                         ),
                       ],
                     ),
+                    Positioned(
+                      top : 55,
+                      left : 10,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+                        onPressed: () async {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      top: 60,
+                      left : 10,
+                      right : 10,
+                      child: Container(
+                        //color : Colors.black,
+                        width : MediaQuery.of(context).size.width * 0.8,
+                        child: Align(
+                          alignment : Alignment.center,
+                          child: Text(real_traderName,
+                              style: const TextStyle(
+                                  fontSize: 28,
+                                  color: Colors.black,
+                                  fontFamily: 'KBO-M',
+                                  fontWeight: FontWeight.w600)),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
             } else {
-              return const Column(
-                children: [
-                  Row(
-                    children: [],
-                  )
-                ],
+              return const Center(
+                child : CircularProgressIndicator(),
               );
             }
           }),
     );
-
   }
+
   Widget CameraGalleryButton(String text, Icon icon) {
     return Column(
       children: [
         Container(
-          width: 60, height: 60,
+          width: 60,
+          height: 60,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
@@ -502,6 +573,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
       ],
     );
   }
+
   void FlutterDialog() {
     showDialog(
         context: context,
@@ -528,7 +600,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                 ),
               ],
             ),
-            actions: <Widget> [
+            actions: <Widget>[
               TextButton(
                 child: Text("취소"),
                 onPressed: () {
@@ -540,16 +612,18 @@ class _SubChattingPageState extends State<SubChattingPage> {
                 child: new Text("확인"),
                 onPressed: () async {
                   Images? images;
-                  FormData formData = FormData.fromMap({
-                  });
-                  for(int i = 0; i < imageList.length; i++) {
-                    formData.files.add(MapEntry('image', await MultipartFile
-                        .fromFile(
-                        imageList[i].path, filename: 'image.jpg')));
+                  FormData formData = FormData.fromMap({});
+                  for (int i = 0; i < imageList.length; i++) {
+                    formData.files.add(MapEntry(
+                        'image',
+                        await MultipartFile.fromFile(imageList[i].path,
+                            filename: 'image.jpg')));
                   }
                   try {
                     Dio dio = Dio();
-                    await dio.post('http://jtaeh.supomarket.com/boards/images/${widget.roomID}', data: formData);
+                    await dio.post(
+                        'http://jtaeh.supomarket.com/boards/images/${widget.roomID}',
+                        data: formData);
                   } catch (e) {
                     print('Error sending Post request : $e');
                   }
@@ -560,11 +634,15 @@ class _SubChattingPageState extends State<SubChattingPage> {
                     images = res;
                   });
                   imageUrlList = images?.imageUrl;
-                  for(String imgUrl in imageUrlList!) {
+                  for (String imgUrl in imageUrlList!) {
                     print("받은 이미지의 유알앨은 ???????");
-                    sendData send = sendData(message: "이미지를 보냈습니다.", myImageUrl: myUserInfo.imagePath, checkRead: 'false', imageUrl: imgUrl);
+                    sendData send = sendData(
+                        message: "이미지를 보냈습니다.",
+                        myImageUrl: myUserInfo.imagePath,
+                        checkRead: 'false',
+                        imageUrl: imgUrl);
                     String? changeData = jsonEncode(send);
-                    if(socket!.connected) {
+                    if (socket!.connected) {
                       socket!.emit('sendMessage', changeData);
                     }
                   }
@@ -574,5 +652,27 @@ class _SubChattingPageState extends State<SubChattingPage> {
             ],
           );
         });
+  }
+
+  Future<bool> _getImageByID(String userName) async {
+    print(userName);
+    Dio dio = Dio();
+    dio.options.responseType = ResponseType.plain; // responseType 설정
+    String url = 'https://kdh.supomarket.com/auth/userToImage';
+
+    Map<String, String> data = {'username': userName};
+
+    try {
+      Response response = await dio.get(url, data: data);
+      dynamic jsonData = response.data;
+      String result = jsonData as String;
+      image = result;
+
+      print("image ${result}을 받았습니다");
+    } catch (e) {
+      print('Error sending GET request : $e');
+    }
+
+    return true;
   }
 }

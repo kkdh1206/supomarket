@@ -259,6 +259,8 @@ class _SubMyPageBuyingPageState extends State<SubMyPageBuyingPage> {
   }
 
   Future<bool> _getMySellingItem(int page, SortType type) async {
+
+    print("get selling item");
     ItemType? tempItemType;
     ItemStatus? tempItemStatus;
     ItemQuality? tempItemQuality;

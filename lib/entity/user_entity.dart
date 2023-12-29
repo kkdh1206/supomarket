@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
+import 'package:supo_market/page/util_function.dart';
+
 enum UserStatus {NORMAL, ADMIN, BANNED}
 
-class AUser {
+class AUser{
   int? id; //email과 다름
   String? email;
   String? password;
@@ -35,5 +38,4 @@ class AUser {
       this.userGrade,
       this.requestList,
     });
-
 }

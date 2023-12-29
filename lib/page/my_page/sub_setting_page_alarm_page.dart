@@ -33,7 +33,8 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
   }
 
   Future<bool> initAlarm() async {
-    mySetting.chattingAlarm = await _getKeyword(isClicked);
+    await _getKeyword(isClicked);
+    mySetting.alarmOnOff = await getAlarmInDevice();
     return true;
   }
 
@@ -50,19 +51,6 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        //toolbarHeight: 60,
-        leading: Padding(
-            padding: const EdgeInsets.only(top: 0, left: 10),
-            child: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-                iconSize: 30)),
-      ),
       body: FutureBuilder(
           future: alarmPageBuilder,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -70,6 +58,7 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
               return Stack(
                 children: [
                   Column(children: [
+                    SizedBox(height: 30),
                     Expanded(
                       child: ListView(
                         children: [
@@ -90,17 +79,21 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                   SizedBox(width: 18),
                                   CupertinoSwitch(
                                     // 급처분 여부
-                                    value: mySetting.chattingAlarm!,
-
+                                    value: mySetting.alarmOnOff!,
                                     activeColor: mainColor,
-                                    onChanged: (bool? value) {
+                                    onChanged: (bool? value) async{
                                       // 스위치가 토글될 때 실행될 코드
                                       setState(() {
-                                        mySetting.chattingAlarm =
-                                            value ?? false;
+                                        mySetting.alarmOnOff = value ?? false;
+                                        isLoading = true;
                                       });
-                                      setAlarmInDevice(
-                                          mySetting.chattingAlarm!);
+
+                                      await patchAlarmOnOff(mySetting.alarmOnOff!);
+                                      await setAlarmInDevice(mySetting.alarmOnOff!);
+
+                                      setState(() {
+                                        isLoading = false;
+                                      });
                                     },
                                   ),
                                 ],
@@ -164,6 +157,14 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                       ),
                     )
                   ]),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 35, left: 10),
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+                          iconSize: 30)),
                   isLoading ? Container(
                     color: Colors.transparent,
                     child: const Center(
@@ -183,7 +184,9 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                 ],
               );
             } else {
-              return const SizedBox();
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             }
           }),
     );
@@ -243,4 +246,33 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
     await myPageUsecase.getKeyword(list);
     return true;
   }
+
+  Future<bool> patchAlarmOnOff(bool onOff) async{
+    print("알람 On/Off 변경");
+
+    String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+    setState(() {
+      _isLoading = true;
+    });
+
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $token';
+    String url = 'https://kdh.supomarket.com/auth/setAlarm';
+
+    var data = {'bool': onOff};
+
+    try {
+      Response response = await dio.patch(url, data: data);
+    } catch (e) {
+      print('Error sending PATCH request : $e');
+    }
+
+    await getMyInfo();
+
+    setState(() {
+      _isLoading = false;
+    });
+    return true;
+  }
+
 }
