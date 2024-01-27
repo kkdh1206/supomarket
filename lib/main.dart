@@ -27,7 +27,7 @@ Future<void> main() async {
   //firebase 사용을 위한 호출들
   print("main start");
   WidgetsFlutterBinding.ensureInitialized();
-  //안드로이드 권한 허용
+  //    안드로이드 권한 허용
   // flutterLocalNotificationsPlugin
   //     .resolvePlatformSpecificImplementation<
   //     AndroidFlutterLocalNotificationsPlugin>()
@@ -40,6 +40,10 @@ Future<void> main() async {
   await Future.delayed(Duration(seconds: 1)); //이거 안해주면 흰색화면뜸
 
   FirebaseMessaging.instance..requestPermission(badge: true, alert: true, sound: true);
+
+  if (!Platform.isAndroid){
+    FirebaseMessaging.instance.deleteToken();
+  }
 
   FirebaseMessaging fbMsg = FirebaseMessaging.instance;
   fcmToken = await fbMsg.getToken();

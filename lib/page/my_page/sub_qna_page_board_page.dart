@@ -137,7 +137,7 @@ class _SubQnAPageBoardPageState extends State<SubQnAPageBoardPage> {
                             Padding(
                               padding:
                                   const EdgeInsets.only(left: 10, right: 10),
-                              child: BoardContents(text: board.title!),
+                              child: BoardContents(text: board.description!),
                             ),
                             const SizedBox(height: 10),
                             Stack(

@@ -156,7 +156,41 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       floatingActionButton: FloatingActionButton(
         elevation: 0,
         backgroundColor: postechRed,
+
         onPressed: () async {
+        // 여기 팝업창 띄움
+          // showDialog 함수로 팝업 창 띄우기
+          await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("유의 사항"),
+                content: Container(
+                height: 200,
+                child: SingleChildScrollView(
+              child: Column(
+              children: [
+              Text("현행 법령을 위반하는 물품의 거래는 물런, 슈포마켓에서 거래가 부적절하다고 판단되는 물품에 대해 운영정택에 따라 판매가 제한 될 수 있습니다.")
+              // Add more items as needed
+              ],
+              ),
+              ),
+                ),
+                actions: [
+                  ElevatedButton(
+                    child: Text("확인"),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // 팝업 닫기
+                      updateList(); // 리스트 업데이트
+                      debugPrint("add return");
+                    },
+                  ),
+
+                ],
+              );
+            },
+          );
+
           final newData = await Navigator.push(
               context,
               MaterialPageRoute(

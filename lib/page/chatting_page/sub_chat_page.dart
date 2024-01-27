@@ -30,10 +30,10 @@ class MessageEntity {
 class SubChattingPage extends StatefulWidget {
   const SubChattingPage(
       {Key? key,
-      required this.roomID,
-      this.traderName,
-      this.buyerID,
-      this.sellerID})
+        required this.roomID,
+        this.traderName,
+        this.buyerID,
+        this.sellerID})
       : super(key: key);
   final String? roomID;
   final String? traderName;
@@ -63,7 +63,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
   List<Chat> localMsg = [];
   final myMessage = {'nickname': '', 'message': ''};
   userData userdata =
-      userData(userID: myUserInfo.userUid, nickname: myUserInfo.userName);
+  userData(userID: myUserInfo.userUid, nickname: myUserInfo.userName);
   Time? time;
   bool? isUserMessage;
   String? image;
@@ -119,7 +119,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
       }
     });
     getMessage();
-    fcmToken;
+
     isListened = false;
     isEnded = false;
     page = 1;
@@ -159,6 +159,10 @@ class _SubChattingPageState extends State<SubChattingPage> {
     final response = await client?.getTokenById(roomId: widget.roomID);
     final token = Token(buyerToken: response?.buyerToken, sellerToken: response?.sellerToken);
 
+    //token 갱신
+    token.buyerToken = await getToken(widget.buyerID!);
+    token.sellerToken = await getToken(widget.sellerID!);
+
     print("sellerToken ${token.sellerToken}");
     print("buyerToken ${token.buyerToken}");
     print("my Token ${fcmToken}");
@@ -183,7 +187,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
     }
 
     var data =
-        await client!.getChatById(id: widget.roomID, page: page, pageSize: 15);
+    await client!.getChatById(id: widget.roomID, page: page, pageSize: 15);
 
     setState(() {
       pastMsg = data;
@@ -336,7 +340,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
 
   void scrollListener() {
     if (_scrollController!.offset + 500 >=
-            _scrollController!.position.maxScrollExtent &&
+        _scrollController!.position.maxScrollExtent &&
         !_scrollController!.position.outOfRange &&
         !isListened!) {
       page++;
@@ -393,7 +397,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                               //sendName = pastMsg[index].senderName;
                               DateTime parseTime = DateTime.parse(localMsg[index].createdAt!);
                               String showTime =
-                                  DateFormat('HH:mm').format(parseTime);
+                              DateFormat('HH:mm').format(parseTime);
                               if (myUserInfo.userUid ==
                                   localMsg[index].senderID) {
                                 isUserMessage = true;
@@ -401,7 +405,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                 isUserMessage = false;
                               }
                               if (localMsg[index].senderID !=
-                                      myUserInfo.userUid &&
+                                  myUserInfo.userUid &&
                                   localMsg[index].checkRead == 'false') {
                                 localMsg[index].checkRead = true.toString();
                                 final check = Check(
@@ -434,7 +438,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                       enableDrag: true,
                                       isDismissible: true,
                                       barrierColor:
-                                          Colors.black.withOpacity(0.1),
+                                      Colors.black.withOpacity(0.1),
                                       constraints: const BoxConstraints(
                                           minHeight: 100,
                                           maxHeight: 150,
@@ -443,10 +447,10 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                       builder: (BuildContext context) {
                                         return ClipRRect(
                                           borderRadius:
-                                              BorderRadius.circular(30),
+                                          BorderRadius.circular(30),
                                           child: Column(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                             children: [
                                               CameraGalleryButton(
                                                   "갤러리 열기",
@@ -472,26 +476,26 @@ class _SubChattingPageState extends State<SubChattingPage> {
                                   decoration: InputDecoration(
                                     filled: true,
                                     fillColor:
-                                        Colors.grey.withOpacity(0.3),
+                                    Colors.grey.withOpacity(0.3),
                                     contentPadding: const EdgeInsets.only(
                                         left: 14.0,
                                         bottom: 8.0,
                                         top: 8.0),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide:
-                                          BorderSide(color: Colors.white),
+                                      BorderSide(color: Colors.white),
                                       borderRadius:
-                                          BorderRadius.circular(25.7),
+                                      BorderRadius.circular(25.7),
                                     ),
                                     enabledBorder: UnderlineInputBorder(
                                       borderSide:
-                                          BorderSide(color: Colors.white),
+                                      BorderSide(color: Colors.white),
                                       borderRadius:
-                                          BorderRadius.circular(25.7),
+                                      BorderRadius.circular(25.7),
                                     ),
                                     hintText: '메시지를 입력하세요',
                                     hintStyle:
-                                        TextStyle(color: Colors.grey),
+                                    TextStyle(color: Colors.grey),
                                   ),
                                   onChanged: (value) {
                                     _userEnterMessage = value;
