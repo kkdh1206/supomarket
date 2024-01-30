@@ -68,9 +68,9 @@ class _SearchPageState extends State<SearchPage> {
 
   final options2 = [
     ItemStatus.TRADING,
-    ItemStatus.USERFASTSELL,
+    // ItemStatus.USERFASTSELL, // <-- 업데이트 시 주석제거
     ItemStatus.RESERVED,
-    ItemStatus.SOLDOUT,
+    // ItemStatus.SOLDOUT, // 판매 완료 제거
   ];
 
   SortType selectedOption1 = SortType.DATEASCEND;
@@ -212,11 +212,15 @@ class _SearchPageState extends State<SearchPage> {
                                 child: Text(
                                   e == ItemStatus.TRADING
                                       ? "거래 중"
-                                      : e == ItemStatus.USERFASTSELL
-                                          ? "급처분 중"
-                                          : e == ItemStatus.RESERVED
-                                              ? "예약 중"
-                                              : "판매 완료",
+
+                                  // 급처분 내용 주석 처리 해둠 <--- 급처분 업데이트 시 주석제거
+
+                                      // : e == ItemStatus.USERFASTSELL
+                                      //     ? "급처분 중"
+                                  //: e == ItemStatus.RESERVED
+                                             // ? "예약 중"
+                                  :"예약 중",
+                                            // : "판매 완료",
                                   textScaleFactor: 0.8,
                                 )))
                             .toList(),

@@ -4,6 +4,16 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
+/// Default [FirebaseOptions] for use with your Firebase apps.
+///
+/// Example:
+/// ```dart
+/// import 'firebase_options.dart';
+/// // ...
+/// await Firebase.initializeApp(
+///   options: DefaultFirebaseOptions.currentPlatform,
+/// );
+/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -40,20 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAuPEZ8taaoVsDjD8k1Am5fFAGrJPOEkhc',
-    appId: '1:120702951032:android:8a91d870058f347c37178d',
-    messagingSenderId: '120702951032',
-    projectId: 'supomarket-b55d0',
-    storageBucket: 'supomarket-b55d0.appspot.com',
+    apiKey: 'AIzaSyAxRPqFE46nAGHdDf21HlBp8-J6ODyUreQ',
+    appId: '1:439999264168:android:b3bd807208d5a87dc2d99d',
+    messagingSenderId: '439999264168',
+    projectId: 'supomarket-a3483',
+    storageBucket: 'supomarket-a3483.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBgw-d7wY4ycWi-5VeAIGbPGFIRnfYkRkc',
-    appId: '1:120702951032:ios:014378a822825f1e37178d',
-    messagingSenderId: '120702951032',
-    projectId: 'supomarket-b55d0',
-    storageBucket: 'supomarket-b55d0.appspot.com',
-    iosClientId: '120702951032-85pg7f8qd4ob8sd0os2l6vnfpgfj62tm.apps.googleusercontent.com',
-    iosBundleId: 'com.example.supo_market',
+    apiKey: 'AIzaSyCXUFE77VgNkTmopfJXaSIyTHqYmEpx2rw',
+    appId: '1:439999264168:ios:21f7960f07a32601c2d99d',
+    messagingSenderId: '439999264168',
+    projectId: 'supomarket-a3483',
+    storageBucket: 'supomarket-a3483.appspot.com',
+    iosBundleId: 'com.example.supoMarket',
   );
 }

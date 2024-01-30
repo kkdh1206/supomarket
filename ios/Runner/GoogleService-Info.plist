@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>120702951032-85pg7f8qd4ob8sd0os2l6vnfpgfj62tm.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.120702951032-85pg7f8qd4ob8sd0os2l6vnfpgfj62tm</string>
+	<string></string>
+	<key>REVERSED_CLIENT_ID</key>439999264168-m762lohn0rg2s8ddl1clv9steqi6h1vg.apps.googleusercontent.com
+	<string>com.googleusercontent.apps.439999264168-m762lohn0rg2s8ddl1clv9steqi6h1vg</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBgw-d7wY4ycWi-5VeAIGbPGFIRnfYkRkc</string>
+	<string>AIzaSyCXUFE77VgNkTmopfJXaSIyTHqYmEpx2rw</string>
 	<key>GCM_SENDER_ID</key>
-	<string>120702951032</string>
+	<string>439999264168</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.supoMarket</string>
+	<string>com.example.supomarket</string>
 	<key>PROJECT_ID</key>
-	<string>supomarket-b55d0</string>
+	<string>supomarket-a3483</string>
 	<key>STORAGE_BUCKET</key>
-	<string>supomarket-b55d0.appspot.com</string>
+	<string>supomarket-a3483.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:120702951032:ios:014378a822825f1e37178d</string>
-	<key>DATABASE_URL</key>
-	<string>https://supomarket-b55d0-default-rtdb.firebaseio.com</string>
+	<string>1:439999264168:ios:dd3f3223ffda2926c2d99d</string>
 </dict>
 </plist>

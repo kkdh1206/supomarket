@@ -1,77 +1,40 @@
 {
   "project_info": {
-    "project_number": "120702951032",
-    "firebase_url": "https://supomarket-b55d0-default-rtdb.firebaseio.com",
-    "project_id": "supomarket-b55d0",
-    "storage_bucket": "supomarket-b55d0.appspot.com"
+    "project_number": "439999264168",
+    "project_id": "supomarket-a3483",
+    "storage_bucket": "supomarket-a3483.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:120702951032:android:8a91d870058f347c37178d",
+        "mobilesdk_app_id": "1:439999264168:android:b3bd807208d5a87dc2d99d",
         "android_client_info": {
           "package_name": "com.example.supo_market"
         }
       },
       "oauth_client": [
         {
-          "client_id": "120702951032-p5lkfjmgpc4651f66ck9ko3vu2fegmob.apps.googleusercontent.com",
+          "client_id": "439999264168-qvs7c3nqt4h54s01l177dlp4uvi6s7nt.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAuPEZ8taaoVsDjD8k1Am5fFAGrJPOEkhc"
+          "current_key": "AIzaSyAxRPqFE46nAGHdDf21HlBp8-J6ODyUreQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "120702951032-p5lkfjmgpc4651f66ck9ko3vu2fegmob.apps.googleusercontent.com",
+              "client_id": "439999264168-qvs7c3nqt4h54s01l177dlp4uvi6s7nt.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "120702951032-85pg7f8qd4ob8sd0os2l6vnfpgfj62tm.apps.googleusercontent.com",
+              "client_id": "439999264168-m762lohn0rg2s8ddl1clv9steqi6h1vg.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.supoMarket"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:120702951032:android:d1897fb490f6886237178d",
-        "android_client_info": {
-          "package_name": "com.example.wiwlee"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "120702951032-p5lkfjmgpc4651f66ck9ko3vu2fegmob.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAuPEZ8taaoVsDjD8k1Am5fFAGrJPOEkhc"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "120702951032-p5lkfjmgpc4651f66ck9ko3vu2fegmob.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "120702951032-85pg7f8qd4ob8sd0os2l6vnfpgfj62tm.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.supoMarket"
+                "bundle_id": "com.example.supomarket"
               }
             }
           ]

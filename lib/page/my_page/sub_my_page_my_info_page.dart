@@ -48,6 +48,8 @@ class _SubMyPageMyInfoPageState extends State< SubMyPageMyInfoPage> {
           child: PasswordChange(),),
           Padding(padding : const EdgeInsets.only(left : 20),
             child: ProfileChange(),),
+          Padding(padding : const EdgeInsets.only(left : 20),
+            child: DeleteButton(),),
 
           //const Text(환경 설정)
           //const SizedBox(width: 500, child: Divider(color: Colors.black, thickness: 0.1)),

@@ -25,6 +25,7 @@ import 'favorite_page/favorite_page.dart';
 import 'home_page/home_page.dart';
 import 'log_in_page/widgets/log_in_page_widget.dart';
 import 'my_page/my_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Item emptyItem = Item(
     sellingTitle: "",
@@ -170,7 +171,16 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
                 child: SingleChildScrollView(
               child: Column(
               children: [
-              Text("현행 법령을 위반하는 물품의 거래는 물런, 슈포마켓에서 거래가 부적절하다고 판단되는 물품에 대해 운영정택에 따라 판매가 제한 될 수 있습니다.")
+              Text("슈포마켓은 올바른 중고거래 문화 조성을 위해서 현행 법령을 위반하는 물품의 거래는 제한하고 있습니다.\n"
+                  "제한물품 거래시, 법에따른 처벌 및 계정이 제한될 수 있습니다. \n"
+                  "자세한 규정은 아래 링크를 참고바랍니다. \n"),
+              GestureDetector(
+                onTap: (){
+                  _launchURL('http://www.supomarket.com/rules');
+                },
+                child: Text("물품규정 바로가기",
+                  style: TextStyle(color: Colors.cyan, decoration: TextDecoration.underline),),
+              )
               // Add more items as needed
               ],
               ),
@@ -190,6 +200,8 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
               );
             },
           );
+
+
 
           final newData = await Navigator.push(
               context,
@@ -252,6 +264,10 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       ),
       backgroundColor: Colors.white,
     );
+  }
+
+  void _launchURL(String url) async {
+    await launchUrl(Uri.parse('http://www.supomarket.com/rules'));
   }
 
   void updateList() {

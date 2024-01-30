@@ -39,9 +39,9 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
 
   final options2 = [
     ItemStatus.TRADING,
-    ItemStatus.SUPOFASTSELL,
+    // ItemStatus.SUPOFASTSELL, // <-- 업데이트 시 급처분 되돌리기
     ItemStatus.RESERVED,
-    ItemStatus.SOLDOUT,
+    // ItemStatus.SOLDOUT, // 판매 완료 제거
   ];
 
   SortType selectedOption1 = SortType.DATEASCEND;
@@ -162,11 +162,12 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                                 child: Text(
                                   e == ItemStatus.TRADING
                                       ? "거래 중"
-                                      : e == ItemStatus.SUPOFASTSELL
-                                          ? "급처분 중"
-                                          : e == ItemStatus.RESERVED
-                                              ? "예약 중"
-                                              : "판매 완료",
+                                      // : e == ItemStatus.SUPOFASTSELL
+                                         // ? "급처분 중"
+                                          // : e == ItemStatus.RESERVED
+                                           //   ? "예약 중"
+                                      : "예약 중",
+                                           //    : "판매 완료",
                                   textScaleFactor: 0.8,
                                 )))
                             .toList(),

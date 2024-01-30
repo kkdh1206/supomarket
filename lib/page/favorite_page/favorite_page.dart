@@ -222,7 +222,7 @@ class _FavoritePageState extends State<FavoritePage>{
               sellingTitle: title,
               itemType: tempItemType,
               itemQuality: tempItemQuality!,
-              sellerName: "정태형",
+              sellerName: "...",
               sellingPrice: price,
               uploadDate: "10일 전",
               uploadDateForCompare: dateTime,

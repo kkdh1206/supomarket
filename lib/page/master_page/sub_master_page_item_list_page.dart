@@ -46,7 +46,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
     ItemStatus.TRADING,
     ItemStatus.SUPOFASTSELL,
     ItemStatus.RESERVED,
-    ItemStatus.SOLDOUT,
+    // ItemStatus.SOLDOUT, // 판매 완료 제거
   ];
 
   SortType selectedOption1 = SortType.DATEASCEND;
@@ -155,11 +155,13 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                                 child: Text(
                                   e == ItemStatus.TRADING
                                       ? "거래 중"
-                                      : e == ItemStatus.SUPOFASTSELL
-                                      ? "급처분 중"
-                                      : e == ItemStatus.RESERVED
-                                      ? "예약 중"
-                                      : "판매 완료",
+                                      // 급처분 내용 주석 처리 해둠 <--- 급처분 업데이트 시 주석제거
+                                      // : e == ItemStatus.SUPOFASTSELL
+                                      // ? "급처분 중"
+                                      // : e == ItemStatus.RESERVED
+                                      // ? "예약 중"
+                                      : "예약 중",
+                                      // : "판매 완료",
                                   textScaleFactor: 0.8,
                                 )))
                             .toList(),

@@ -62,6 +62,7 @@ dependencies:
   flutter_animated_icons: ^1.0.1
   lottie: ^1.4.3
   flutter_native_splash: ^2.3.8
+  url_launcher: ^6.0.10
 
 
 

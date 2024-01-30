@@ -467,22 +467,25 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
               Row(
                 children: [
                   const SizedBox(width: 20),
-                  const Text("급처분 : ",
-                      style: TextStyle(fontFamily: 'KBO-B', fontSize: 18)),
-                  CupertinoSwitch(
-                    // 급처분 여부
-                    value: isFastSellForToggle,
-                    activeColor: mainColor,
-                    onChanged: (bool? value) {
-                      // 스위치가 토글될 때 실행될 코드
-                      setState(() {
-                        newItem.itemStatus = (value == true
-                            ? ItemStatus.USERFASTSELL
-                            : ItemStatus.TRADING);
-                        isFastSellForToggle = value ?? false;
-                      });
-                    },
-                  ),
+
+                  // 급처분 내용 주석 처리 해둠 <--- 급처분 업데이트 시 주석제거
+
+                  // const Text("급처분 : ",
+                  //     style: TextStyle(fontFamily: 'KBO-B', fontSize: 18)),
+                  // CupertinoSwitch(
+                  //   // 급처분 여부
+                  //   value: isFastSellForToggle,
+                  //   activeColor: mainColor,
+                  //   onChanged: (bool? value) {
+                  //     // 스위치가 토글될 때 실행될 코드
+                  //     setState(() {
+                  //       newItem.itemStatus = (value == true
+                  //           ? ItemStatus.USERFASTSELL
+                  //           : ItemStatus.TRADING);
+                  //       isFastSellForToggle = value ?? false;
+                  //     });
+                  //   },
+                  // ),
                 ],
               ),
 

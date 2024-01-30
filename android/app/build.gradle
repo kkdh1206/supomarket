@@ -1,3 +1,9 @@
+plugins{
+    id 'com.android.application'
+    id 'com.google.gms.google-services'
+    id 'kotlin-android'
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -21,11 +27,13 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-apply plugin: 'com.android.application'
+
+
+// apply plugin: 'com.android.application'
 // START: FlutterFire Configuration
 //apply plugin: 'com.google.gms:google-services 4.3.14'
 // END: FlutterFire Configuration
-apply plugin: 'kotlin-android'
+// apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
@@ -72,6 +80,6 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation platform('com.google.firebase:firebase-bom:30.2.0')
+    implementation platform('com.google.firebase:firebase-bom:32.7.1')
     implementation 'com.google.firebase:firebase-analytics'
 }

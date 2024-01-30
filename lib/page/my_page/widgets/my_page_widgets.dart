@@ -94,6 +94,46 @@ class LogoutButtonState extends State<LogoutButton> {
   }
 }
 
+
+class DeleteButton extends StatefulWidget {
+  @override
+  DeleteButtonState createState() => DeleteButtonState();
+}
+
+class DeleteButtonState extends State<DeleteButton> {
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 50,
+        width: 350,
+        child: InkWell(
+            onTap: () {
+              _DeletePopUp(context);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/icons/log-out.png',
+                  width: 25,
+                  height: 25,
+                ),
+                Text(
+                  '  회원탈퇴',
+                  style: TextStyle(fontFamily: 'Arial', fontSize: 17),
+                )
+              ],
+            )));
+  }
+
+  void _DeletePopUp(BuildContext context) {
+    myPageUsecase.deleteUserPopUp(context);
+  }
+}
+
 class QnAButton extends StatefulWidget {
   @override
   QnAButtonState createState() => QnAButtonState();
@@ -401,6 +441,8 @@ class ProfileChangeState extends State<ProfileChange> {
             )));
   }
 }
+
+
 
 class AlarmTitle extends StatelessWidget {
   @override

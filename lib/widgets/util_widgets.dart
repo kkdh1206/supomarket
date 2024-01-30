@@ -239,10 +239,10 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
 
     return IconButton(
       splashRadius: 50,
-      iconSize: 50,
-      icon: Lottie.asset(LottieFiles.$63128_bell_icon,
+      iconSize: 100,
+      icon: Lottie.asset(LottieFiles.$33262_icons_bell_notification,
           controller: _bellController,
-          height: 30,
+          height: 40,
           fit: BoxFit.cover),
 
       onPressed: () {
@@ -353,9 +353,65 @@ class ReallyBoughtPopUpState extends State<ReallyBoughtPopUp> with TickerProvide
                     ),
                   );
                 });
-        }
+        }else{
+
+
+          }
+
+
         }else{
           _bellController.stop();
+          print("눌림");
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  scrollable: true,
+                  title: const Text('거래내역이 없습니다'),
+                  content: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Form(
+                          child: Column(
+                            children: <Widget>[
+                              Row(
+                                children: [
+                                  Text('최근 거래내역이 없습니다.', style: TextStyle(fontFamily: 'KBO-M')),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  Text('거래내역이 생기면 종이 울리게 됩니다.',
+                                      style: TextStyle(fontFamily: 'KBO-M')),
+
+                                ],
+                              ),
+                              Row(children: [Text(" ")],),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+
+
+                                  const SizedBox(width: 10),
+                                  ElevatedButton(
+                                      child: Text("확인"),
+                                      onPressed: () async{
+
+                                        Navigator.pop(context); // 이전 화면으로 복귀
+                                      })
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    ],
+                  ),
+                );
+              });
           print("stop");
           setState(() {});
         }
