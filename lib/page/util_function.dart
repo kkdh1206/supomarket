@@ -40,22 +40,42 @@ Future<bool>? managementPageBuilder;
 
 String? fcmToken;
 
-Future<bool> setAlarmInDevice (bool check) async {
+Future<bool> setChatAlarmInDevice (bool check) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
-  debugPrint("set alarm in device");
-  pref.setBool('isAlarm', check);
-  mySetting.alarmOnOff = await getAlarmInDevice();
+  debugPrint("set chatAlarm in device");
+  pref.setBool('isChatAlarm', check);
+  mySetting.chatAlarmOnOff = await getChatAlarmInDevice();
   return true;
 }
 
-Future<bool> getAlarmInDevice() async {
+Future<bool> getChatAlarmInDevice() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
 
   try{
-    print("get isAlarm In device Complete => ${pref.getBool('isAlarm')}");
-    return pref.getBool('isAlarm')!;
+    print("get isChatAlarm In device Complete => ${pref.getBool('isChatAlarm')}");
+    return pref.getBool('isChatAlarm')!;
   }catch(e){
-    print("get isAlarm In device Error");
+    print("get isChatAlarm In device Error");
+    return false;
+  }
+}
+
+Future<bool> setCategoryAlarmInDevice (bool check) async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  debugPrint("set CategoryAlarm in device");
+  pref.setBool('isCategoryAlarm', check);
+  mySetting.categoryAlarmOnOff = await getCategoryAlarmInDevice();
+  return true;
+}
+
+Future<bool> getCategoryAlarmInDevice() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+
+  try{
+    print("get isAlarm In device Complete => ${pref.getBool('isCategoryAlarm')}");
+    return pref.getBool('isCategoryAlarm')!;
+  }catch(e){
+    print("get isCategoryAlarm In device Error");
     return false;
   }
 }

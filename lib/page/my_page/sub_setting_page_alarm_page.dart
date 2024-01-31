@@ -34,7 +34,8 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
 
   Future<bool> initAlarm() async {
     await _getKeyword(isClicked);
-    mySetting.alarmOnOff = await getAlarmInDevice();
+    mySetting.chatAlarmOnOff = await getChatAlarmInDevice();
+    mySetting.categoryAlarmOnOff = await getCategoryAlarmInDevice();
     return true;
   }
 
@@ -70,7 +71,7 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                 children: [
                                   SizedBox(width: 18),
                                   Text(
-                                    "앱 알림",
+                                    "채팅 알림",
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontFamily: 'KBO-M',
@@ -79,17 +80,45 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                   SizedBox(width: 18),
                                   CupertinoSwitch(
                                     // 급처분 여부
-                                    value: mySetting.alarmOnOff!,
+                                    value: mySetting.chatAlarmOnOff!,
                                     activeColor: mainColor,
                                     onChanged: (bool? value) async{
                                       // 스위치가 토글될 때 실행될 코드
                                       setState(() {
-                                        mySetting.alarmOnOff = value ?? false;
+                                        mySetting.chatAlarmOnOff = value ?? false;
                                         isLoading = true;
                                       });
 
-                                      await patchAlarmOnOff(mySetting.alarmOnOff!);
-                                      await setAlarmInDevice(mySetting.alarmOnOff!);
+                                      await patchChatAlarmOnOff(mySetting.chatAlarmOnOff!);
+                                      await setChatAlarmInDevice(mySetting.chatAlarmOnOff!);
+
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                    },
+                                  ),
+                                  SizedBox(width: 50),
+                                  Text(
+                                    "카테고리 알림",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontFamily: 'KBO-M',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(width: 18),
+                                  CupertinoSwitch(
+                                    // 급처분 여부
+                                    value: mySetting.categoryAlarmOnOff!,
+                                    activeColor: mainColor,
+                                    onChanged: (bool? value) async{
+                                      // 스위치가 토글될 때 실행될 코드
+                                      setState(() {
+                                        mySetting.categoryAlarmOnOff = value ?? false;
+                                        isLoading = true;
+                                      });
+
+                                      await patchCategoryAlarmOnOff(mySetting.categoryAlarmOnOff!);
+                                      await setCategoryAlarmInDevice(mySetting.categoryAlarmOnOff!);
 
                                       setState(() {
                                         isLoading = false;
@@ -247,7 +276,7 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
     return true;
   }
 
-  Future<bool> patchAlarmOnOff(bool onOff) async{
+  Future<bool> patchChatAlarmOnOff(bool onOff) async{
     print("알람 On/Off 변경");
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
@@ -257,7 +286,35 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
 
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
-    String url = 'https://kdh.supomarket.com/auth/setAlarm';
+    String url = 'https://kdh.supomarket.com/auth/setChatAlarm';
+
+    var data = {'bool': onOff};
+
+    try {
+      Response response = await dio.patch(url, data: data);
+    } catch (e) {
+      print('Error sending PATCH request : $e');
+    }
+
+    await getMyInfo();
+
+    setState(() {
+      _isLoading = false;
+    });
+    return true;
+  }
+
+  Future<bool> patchCategoryAlarmOnOff(bool onOff) async{ // cupertino 스위치중 카테고리 알람임
+    print("알람 On/Off 변경");
+
+    String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+    setState(() {
+      _isLoading = true;
+    });
+
+    Dio dio = Dio();
+    dio.options.headers['Authorization'] = 'Bearer $token';
+    String url = 'https://kdh.supomarket.com/auth/setCategoryAlarm';
 
     var data = {'bool': onOff};
 

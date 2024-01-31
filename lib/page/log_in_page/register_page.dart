@@ -143,7 +143,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Stack(
                       children: [
                         TextInputwithButton(
-                            hintText: '닉네임',
+                            hintText: '닉네임 (1~6자리)',
                             onChanged: (text) {
                               setState(() {
                                 newNickName = text;
@@ -247,8 +247,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                           Navigator.pushAndRemoveUntil(
                                               context,
                                               MaterialPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
+                                                  builder: (BuildContext
+                                                  context) =>
                                                       AuthEmailPage()),
                                                   (route) => false);
                                         }
@@ -331,6 +331,31 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  void _alreadyExistPopUp() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const SingleChildScrollView(child: Text("이미 사용중인 이메일입니다.\n만약 해당 메일로 계정을 만드신 적이 없다면\nsupomarket@naver.com 으로 메일 부탁드립니다.")),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> checkDuplication(String username) async {
     String name = username ?? '';
 
@@ -383,30 +408,30 @@ class _RegisterPageState extends State<RegisterPage> {
     return false;
   }
 
-  void _alreadyExistPopUp() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, //여백을 눌러도 닫히지 않음
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: const SingleChildScrollView(child: Text("이미 존재하는 계정입니다")),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextButton(
-                  child: const Text("확인"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _alreadyExistPopUp() {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false, //여백을 눌러도 닫히지 않음
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         content: const SingleChildScrollView(child: Text("이미 존재하는 계정입니다")),
+  //         actions: <Widget>[
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //             children: [
+  //               TextButton(
+  //                 child: const Text("확인"),
+  //                 onPressed: () {
+  //                   Navigator.pop(context);
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void _weakPasswordPopUp() {
     showDialog(

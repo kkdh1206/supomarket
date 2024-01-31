@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:supo_market/page/util_function.dart';
 
-enum UserStatus {NORMAL, ADMIN, BANNED}
+enum UserStatus {NORMAL, ADMIN, BANNED, DELETED}
 
 class AUser{
   int? id; //email과 다름
