@@ -13,6 +13,7 @@ import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
 import 'package:supo_market/page/util_function.dart';
 import 'package:supo_market/page/entity/util_entity.dart';
+import 'package:supo_market/retrofit/RestClient.dart';
 import '../entity/item_entity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -35,6 +36,8 @@ class SubAddItemPage extends StatefulWidget {
 class _SubAddItemPageState extends State<SubAddItemPage> {
   List<Item>? list;
   bool isFastSellForToggle = false;
+  RestClient? client;
+  Dio dio = Dio();
 
   Item newItem = Item(
     sellingTitle: "",
@@ -144,6 +147,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
         actions: <Widget>[
           TextButton(
             onPressed: () async {
+              List<dynamic>? tokenList;
               if(!completed) {
                 print("업로드 중입니다!!!!");
                 // print(doubleRequest.isCompleted);
@@ -202,6 +206,21 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                     print(formData);
                     try {
                       Response response = await dio.post(url, data: formData);
+                      tokenList = await getTokenByCategory(newItem.itemType.toString());
+                      print("상품을 등록할 때 전달된 토큰: !!!!!!!!");
+                      print(tokenList);
+                      if(tokenList[0] != "해당유저없음") {
+                        client = RestClient(dio);
+                        print("카테고리 알람 준비 완료");
+                        final canotificate = Categorynotificate(
+                            tokens: tokenList,
+                            title: newItem.itemType.toString(),
+                            sentence: "관심있는 상품이 등록되었습니다."
+                        );
+                        await client?.postCategoryNotification(canotificate);
+                        print(canotificate.title);
+                        print("카테고리 알람 전송 완료");
+                      }
                       print(response);
                       print("전송완료");
                       //doubleRequest.complete(true);

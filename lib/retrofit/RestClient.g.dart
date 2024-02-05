@@ -137,6 +137,20 @@ Map<String, dynamic> _$NotificateToJson(Notificate instance) =>
       'roomId': instance.roomId,
     };
 
+Categorynotificate _$CategorynotificateFromJson(Map<String, dynamic> json) =>
+    Categorynotificate(
+      tokens: json['tokens'] as List<dynamic>?,
+      title: json['title'] as String?,
+      sentence: json['sentence'] as String?,
+    );
+
+Map<String, dynamic> _$CategorynotificateToJson(Categorynotificate instance) =>
+    <String, dynamic>{
+      'tokens': instance.tokens,
+      'title': instance.title,
+      'sentence': instance.sentence,
+    };
+
 Token _$TokenFromJson(Map<String, dynamic> json) => Token(
       buyerToken: json['buyerToken'] as String?,
       sellerToken: json['sellerToken'] as String?,
@@ -223,7 +237,11 @@ class _RestClient implements RestClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     var value = _result.data!
         .map((dynamic i) => Records.fromJson(i as Map<String, dynamic>))
         .toList();
@@ -248,7 +266,11 @@ class _RestClient implements RestClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     var value = _result.data!
         .map((dynamic i) => Rooms.fromJson(i as Map<String, dynamic>))
         .toList();
@@ -256,7 +278,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<void> postRoomDetail(roomData) async {
+  Future<void> postRoomDetail(RoomData roomData) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -273,7 +295,11 @@ class _RestClient implements RestClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
   }
 
   @override
@@ -294,7 +320,11 @@ class _RestClient implements RestClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     var value = _result.data!
         .map((dynamic i) => Room.fromJson(i as Map<String, dynamic>))
         .toList();
@@ -303,9 +333,9 @@ class _RestClient implements RestClient {
 
   @override
   Future<List<Chat>> getChatById({
-    id,
-    page,
-    pageSize,
+    String? id,
+    int? page,
+    int? pageSize,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -327,7 +357,11 @@ class _RestClient implements RestClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     var value = _result.data!
         .map((dynamic i) => Chat.fromJson(i as Map<String, dynamic>))
         .toList();
@@ -335,7 +369,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<List<Room>> getRoomById({id}) async {
+  Future<List<Room>> getRoomById({String? id}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -353,7 +387,11 @@ class _RestClient implements RestClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     var value = _result.data!
         .map((dynamic i) => Room.fromJson(i as Map<String, dynamic>))
         .toList();
@@ -361,7 +399,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<void> deleteRoom(deleteId) async {
+  Future<void> deleteRoom(DeleteId deleteId) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -378,11 +416,15 @@ class _RestClient implements RestClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
   }
 
   @override
-  Future<Time> getTimeByMessage({message}) async {
+  Future<Time> getTimeByMessage({String? message}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -400,15 +442,19 @@ class _RestClient implements RestClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = Time.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<void> updateCheck(
-    message,
-    check,
+    String? message,
+    Check check,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -427,11 +473,15 @@ class _RestClient implements RestClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
   }
 
   @override
-  Future<void> postNotification(notificate) async {
+  Future<void> postNotification(Notificate notificate) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -448,11 +498,40 @@ class _RestClient implements RestClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
   }
 
   @override
-  Future<Token> getTokenById({roomId}) async {
+  Future<void> postCategoryNotification(Categorynotificate canotificate) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(canotificate.toJson());
+    await _dio.fetch<void>(_setStreamType<void>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/boards/category',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
+  }
+
+  @override
+  Future<Token> getTokenById({String? roomId}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -470,15 +549,19 @@ class _RestClient implements RestClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = Token.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<void> updateResent(
-    roomId,
-    resent,
+    String? roomId,
+    Resent resent,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -497,13 +580,17 @@ class _RestClient implements RestClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
   }
 
   @override
   Future<List<Room>> getReqRoomNum(
-    sellerId,
-    goodsId,
+    String sellerId,
+    String goodsId,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'goodsId': goodsId};
@@ -521,7 +608,11 @@ class _RestClient implements RestClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     var value = _result.data!
         .map((dynamic i) => Room.fromJson(i as Map<String, dynamic>))
         .toList();
@@ -529,7 +620,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Images> getImage({roomId}) async {
+  Future<Images> getImage({String? roomId}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -547,7 +638,11 @@ class _RestClient implements RestClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = Images.fromJson(_result.data!);
     return value;
   }
@@ -563,5 +658,22 @@ class _RestClient implements RestClient {
       }
     }
     return requestOptions;
+  }
+
+  String _combineBaseUrls(
+    String dioBaseUrl,
+    String? baseUrl,
+  ) {
+    if (baseUrl == null || baseUrl.trim().isEmpty) {
+      return dioBaseUrl;
+    }
+
+    final url = Uri.parse(baseUrl);
+
+    if (url.isAbsolute) {
+      return url.toString();
+    }
+
+    return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }

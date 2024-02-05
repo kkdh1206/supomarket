@@ -66,6 +66,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
   userData(userID: myUserInfo.userUid, nickname: myUserInfo.userName);
   Time? time;
   bool? isUserMessage;
+  bool? alarmStatus;
   String? image;
   ScrollController _scrollController = ScrollController();
   String? checkRead;
@@ -182,8 +183,14 @@ class _SubChattingPageState extends State<SubChattingPage> {
     //상대 이름 받기
     if (widget.buyerID == myUserInfo.userUid) {
       real_traderName = await getUserName(widget.sellerID!);
+      alarmStatus = await getChatAlarmById(widget.sellerID);
+      print("전달받은 알람 상태:");
+      print(alarmStatus.toString());
     } else {
       real_traderName = await getUserName(widget.buyerID!);
+      alarmStatus = await getChatAlarmById(widget.buyerID);
+      print("전달받은 알람 상태:");
+      print(alarmStatus.toString());
     }
 
     var data =
@@ -270,16 +277,13 @@ class _SubChattingPageState extends State<SubChattingPage> {
 
   void sendMessage(String message, String myImageUrl, String sendName) async {
     print("send Message");
+    print(alarmStatus);
     sendData senddata = sendData(
         message: message,
         myImageUrl: myImageUrl,
         checkRead: 'false',
         imageUrl: "NoImage");
     String? changeData = jsonEncode(senddata);
-    // print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $sendName');
-    // print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $fcmToken');
-    // print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: $message');
-    // print('입력받은 데이터ㅋㅋㅋㅋㅋㅋㅋㅋㅋ: ${widget.roomID}');
     print("서버로 전달하는 토큰: $sendToken");
     final notification = Notificate(
       token: sendToken,
@@ -289,7 +293,9 @@ class _SubChattingPageState extends State<SubChattingPage> {
     );
     if (socket!.connected) {
       socket!.emit('sendMessage', changeData);
-      await client?.postNotification(notification);
+      if(alarmStatus == true) {
+        await client?.postNotification(notification);
+      }
     } else {
       print('연결이 필요합니다.');
     }

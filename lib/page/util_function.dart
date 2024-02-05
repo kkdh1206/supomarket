@@ -806,6 +806,31 @@ Future<String> getToken(String uid) async{
 
 }
 
+Future<List<dynamic>> getTokenByCategory(String? category) async{
+  print("token 서버에서 가져오기 ");
+  String? userToken;
+
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'https://kdh.supomarket.com/auth/fcmTokenByCategory';
+  List<dynamic> tokenList = [];
+
+  try {
+    var data = {'category' : category};
+    Response response = await dio.get(url, data: data);
+    dynamic jsonData = response.data;
+
+    tokenList = jsonData as List<dynamic>;
+    print("fcmToken ${userToken}을 받았습니다");
+  } catch (e) {
+    print('Error sending GET request : $e');
+  }
+
+  return tokenList;
+
+}
 
 Future reqIOSPermission(FirebaseMessaging fbMsg) async {
   NotificationSettings settings = await fbMsg.requestPermission(
@@ -853,17 +878,42 @@ Future<bool> getMyInfoRequestList() async {
   return true;
 }
 
+Future<bool?> getChatAlarmById(String? userUid) async {
+  String? alarm;
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'https://kdh.supomarket.com/auth/getChatAlarm';
+
+  try {
+    var data = {'uid': userUid};
+    Response response = await dio.get(url, data: data);
+    dynamic jsonData = response.data;
+    alarm = jsonData as String;
+  } catch (e) {
+    print('Error sending GET request : $e');
+  }
+  print("getChatAlarmById 함수에서 받은 알림 유무");
+  print(alarm);
+  if(alarm == 'true') {
+    return true;
+  }
+  else if(alarm == 'false') {
+    return false;
+  }
+}
+
 Future<bool> assignTrue() async{
   print("assign True");
   return true;
 }
 
-Future<String> getUserName(String userUid) async {
+Future<String> getUserName(String? userUid) async {
   Dio dio = Dio();
   dio.options.responseType = ResponseType.plain; // responseType 설정
   String url = 'https://kdh.supomarket.com/auth/userUid';
 
-  Map<String, String> data = {'userUid': userUid};
+  Map<String, String?> data = {'userUid': userUid};
   try {
 
     Response response = await dio.get(url, data: data);

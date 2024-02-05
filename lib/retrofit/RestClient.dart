@@ -38,6 +38,9 @@ abstract class RestClient {
   @POST('/boards/push')
   Future<void> postNotification(@Body() Notificate notificate);
 
+  @POST('/boards/category')
+  Future<void> postCategoryNotification(@Body() Categorynotificate canotificate);
+
   @GET('/boards/token/{roomId}')
   Future<Token> getTokenById({@Path() String? roomId});
 
@@ -215,6 +218,21 @@ class Notificate {
   });
   factory Notificate.fromJson(Map<String, dynamic> json) => _$NotificateFromJson(json);
   Map<String, dynamic> toJson() => _$NotificateToJson(this);
+}
+
+@JsonSerializable()
+class Categorynotificate {
+  List<dynamic>? tokens;
+  String? title;
+  String? sentence;
+
+  Categorynotificate({
+    this.tokens,
+    this.title,
+    this.sentence
+  });
+  factory Categorynotificate.fromJson(Map<String, dynamic> json) => _$CategorynotificateFromJson(json);
+  Map<String, dynamic> toJson() => _$CategorynotificateToJson(this);
 }
 
 @JsonSerializable()

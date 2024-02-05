@@ -67,9 +67,21 @@ class ChattingPageState extends State<ChattingPage> {
 
     for(int i = 0; i<roomList.length; i++) {
       idList.add(roomList[i].goodsID!);
+      if(roomList[i].buyerID == myUserInfo.userUid) {
+        print("입력된 룸네임은 !!!!!!!!!!!!!: ");
+        String? roomName = await getUserName(roomList[i].sellerID);
+        print(roomName);
+        roomNameList.add(roomName);
+      }
+      else {
+        print("입력된 룸네임은 !!!!!!!!!!!!!: ");
+        String? roomName = await getUserName(roomList[i].buyerID);
+        print(roomName);
+        roomNameList.add(roomName);
+      }
     }
 
-    roomNameList = await getItemNameById(idList);
+    //roomNameList = await getItemNameById(idList);
     roomImageList = await getItemImageById(idList);
 
     return true;

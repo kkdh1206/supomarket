@@ -551,6 +551,9 @@ class _SubHomePageState extends State<SubHomePage> {
                               if(widget.item.sellerUid == null){
                                 print("존재하지 않는 사용자입니다");
                               }
+                              else if(widget.item.sellerUid == myUserInfo.userUid) {
+                                print("자기 자신과 채팅할 수 없습니다");
+                              }
                               else {
                                 await getToken(widget.item.sellerUid!);
                                 inputInfo(

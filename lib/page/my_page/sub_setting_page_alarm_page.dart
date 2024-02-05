@@ -304,7 +304,7 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
     return true;
   }
 
-  Future<bool> patchCategoryAlarmOnOff(bool onOff) async{ // cupertino 스위치중 카테고리 알람임
+  Future<bool> patchCategoryAlarmOnOff(bool onOff) async { // cupertino 스위치중 카테고리 알람임
     print("알람 On/Off 변경");
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
