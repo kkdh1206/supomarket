@@ -65,27 +65,35 @@ class _MyPageState extends State<MyPage> {
       body: Column(
         children: [
           const SizedBox(height: 10),
-          Row(
-            children: [
-              const SizedBox(width: 20),
-              Container(
-                width: 80, // 박스의 너비
-                height: 80, // 박스의 높이
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40.0),
-                  image: DecorationImage(
-                    image: NetworkImage(url??""),
-                    // 이미지 경로
-                    fit: BoxFit.cover, // 이미지가 박스에 꽉 차도록 설정
+          Flexible(
+            child: Row(
+              children: [
+                const SizedBox(width: 20),
+                Flexible(
+                  child: Container(
+                    width: 80, // 박스의 너비
+                    height: 80, // 박스의 높이
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40.0),
+                      image: DecorationImage(
+                        image: NetworkImage(url??""),
+                        // 이미지 경로
+                        fit: BoxFit.cover, // 이미지가 박스에 꽉 차도록 설정
+                      ),
+                    ),
+                    //  실제로는 서버에서 받아와야함
                   ),
                 ),
-                //  실제로는 서버에서 받아와야함
-              ),
-              const SizedBox(width: 20),
-              NameNumber(name : name??"익명"),
-              const SizedBox(width: 20),
-              UserGrade(),
-            ],
+                const SizedBox(width: 20),
+                Flexible(
+                  child: NameNumber(name: name??"익명"),
+                ),
+                const SizedBox(width: 20),
+                Flexible(
+                  child: UserGrade(),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           SettingButton(),

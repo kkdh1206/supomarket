@@ -231,6 +231,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                                 ItemStatus.USERFASTSELL) {
                               //급처분 아이템은 보여주지 않기
                               return ItemCard(
+                                itemID: list![position].itemID!,
                                 image: list![position].imageListB.isEmpty
                                     ? Image.asset("assets/images/main_logo.jpg",
                                         width: 100,

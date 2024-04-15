@@ -5,7 +5,7 @@ var mySetting = Setting(
   categoryAlarmOnOff: false,
   chatAlarmOnOff: false,
   categoryAlarms:
-  {"냉장고" : true,
+  {"전자기기" : true,
     "의류" : false,
     "자취방" : false,
     "모니터" : false,

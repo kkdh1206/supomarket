@@ -126,6 +126,7 @@ class _FavoritePageState extends State<FavoritePage>{
                     title: list![position].sellingTitle!,
                     date: list![position].uploadDate ?? "",
                     price: list![position].sellingPrice!,
+                    itemID: list![position].itemID!,
                     onTap: () {
                       debugPrint(list![position].sellerSchoolNum);
                       debugPrint(list![position].sellerName);

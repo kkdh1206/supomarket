@@ -164,7 +164,7 @@ class QnAButtonState extends State<QnAButton> {
                   height: 25,
                 ),
                 Text(
-                  '  Q&A 게시판',
+                  '  Q&A 및 신고 게시판',
                   style: TextStyle(fontFamily: 'Arial', fontSize: 17),
                 )
               ],
@@ -461,12 +461,14 @@ class AlarmTitle extends StatelessWidget {
 class KeywordAlarm extends StatefulWidget {
   final bool isClicked;
   final String text;
+  final String displayText;
   final Function() delay;
 
   const KeywordAlarm(
       {Key? key,
       required this.isClicked,
       required this.text,
+        required this.displayText,
       required this.delay})
       : super(key: key);
 
@@ -488,7 +490,7 @@ class KeywordAlarmState extends State<KeywordAlarm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.25,
+      width: MediaQuery.of(context).size.width * 0.3,
       height: 100,
       decoration: isClicked!
           ? null
@@ -522,7 +524,7 @@ class KeywordAlarmState extends State<KeywordAlarm> {
           }
         },
         child: Center(
-          child: Text("#${widget.text}",
+          child: Text("#${widget.displayText}",
               overflow: TextOverflow.clip,
               maxLines: 1,
               style: TextStyle(

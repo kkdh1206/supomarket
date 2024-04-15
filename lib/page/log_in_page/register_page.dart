@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:supo_market/page/log_in_page/agreement.dart';
 import 'package:supo_market/page/log_in_page/widgets/log_in_page_widget.dart';
 import '../../entity/util_entity.dart';
 import '../../infra/users_info_data.dart';
@@ -24,6 +25,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool isChecked = false;
+  bool isAgree = false;
   TextEditingController id = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController password2 = TextEditingController();
@@ -63,6 +65,11 @@ class _RegisterPageState extends State<RegisterPage> {
     else if(isChecked==false){
       print("닉네임 중복 확인안함");
       _checkNickNamePopUp();
+      isPressed = false;
+    }
+    else if(isAgree == false) {
+      print("사용약관 동의안함");
+      _checkAgree();
       isPressed = false;
     }
     else {
@@ -143,7 +150,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Stack(
                       children: [
                         TextInputwithButton(
-                            hintText: '닉네임 (1~6자리)',
+                            hintText: '닉네임 (2자리 이상)',
                             onChanged: (text) {
                               setState(() {
                                 newNickName = text;
@@ -187,6 +194,33 @@ class _RegisterPageState extends State<RegisterPage> {
                             newUserSchoolNum = text;
                           });
                         }),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Checkbox(
+                            value: isAgree,
+                            onChanged: (value) {
+                              setState(() {
+                                isAgree = value!;
+                              });
+                            }
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => AgreementPage()),
+                              );
+                            },
+                            child: Text(
+                              '사용약관 확인 및 동의',
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: Colors.red,
+                              ),
+                            ),
+                        ),
+                      ],
+                    ),
                     Container(
                       margin: const EdgeInsets.only(left: 35, right: 35),
                       child: Column(
@@ -465,6 +499,31 @@ class _RegisterPageState extends State<RegisterPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: const SingleChildScrollView(child: Text("닉네임 중복확인을 확인해주세요")),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: const Text("확인"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _checkAgree() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, //여백을 눌러도 닫히지 않음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const SingleChildScrollView(child: Text("사용약관 동의를 확인해주세요.")),
           actions: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -176,7 +176,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
                   "자세한 규정은 아래 링크를 참고바랍니다. \n"),
               GestureDetector(
                 onTap: (){
-                  _launchURL('http://www.supomarket.com/rules');
+                  _launchURL('https://www.supomarket.com/rules/trade');
                 },
                 child: Text("물품규정 바로가기",
                   style: TextStyle(color: Colors.cyan, decoration: TextDecoration.underline),),
@@ -231,6 +231,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
         ],
       ),
       bottomNavigationBar: SafeArea(
+
         child: TabBar(
           tabs: <Tab>[
             Tab(
@@ -252,7 +253,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
             Tab(
                 icon: Image.asset('assets/images/icons/profile.png',
                     width: 25, height: 25, color: Colors.grey[600]),
-                child: Text("내 정보"))
+                child: Text("내 정보",style: TextStyle(fontSize: 13),), )
           ],
           controller: controller,
           unselectedLabelColor: Colors.grey,
@@ -267,7 +268,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   }
 
   void _launchURL(String url) async {
-    await launchUrl(Uri.parse('http://www.supomarket.com/rules'));
+    await launchUrl(Uri.parse('http://www.supomarket.com/rules/trade'));
   }
 
   void updateList() {

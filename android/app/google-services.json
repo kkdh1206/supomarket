@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:439999264168:android:b3bd807208d5a87dc2d99d",
         "android_client_info": {
-          "package_name": "com.example.supo_market"
+          "package_name": "com.supomarket.supo_market"
         }
       },
       "oauth_client": [
@@ -34,7 +34,7 @@
               "client_id": "439999264168-m762lohn0rg2s8ddl1clv9steqi6h1vg.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.supomarket"
+                "bundle_id": "com.supomarket.supomarket"
               }
             }
           ]

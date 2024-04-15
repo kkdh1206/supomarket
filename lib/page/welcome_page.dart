@@ -108,40 +108,67 @@ class MyAppState extends State<MyApp> {
     if (firebaseAuth.currentUser != null) {
       myUserInfo.isUserLogin = true;
       debugPrint("로그인 상태입니다");
-      getMyInfo();
+
+      checkBanned();
+      print(myUserInfo.userStatus);
     } else {
       debugPrint("로그아웃 상태입니다");
     }
   }
 
+  Future checkBanned() async {
+    await getMyInfo();
+    if (myUserInfo.userStatus == UserStatus.BANNED) {
+      myUserInfo.isUserLogin = false; // 밴 당한 경우 다시 로그인으로 보내줘버림
+      debugPrint("banned 된 유저입니다");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        // ChangeNotifierProvider(create: (_)=> LoginModel()),
-        ChangeNotifierProvider(create: (_) => SocketProvider()),
-      ],
-      child: MaterialApp(
-        title : "슈포마켓",
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFB70001)),
-            fontFamily: 'KBO-M'),
-        home: ((myUserInfo.isUserLogin == true) &&
-                (firebaseAuth.currentUser?.emailVerified == true) &&
-                (myUserInfo.userStatus == UserStatus.BANNED))
-            ? WelcomePage()
-            : ((myUserInfo.isUserLogin == true) &&
-                    (firebaseAuth.currentUser?.emailVerified == true))
-                ? ControlPage()
-                : WelcomePage(),
-        initialRoute: '/',
-        routes: {
-          '/control': (context) => ControlPage(),
-          //'/subHome': (context) => const SubHomePage()
-        },
-      ),
-    );
+    // async 안써도 future builder 쓰면 checkebanned 처리 가능
+    return FutureBuilder(
+        future: checkBanned(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // 데이터를 기다리는 동안 로딩 표시
+            return CircularProgressIndicator();
+          } else {
+            // checkBanned() 함수의 결과에 따라 다른 위젯 반환
+
+            return MultiProvider(
+              providers: [
+                // ChangeNotifierProvider(create: (_)=> LoginModel()),
+                ChangeNotifierProvider(create: (_) => SocketProvider()),
+              ],
+              child: MaterialApp(
+                title: "슈포마켓",
+                debugShowCheckedModeBanner: false,
+                theme: ThemeData(
+                    colorScheme:
+                        ColorScheme.fromSeed(seedColor: Color(0xFFB70001)),
+                    fontFamily: 'KBO-M'),
+                home:
+
+                    // // ((myUserInfo.isUserLogin == true) &&
+                    // //     (firebaseAuth.currentUser?.emailVerified == true) &&
+                    // (myUserInfo.userStatus == UserStatus.BANNED))
+                    // ? WelcomePage()
+                    // :
+
+                    ((myUserInfo.isUserLogin == true) &&
+                            (firebaseAuth.currentUser?.emailVerified == true))
+                        ? ControlPage()
+                        : WelcomePage(),
+                initialRoute: '/',
+                routes: {
+                  '/control': (context) => ControlPage(),
+                  //'/subHome': (context) => const SubHomePage()
+                },
+              ),
+            );
+          }
+        });
   }
 }
 
@@ -158,22 +185,35 @@ class WelcomePage extends StatelessWidget {
         body: Center(
           child: Stack(
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/images/main_logo.png'),
-                    ],
-                  ),
-                  const SizedBox(height: 50),
-                ],
-              ),
+              // Column(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     Row(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         Container(
+              //           width: MediaQuery.of(context).size.width,
+              //           height: MediaQuery.of(context).size.height,
+              //             child: Image.asset('assets/images/main_logo.png')),
+              //       ],
+              //     ),
+              //   ],
+              // ),
               Positioned(
-                bottom: 360,
-                left: 138,
-                right: 138,
+                  top: MediaQuery.of(context).size.height * 0.2,
+                  right: MediaQuery.of(context).size.width * 0.01,
+                  left: MediaQuery.of(context).size.width * 0.01,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Container(
+                      child: Image.asset('assets/images/icons/explain.jpeg'),
+                    ),
+                  )),
+              Positioned(
+                bottom: MediaQuery.of(context).size.height *
+                    0.35, // 화면 높이의 10% 위치에 배치
+                right: MediaQuery.of(context).size.width * 0.3,
+                left: MediaQuery.of(context).size.width * 0.3,
                 child: Container(
                   height: 35,
                   decoration: BoxDecoration(

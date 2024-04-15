@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
     Request();
   }
 
-  void Request() async{
+  void Request() async {
     print("request home page");
     await getMyInfoRequestList();
     print(myUserInfo.requestList.toString());
@@ -273,6 +273,7 @@ class _HomePageState extends State<HomePage> {
                                 ItemStatus.USERFASTSELL) {
                               //급처분 아이템은 보여주지 않기
                               return ItemCard(
+                                itemID: list![position].itemID!,
                                 image: list![position].imageListB.isEmpty
                                     ? Image.asset("assets/images/main_logo.jpg",
                                         width: 100,
@@ -367,6 +368,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+
+
   //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
   Future<bool> getItemMain(int page, SortType type, ItemStatus status) async {
     ItemType? tempItemType;
@@ -460,6 +463,8 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+
+
 //일회성 알림
 void showNotification() async {
   print("notiification");
@@ -484,6 +489,8 @@ void showNotification() async {
       payload: '부가정보' // 부가정보
       );
 }
+
+
 // //서버 푸시 알림
 // Future<void> _listenerWithTerminated() async {
 //   FlutterLocalNotificationsPlugin _localNotification = FlutterLocalNotificationsPlugin();

@@ -47,23 +47,50 @@ class _CategoryPageState extends State<CategoryPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Refrigerator(list: widget.list, text: "냉장고"),
-            const SizedBox(width: 10.0),
-            Clothes(list: widget.list, text: "의류"),
-          ]),
-          const SizedBox(height: 10.0),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Rooms(list: widget.list, text: "자취방"),
-            const SizedBox(width: 10.0),
-            Monitor(list: widget.list, text: "모니터"),
-          ]),
-          const SizedBox(height: 10.0),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Book(list: widget.list, text: "책"),
-            const SizedBox(width: 10.0),
-            Etc(list: widget.list, text: "ETC"),
-          ]),
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Refrigerator(list: widget.list, text: "전자기기"),
+                ),
+                SizedBox(width: 10.0),
+                Flexible(
+                  child: Clothes(list: widget.list, text: "가구"),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10.0),
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Rooms(list: widget.list, text: "자취방"),
+                ),
+                SizedBox(width: 10.0),
+                Flexible(
+                  child: Monitor(list: widget.list, text: "이동수단"),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10.0),
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Book(list: widget.list, text: "책"),
+                ),
+                SizedBox(width: 10.0),
+                Flexible(
+                  child: Etc(list: widget.list, text: "ETC"),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

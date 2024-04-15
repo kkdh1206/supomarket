@@ -284,13 +284,13 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                                             },
                                             child: Text(
                                               index == 0
-                                                  ? "냉장고"
+                                                  ? "전자기기"
                                                   : index == 1
-                                                      ? "의류"
+                                                      ? "가구"
                                                       : index == 2
                                                           ? "자취방"
                                                           : index == 3
-                                                              ? "모니터"
+                                                              ? "이동수단"
                                                               : index == 4
                                                                   ? "책"
                                                                   : "기타",
@@ -309,7 +309,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                         });
                   },
                   child: Text(
-                    "상품 종류 : ${modifiedItem.itemType == ItemType.REFRIGERATOR ? "냉장고" : modifiedItem.itemType == ItemType.MONITOR ? "모니터" : modifiedItem.itemType == ItemType.BOOK ? "책" : modifiedItem.itemType == ItemType.ROOM ? "자취방" : modifiedItem.itemType == ItemType.CLOTHES ? "의류" : "기타"}",
+                    "상품 종류 : ${modifiedItem.itemType == ItemType.REFRIGERATOR ? "전자기기" : modifiedItem.itemType == ItemType.MONITOR ? "가구" : modifiedItem.itemType == ItemType.BOOK ? "책" : modifiedItem.itemType == ItemType.ROOM ? "자취방" : modifiedItem.itemType == ItemType.CLOTHES ? "이동수단" : "기타"}",
                     textScaleFactor: 1.0,
                     style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
                   ),

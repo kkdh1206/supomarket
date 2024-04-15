@@ -208,7 +208,7 @@ class _SubHomePageState extends State<SubHomePage> {
                                 Navigator.pop(context);
                               },
                               icon:
-                                  Icon(Icons.arrow_back, color: Colors.white54),
+                                  Icon(Icons.arrow_back, color: Colors.black54),
                               iconSize: 30)),
                     ],
                   ),
@@ -378,16 +378,16 @@ class _SubHomePageState extends State<SubHomePage> {
                                         ? "기타"
                                         : widget.item.itemType ==
                                                 ItemType.REFRIGERATOR
-                                            ? "냉장고"
+                                            ? "전자기기"
                                             : widget.item.itemType ==
                                                     ItemType.ROOM
                                                 ? "자취방"
                                                 : widget.item.itemType ==
                                                         ItemType.MONITOR
-                                                    ? "모니터"
+                                                    ? "가구"
                                                     : widget.item.itemType ==
                                                             ItemType.CLOTHES
-                                                        ? "의류"
+                                                        ? "이동수단"
                                                         : "책",
                                     style: const TextStyle(
                                         fontFamily: 'KBO-L',
