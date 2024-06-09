@@ -37,6 +37,7 @@ class ChattingPageState extends State<ChattingPage> {
       userStatus: UserStatus.NORMAL);
 
   List<Room> roomList = [];
+  List<Room> localList = [];
   List<dynamic> roomNameList = [];
   List<dynamic> roomImageList = [];
 
@@ -52,30 +53,30 @@ class ChattingPageState extends State<ChattingPage> {
     Dio dio = Dio();
     client = RestClient(dio);
     roomList.clear();
+    localList.clear();
     getChatRoomId(myUserInfo.userUid!);
     print("userUid" + myUserInfo.userUid!);
   }
 
   Future<bool> initRoomInfo() async {
 
-    print("initRoomInfo : ${roomList.length}");
-
+    print("initRoomInfo : ${localList.length}");
     roomImageList.clear();
     roomNameList.clear();
 
     List<String> idList = [];
 
-    for(int i = 0; i<roomList.length; i++) {
-      idList.add(roomList[i].goodsID!);
-      if(roomList[i].buyerID == myUserInfo.userUid) {
+    for(int i = 0; i<localList.length; i++) {
+      idList.add(localList[i].goodsID!);
+      if (localList[i].buyerID == myUserInfo.userUid) {
         print("입력된 룸네임은 !!!!!!!!!!!!!: ");
-        String? roomName = await getUserName(roomList[i].sellerID);
+        String? roomName = await getUserName(localList[i].sellerID);
         print(roomName);
         roomNameList.add(roomName);
       }
       else {
         print("입력된 룸네임은 !!!!!!!!!!!!!: ");
-        String? roomName = await getUserName(roomList[i].buyerID);
+        String? roomName = await getUserName(localList[i].buyerID);
         print(roomName);
         roomNameList.add(roomName);
       }
@@ -87,38 +88,19 @@ class ChattingPageState extends State<ChattingPage> {
     return true;
   }
 
-  // void inputInfo(String sss) async {
-  //   final buyerID = '345601';
-  //   final sellerID = '50508';
-  //   final goodsID = '91751';
-  //
-  //   final roomData = RoomData(
-  //     buyerID: buyerID,
-  //     sellerID: sellerID,
-  //     goodsID: goodsID,
-  //     id: buyerID + sellerID + goodsID,
-  //     roomName: sss,
-  //   );
-  //
-  //   await client!.postRoomDetail(roomData);
-  //
-  //   roomList.add(Room(
-  //       id: roomData.id,
-  //       buyerID: roomData.buyerID,
-  //       sellerID: roomData.sellerID,
-  //       goodsID: roomData.goodsID,
-  //       roomName: roomData.roomName));
-  //
-  //   setState(() {});
-  // }
-
   void getChatRoomId(String uid) async {
     var res = await client!.getRoomById(id: uid);
     print("유저 아이디는: ${uid}");
     setState(() {
       roomList = res;
+      localList.clear();
     });
     print(roomList.length.toString() + "!!!!!");
+    for(int i = 0; i < roomList.length; i++) {
+      if(roomList[i].resentMessage != 'None_Message_Yet') {
+        localList.add(roomList[i]);
+      }
+    }
     chattingPageBuilder = initRoomInfo();
   }
 
@@ -139,7 +121,7 @@ class ChattingPageState extends State<ChattingPage> {
 
                 print("build chatting page");
 
-                if(roomList.isEmpty){
+                if(localList.isEmpty){
                   return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -173,9 +155,8 @@ class ChattingPageState extends State<ChattingPage> {
                                           "assets/images/supi_logo.jpeg",
                                           width: 65,
                                           height: 65,
-                                          fit: BoxFit.contain)
-
-
+                                          fit: BoxFit.contain
+                                      )
                                   ),
                                 ),
                                 Expanded(
@@ -241,13 +222,13 @@ class ChattingPageState extends State<ChattingPage> {
                     Container(
                       child: Center(
                         child: ListView.builder(
-                          itemCount: roomList.length + 1,
+                          itemCount: localList.length + 1,
                           itemBuilder: (context, position) {
                             //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
 
                             return GestureDetector(
                               onTap: () {
-                                if (position == roomList.length) {
+                                if (position == localList.length) {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -259,10 +240,10 @@ class ChattingPageState extends State<ChattingPage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => SubChattingPage(
-                                            roomID: roomList[position].id,
-                                            traderName: roomList[position].roomName,
-                                            buyerID : roomList[position].buyerID,
-                                            sellerID : roomList[position].sellerID,
+                                            roomID: localList[position].id,
+                                            traderName: localList[position].roomName,
+                                            buyerID : localList[position].buyerID,
+                                            sellerID : localList[position].sellerID,
                                           ))).then((value) {
                                     getChatRoomId(myUserInfo.userUid!);
                                   });
@@ -286,7 +267,7 @@ class ChattingPageState extends State<ChattingPage> {
                                           child: ClipRRect(
                                             borderRadius:
                                             BorderRadius.circular(50.0),
-                                            child: position == roomList.length
+                                            child: position == localList.length
                                                 ? Image.asset(
                                                 "assets/images/supi_logo.jpeg",
                                                 width: 65,
@@ -316,7 +297,7 @@ class ChattingPageState extends State<ChattingPage> {
                                                 Row(
                                                   children: [
                                                     if (position ==
-                                                        roomList.length)
+                                                        localList.length)
                                                       const Text(
                                                         "Supi",
                                                         style: TextStyle(
@@ -353,9 +334,9 @@ class ChattingPageState extends State<ChattingPage> {
                                                     Expanded(
                                                       child: Text(
                                                         position ==
-                                                            roomList.length
+                                                            localList.length
                                                             ? "챗봇입니다"
-                                                            : roomList[position]
+                                                            : localList[position]
                                                             .resentMessage ??
                                                             "",
                                                         style: const TextStyle(
@@ -377,7 +358,7 @@ class ChattingPageState extends State<ChattingPage> {
                                       ],
                                     ),
                                   ),
-                                  position != roomList.length? Positioned(
+                                  position != localList.length? Positioned(
                                     right: 10,
                                     top: 3,
                                     child: IconButton(
@@ -421,11 +402,11 @@ class ChattingPageState extends State<ChattingPage> {
                 TextButton(
                   child: const Text("확인"),
                   onPressed: () async {
-                    await client!.deleteRoom(DeleteId(id: roomList[position].id));
-                    List<Room> updatedList = List.from(roomList);
+                    await client!.deleteRoom(DeleteId(id: localList[position].id));
+                    List<Room> updatedList = List.from(localList);
                     updatedList.removeAt(position);
                     setState(() {
-                      roomList = updatedList;
+                      localList = updatedList;
                     });
                     chattingPageBuilder = assignTrue();
                     setState(() {});

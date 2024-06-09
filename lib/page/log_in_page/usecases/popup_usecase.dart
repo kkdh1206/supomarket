@@ -67,7 +67,7 @@ class PopUpUseCase {
       barrierDismissible: false, //여백을 눌러도 닫히지 않음
       builder: (BuildContext context) {
         return AlertDialog(
-          content: const SingleChildScrollView(child: Text("올바르지 않은 정보입니다")),
+          content: const SingleChildScrollView(child: Text("아이디 또는 비밀번호가\n 올바르지 않습니다.")),
           actions: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

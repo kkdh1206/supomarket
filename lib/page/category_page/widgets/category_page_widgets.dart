@@ -276,7 +276,7 @@ class MonitorState extends State<Monitor> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '모니터',
+                        '이동수단',
                         style: TextStyle(
                             color: Colors.black,
                             fontFamily: 'KBO-B',
@@ -289,7 +289,7 @@ class MonitorState extends State<Monitor> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'monitors',
+                        'rides',
                         style: TextStyle(
                             color: Colors.black,
                             fontFamily: 'KBO-L',
@@ -305,7 +305,7 @@ class MonitorState extends State<Monitor> {
                 right: 0,
                 bottom: 0,
                 child: Image.asset(
-                  'assets/images/icons/desktop.png',
+                  'assets/images/rides.png',
                   width: 100,
                   height: 100,
                 ),
@@ -354,7 +354,7 @@ class ClothesState extends State<Clothes> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '의류',
+                        '가구',
                         style: TextStyle(
                             color: Colors.black,
                             fontFamily: 'KBO-B',
@@ -367,7 +367,7 @@ class ClothesState extends State<Clothes> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'clothes',
+                        'furniture',
                         style: TextStyle(
                             color: Colors.black,
                             fontFamily: 'KBO-L',
@@ -383,7 +383,7 @@ class ClothesState extends State<Clothes> {
                 right: 0,
                 bottom: 0,
                 child: Image.asset(
-                  'assets/images/icons/clothes-hanger.png',
+                  'assets/images/furniture.png',
                   width: 110,
                   height: 110,
                 ),
@@ -431,7 +431,7 @@ class RefrigeratorState extends State<Refrigerator>{
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '냉장고',
+                        '전자기기',
                         style: TextStyle(
                             color: Colors.black,
                             fontFamily: 'KBO-B',
@@ -444,7 +444,7 @@ class RefrigeratorState extends State<Refrigerator>{
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'fridges',
+                        'electronic',
                         style: TextStyle(
                             color: Colors.black,
                             fontFamily: 'KBO-L',
@@ -460,7 +460,7 @@ class RefrigeratorState extends State<Refrigerator>{
                 right: 0,
                 bottom: 0,
                 child: Image.asset(
-                  'assets/images/icons/fridge.png',
+                  'assets/images/icons/desktop.png',
                   width: 100,
                   height: 100,
                 ),
@@ -526,7 +526,7 @@ class RoomsState extends State<Rooms> {
                             color: Colors.black,
                             fontFamily: 'KBO-L',
                             fontWeight: FontWeight.w200,
-                            fontSize: 20),
+                            fontSize: 18),
                       )
                     ],
                   ),
@@ -537,9 +537,9 @@ class RoomsState extends State<Rooms> {
                 right: 0,
                 bottom: -5,
                 child: Image.asset(
-                  'assets/images/icons/room.png',
-                  width: 100,
-                  height: 100,
+                  'assets/images/rooms.png',
+                  width: 95,
+                  height: 95,
                 ),
               )
             ],

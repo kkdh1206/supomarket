@@ -231,6 +231,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                                 ItemStatus.USERFASTSELL) {
                               //급처분 아이템은 보여주지 않기
                               return ItemCard(
+                                itemID: list![position].itemID!,
                                 image: list![position].imageListB.isEmpty
                                     ? Image.asset("assets/images/main_logo.jpg",
                                         width: 100,
@@ -327,13 +328,13 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
   void setURL() {
     url =
         'https://kdh.supomarket.com/items/category?sort=${ConvertEnumToString(selectedOption1)}&status=${ConvertEnumToString(selectedOption2)}&page=${page}&pageSize=${pageSize}';
-    if (type == '냉장고') {
+    if (type == '전자기기') {
       data = {'category': 'REFRIGERATOR'};
-    } else if (type == '의류') {
+    } else if (type == '가구') {
       data = {'category': 'CLOTHES'};
     } else if (type == '자취방') {
       data = {'category': 'ROOM'};
-    } else if (type == '모니터') {
+    } else if (type == '이동수단') {
       data = {'category': 'MONITOR'};
     } else if (type == '책') {
       data = {'category': 'BOOK'};

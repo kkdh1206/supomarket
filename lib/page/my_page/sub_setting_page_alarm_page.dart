@@ -66,46 +66,50 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                           SizedBox(
                             height: 50,
                             child: Align(
-                              alignment: Alignment.centerLeft,
+                              alignment: Alignment.center,
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(width: 18),
+                                  SizedBox(width: MediaQuery.of(context).size.width * 0.05),
                                   Text(
                                     "채팅 알림",
                                     style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 15,
                                         fontFamily: 'KBO-M',
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  SizedBox(width: 18),
-                                  CupertinoSwitch(
-                                    // 급처분 여부
-                                    value: mySetting.chatAlarmOnOff!,
-                                    activeColor: mainColor,
-                                    onChanged: (bool? value) async{
-                                      // 스위치가 토글될 때 실행될 코드
-                                      setState(() {
-                                        mySetting.chatAlarmOnOff = value ?? false;
-                                        isLoading = true;
-                                      });
+                                  SizedBox(width: MediaQuery.of(context).size.width * 0.01),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width * 0.2,
+                                    child: CupertinoSwitch(
+                                      // 급처분 여부
+                                      value: mySetting.chatAlarmOnOff!,
+                                      activeColor: mainColor,
+                                      onChanged: (bool? value) async{
+                                        // 스위치가 토글될 때 실행될 코드
+                                        setState(() {
+                                          mySetting.chatAlarmOnOff = value ?? false;
+                                          isLoading = true;
+                                        });
 
-                                      await patchChatAlarmOnOff(mySetting.chatAlarmOnOff!);
-                                      await setChatAlarmInDevice(mySetting.chatAlarmOnOff!);
+                                        await patchChatAlarmOnOff(mySetting.chatAlarmOnOff!);
+                                        await setChatAlarmInDevice(mySetting.chatAlarmOnOff!);
 
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                    },
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      },
+                                    ),
                                   ),
-                                  SizedBox(width: 50),
+                                  SizedBox(width: MediaQuery.of(context).size.width * 0.075,),
                                   Text(
                                     "카테고리 알림",
                                     style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 15,
                                         fontFamily: 'KBO-M',
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  SizedBox(width: 18),
+                                  SizedBox(width: MediaQuery.of(context).size.width * 0.01),
                                   CupertinoSwitch(
                                     // 급처분 여부
                                     value: mySetting.categoryAlarmOnOff!,
@@ -125,6 +129,7 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                       });
                                     },
                                   ),
+                                  SizedBox(width: MediaQuery.of(context).size.width * 0.05),
                                 ],
                               ),
                             ),
@@ -147,15 +152,18 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     KeywordAlarm(text: "냉장고",
+                                        displayText: "전자기기",
                                         isClicked: isClicked.contains("냉장고"),
                                         delay: delay,
                                     ),
                                     const SizedBox(width: 5),
                                     KeywordAlarm(text: "의류",
+                                        displayText: "가구",
                                         isClicked: isClicked.contains("의류"),
                                       delay: delay),
                                     const SizedBox(width: 5),
                                     KeywordAlarm(text: "자취방",
+                                        displayText: "자취방",
                                         isClicked: isClicked.contains("자취방"),
                                       delay: delay,),
                                   ]),
@@ -169,14 +177,17 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     KeywordAlarm(text: "책",
+                                        displayText: "책",
                                         isClicked: isClicked.contains("책"),
                                       delay: delay,),
                                     const SizedBox(width: 5),
                                     KeywordAlarm(text: "모니터",
+                                        displayText: "이동수단",
                                         isClicked: isClicked.contains("모니터"),
                                       delay: delay,),
                                     const SizedBox(width: 5),
                                     KeywordAlarm(text: "기타",
+                                        displayText: "기타",
                                         isClicked: isClicked.contains("기타"),
                                       delay: delay,),
                                   ]),

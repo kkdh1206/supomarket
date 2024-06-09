@@ -1,18 +1,24 @@
 //홈화면 리스트뷰 카드
 
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import '../home_page.dart';
+import '../../../entity/item_entity.dart';
 import '../../../entity/util_entity.dart';
+
+
 
 class ItemCard extends StatelessWidget {
   final Image image;
   final String title;
   final String date;
   final int price;
+  final int itemID;
   final Function() onTap;
 
-  ItemCard({Key? key, required this.image, required this.title, required this.date, required this.price, required this.onTap}) : super(key:key);
+  ItemCard({Key? key, required this.image, required this.title, required this.date,required this.itemID, required this.price, required this.onTap}) : super(key:key);
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +105,33 @@ class ItemCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("부적절한 게시물"),
+                                content: Text("불쾌하거나 부적절하다고 생각하는 게시물을 신고하거나 차단할 수 있습니다."),
+                                actions: <Widget>[
+                                  TextButton(onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                    child: Text("신고"),
+                                  ),
+                                  TextButton(onPressed: () {
+                                    hate(itemID);
+                                    Navigator.of(context).pop();
+                                  },
+                                      child: Text("차단"),
+                                  ),
+                                ],
+                              );
+                            }
+                        );
+                      },
+                      icon: Icon(Icons.new_releases_outlined),
+                  ),
                 ],
               ),
             ],
@@ -107,6 +140,28 @@ class ItemCard extends StatelessWidget {
       ),
     );
   }
+}
+
+
+Future<bool> hate(int itemID) async {
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+  print('getData');
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url =
+      'https://kdh.supomarket.com/items/hateItem/${itemID}';
+
+  try {
+    print(url);
+    print(itemID);
+    Response response = await dio.patch(url);
+    print(response);
+    // Map<String, dynamic> JsonData = json.decode(response.data);
+  } catch (e) {
+    print('Error sending PATCH request : $e');
+  }
+
+return true;
 }
 
 

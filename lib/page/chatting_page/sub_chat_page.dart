@@ -293,9 +293,10 @@ class _SubChattingPageState extends State<SubChattingPage> {
     );
     if (socket!.connected) {
       socket!.emit('sendMessage', changeData);
-      if(alarmStatus == true) {
-        await client?.postNotification(notification);
-      }
+      print(alarmStatus);
+      await client?.postNotification(notification);
+      print("전달됫냐?");
+      print(notification.title);
     } else {
       print('연결이 필요합니다.');
     }

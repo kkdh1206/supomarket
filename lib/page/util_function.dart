@@ -40,6 +40,27 @@ Future<bool>? managementPageBuilder;
 
 String? fcmToken;
 
+String setCategoryName(String category) {
+  if(category == "ItemType.REFRIGERATOR") {
+    return "전자기기";
+  }
+  else if(category == "ItemType.BOOK") {
+    return "책";
+  }
+  else if(category == "ItemType.CLOTHES") {
+    return "가구";
+  }
+  else if(category == "ItemType.ROOM") {
+    return "자취방";
+  }
+  else if(category == "ItemType.MONITOR") {
+    return "이동수단";
+  }
+  else {
+    return "기타";
+  }
+}
+
 Future<bool> setChatAlarmInDevice (bool check) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   debugPrint("set chatAlarm in device");

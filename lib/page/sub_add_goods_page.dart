@@ -205,16 +205,19 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
                     print(formData);
                     try {
+                      String? categoryText;
                       Response response = await dio.post(url, data: formData);
+                      //print(newItem.itemType.toString());
                       tokenList = await getTokenByCategory(newItem.itemType.toString());
-                      print("상품을 등록할 때 전달된 토큰: !!!!!!!!");
-                      print(tokenList);
+                      categoryText = setCategoryName(newItem.itemType.toString());
+                      //print("상품을 등록할 때 전달된 토큰: !!!!!!!!");
+                      //print(tokenList);
                       if(tokenList[0] != "해당유저없음") {
                         client = RestClient(dio);
                         print("카테고리 알람 준비 완료");
                         final canotificate = Categorynotificate(
                             tokens: tokenList,
-                            title: newItem.itemType.toString(),
+                            title: categoryText,
                             sentence: "관심있는 상품이 등록되었습니다."
                         );
                         await client?.postCategoryNotification(canotificate);
@@ -375,13 +378,13 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                 },
                                                 child: Text(
                                                   index == 0
-                                                      ? "냉장고"
+                                                      ? "전자기기"
                                                       : index == 1
-                                                      ? "의류"
+                                                      ? "가구"
                                                       : index == 2
                                                       ? "자취방"
                                                       : index == 3
-                                                      ? "모니터"
+                                                      ? "이동수단"
                                                       : index == 4
                                                       ? "책"
                                                       : "기타",
@@ -400,7 +403,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                             });
                       },
                       child: Text(
-                        "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "냉장고" : newItem.itemType == ItemType.MONITOR ? "모니터" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "의류" : "기타"}",
+                        "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "전자기기" : newItem.itemType == ItemType.MONITOR ? "이동수단" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "가구" : "기타"}",
                         textScaleFactor: 1.0,
                         style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
                       ),

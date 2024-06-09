@@ -33,9 +33,7 @@ Future<void> main() async {
   //     AndroidFlutterLocalNotificationsPlugin>()
   //     ?.requestPermission();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
 
   await Future.delayed(Duration(seconds: 1)); //이거 안해주면 흰색화면뜸
 
@@ -96,7 +94,7 @@ void _handleMessage(RemoteMessage message) {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   flutterLocalNotificationsPlugin.show(
     message.notification.hashCode,

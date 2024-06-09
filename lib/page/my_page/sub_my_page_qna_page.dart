@@ -57,7 +57,7 @@ class SubMyPageQnAPageState extends State<SubMyPageQnAPage> {
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Q&A 게시판', style : TextStyle(color : Colors.black, fontFamily: 'KBO-M', fontWeight: FontWeight.bold, fontSize : 25)),
+            Text('Q&A 및 신고 게시판', style : TextStyle(color : Colors.black, fontFamily: 'KBO-M', fontWeight: FontWeight.bold, fontSize : 16)),
           ],
         ),
         actions: [

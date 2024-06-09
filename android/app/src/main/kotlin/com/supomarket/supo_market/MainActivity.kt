@@ -1,4 +1,4 @@
-package com.example.supo_market
+package com.supomarket.supo_market
 
 import io.flutter.embedding.android.FlutterActivity
 

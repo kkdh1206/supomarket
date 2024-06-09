@@ -278,6 +278,7 @@ class _SearchPageState extends State<SearchPage> {
                                   ItemStatus.USERFASTSELL) {
                                 //급처분 아이템은 보여주지 않기
                                 return ItemCard(
+                                  itemID: searchList![position].itemID!,
                                   image: searchList![position].imageListB.isEmpty
                                       ? Image.asset("assets/images/main_logo.jpg",
                                       width: 100,

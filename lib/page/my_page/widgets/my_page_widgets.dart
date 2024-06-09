@@ -30,7 +30,8 @@ class SettingButtonState extends State<SettingButton> {
         height: 50,
         width: 350,
         child: InkWell(
-            onTap: () {
+            onTap: () async{
+              await setChatAlarmInDevice(mySetting.chatAlarmOnOff!);
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -164,7 +165,7 @@ class QnAButtonState extends State<QnAButton> {
                   height: 25,
                 ),
                 Text(
-                  '  Q&A 게시판',
+                  '  Q&A 및 신고 게시판',
                   style: TextStyle(fontFamily: 'Arial', fontSize: 17),
                 )
               ],
@@ -343,7 +344,7 @@ class NameNumber extends StatelessWidget {
               color: Colors.black,
               fontFamily: 'KBO-B',
               fontWeight: FontWeight.w300,
-              fontSize: 20)),
+              fontSize: 17)),
     );
   }
 }
@@ -352,8 +353,23 @@ class UserGrade extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Image.asset("assets/images/${myUserInfo.userGrade ?? "F"}.jpeg",
-          scale: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Image.asset(
+            "assets/images/${myUserInfo.userGrade ?? "F"}.jpeg",
+            scale: 10,
+          ),
+          Text(
+            "신용학점",
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 16,
+              fontFamily: 'KBO-B'
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -461,12 +477,14 @@ class AlarmTitle extends StatelessWidget {
 class KeywordAlarm extends StatefulWidget {
   final bool isClicked;
   final String text;
+  final String displayText;
   final Function() delay;
 
   const KeywordAlarm(
       {Key? key,
       required this.isClicked,
       required this.text,
+        required this.displayText,
       required this.delay})
       : super(key: key);
 
@@ -488,7 +506,7 @@ class KeywordAlarmState extends State<KeywordAlarm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.25,
+      width: MediaQuery.of(context).size.width * 0.3,
       height: 100,
       decoration: isClicked!
           ? null
@@ -522,14 +540,14 @@ class KeywordAlarmState extends State<KeywordAlarm> {
           }
         },
         child: Center(
-          child: Text("#${widget.text}",
+          child: Text("#${widget.displayText}",
               overflow: TextOverflow.clip,
               maxLines: 1,
               style: TextStyle(
                   color: isClicked! ? Colors.white : mainColor,
                   fontFamily: 'KBO-M',
                   fontWeight: FontWeight.w700,
-                  fontSize: 16)),
+                  fontSize: 14)),
         ),
       ),
     );

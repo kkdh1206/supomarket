@@ -3,9 +3,9 @@ import '../entity/user_entity.dart';
 
 var mySetting = Setting(
   categoryAlarmOnOff: false,
-  chatAlarmOnOff: false,
+  chatAlarmOnOff: true,
   categoryAlarms:
-  {"냉장고" : true,
+  {"전자기기" : false,
     "의류" : false,
     "자취방" : false,
     "모니터" : false,

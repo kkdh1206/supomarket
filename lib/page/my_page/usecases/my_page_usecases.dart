@@ -72,7 +72,7 @@ class MyPageUsecase{
 
                     // 파이어베이스에서 계정 삭제
                     final user = FirebaseAuth.instance.currentUser;
-                    user!.delete(); // 유저삭제
+                    await user!.delete(); // 유저삭제
                     await FirebaseAuth.instance.signOut();
 
                     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
