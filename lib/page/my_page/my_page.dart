@@ -90,7 +90,9 @@ class _MyPageState extends State<MyPage> {
                 ),
                 const SizedBox(width: 20),
                 Flexible(
-                  child: UserGrade(),
+                  child: Container(
+                    height: 120,
+                      child: UserGrade()),
                 ),
               ],
             ),

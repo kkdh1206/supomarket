@@ -188,7 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ],
                     ),
                     TextInputwithButton(
-                        hintText: '학번',
+                        hintText: '학번/직번(20240000)',
                         onChanged: (text) {
                           setState(() {
                             newUserSchoolNum = text;

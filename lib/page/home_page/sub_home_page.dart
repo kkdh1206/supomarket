@@ -57,15 +57,15 @@ class _SubHomePageState extends State<SubHomePage> {
     String sellToken = await getToken(sell);
 
     final roomData = RoomData(
-        buyerID: buy,
-        sellerID: sell,
-        goodsID: item,
-        id: roomID,
-        roomName: seller,
-        buyerToken: buyToken,
-        sellerToken: sellToken,
-        resentTime: '2023-09-12T10:27:44.074Z',
-      resentMessage: 'aaa',
+      buyerID: buy,
+      sellerID: sell,
+      goodsID: item,
+      id: roomID,
+      roomName: seller,
+      buyerToken: buyToken,
+      sellerToken: sellToken,
+      resentTime: '2023-09-12T10:27:44.074Z',
+      resentMessage: 'None_Message_Yet',
       resentCheck: 'false',
 
     );
@@ -216,7 +216,7 @@ class _SubHomePageState extends State<SubHomePage> {
                   Card(
                     color: Colors.grey[200],
                     margin: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 20),
+                        vertical: 20, horizontal: 10),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -268,12 +268,12 @@ class _SubHomePageState extends State<SubHomePage> {
                                 ),
                                 Container(
                                   width: 150,
-                                  margin: const EdgeInsets.only(left : 5),
+                                  margin: const EdgeInsets.only(left : 10),
                                   child: Text(
                                     widget.item.sellerName ?? "미상",
                                     maxLines: 1,
                                     style: TextStyle(
-                                      fontSize: 25,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     overflow : TextOverflow.ellipsis,
@@ -308,7 +308,7 @@ class _SubHomePageState extends State<SubHomePage> {
                                     textScaleFactor: 2.1,
                                     style: const TextStyle(
                                       fontFamily: 'KBO-B',
-                                        fontWeight: FontWeight.w900),
+                                        fontWeight: FontWeight.w500),
                                     textAlign: TextAlign.start),
                               ),
                             ),
@@ -511,7 +511,7 @@ class _SubHomePageState extends State<SubHomePage> {
                         height: 42,
                         width: 42,
                         child: widget.item.isLiked == true? Image.asset("assets/images/icons/heart.png", color : mainColor)
-                        : Image.asset("assets/images/icons/heart.png", color : Colors.black),
+                        : Image.asset("assets/images/heart_border.png"),
                       ),
                     ),
                     GestureDetector(
@@ -543,7 +543,8 @@ class _SubHomePageState extends State<SubHomePage> {
                               borderRadius: BorderRadius.circular(11.0),
                             ),
                             child: const Text(
-                              "채팅하기", textScaleFactor: 1.2, style: TextStyle(
+                              "채팅하기", style: TextStyle(
+                              fontSize: 13,
                               fontFamily: 'KBO-B',
                                 color: Colors.white, fontWeight: FontWeight.bold),
                             ),

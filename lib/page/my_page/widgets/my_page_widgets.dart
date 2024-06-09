@@ -30,7 +30,8 @@ class SettingButtonState extends State<SettingButton> {
         height: 50,
         width: 350,
         child: InkWell(
-            onTap: () {
+            onTap: () async{
+              await setChatAlarmInDevice(mySetting.chatAlarmOnOff!);
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -343,7 +344,7 @@ class NameNumber extends StatelessWidget {
               color: Colors.black,
               fontFamily: 'KBO-B',
               fontWeight: FontWeight.w300,
-              fontSize: 20)),
+              fontSize: 17)),
     );
   }
 }
@@ -352,8 +353,23 @@ class UserGrade extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Image.asset("assets/images/${myUserInfo.userGrade ?? "F"}.jpeg",
-          scale: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Image.asset(
+            "assets/images/${myUserInfo.userGrade ?? "F"}.jpeg",
+            scale: 10,
+          ),
+          Text(
+            "신용학점",
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 16,
+              fontFamily: 'KBO-B'
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -531,7 +547,7 @@ class KeywordAlarmState extends State<KeywordAlarm> {
                   color: isClicked! ? Colors.white : mainColor,
                   fontFamily: 'KBO-M',
                   fontWeight: FontWeight.w700,
-                  fontSize: 16)),
+                  fontSize: 14)),
         ),
       ),
     );

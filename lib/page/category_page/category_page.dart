@@ -43,15 +43,15 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold (
       backgroundColor: Colors.white,
-      body: Column(
+      body: Column (
         children: [
-          Flexible(
-            child: Row(
+          Flexible (
+            child: Row (
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
+                Flexible (
                   child: Refrigerator(list: widget.list, text: "전자기기"),
                 ),
                 SizedBox(width: 10.0),

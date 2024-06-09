@@ -1,5 +1,5 @@
 class Setting {
-  bool? chatAlarmOnOff;
+  bool? chatAlarmOnOff= true;
   bool? categoryAlarmOnOff;
   Map? categoryAlarms;
   String? selectedCategoryAlarm;
