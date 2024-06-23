@@ -127,6 +127,7 @@ class _FavoritePageState extends State<FavoritePage>{
                     date: list![position].uploadDate ?? "",
                     price: list![position].sellingPrice!,
                     itemID: list![position].itemID!,
+                    view: list![position].view!,
                     onTap: () {
                       debugPrint(list![position].sellerSchoolNum);
                       debugPrint(list![position].sellerName);
@@ -201,6 +202,7 @@ class _FavoritePageState extends State<FavoritePage>{
           String title = data['title'] as String;
           String description = data['description'] as String;
           int price = data['price'] as int;
+          int view = data['view'] as int;
 
           String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
           tempItemStatus = convertStringToEnum(status);
@@ -228,6 +230,7 @@ class _FavoritePageState extends State<FavoritePage>{
               uploadDate: "10일 전",
               uploadDateForCompare: dateTime,
               itemDetail: description,
+              view: view,
               sellerImage:
               "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
               isLiked: false,

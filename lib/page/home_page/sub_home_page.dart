@@ -9,6 +9,7 @@ import 'package:supo_market/entity/user_entity.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/page/home_page/sub_picture_page.dart';
 import 'package:supo_market/page/home_page/sub_sub_home_page_comments_page.dart';
+import 'package:supo_market/page/opposite_page.dart';
 import 'package:supo_market/page/util_function.dart';
 import 'package:supo_market/retrofit/RestClient.dart';
 import '../../entity/item_entity.dart';
@@ -34,6 +35,8 @@ class _SubHomePageState extends State<SubHomePage> {
   int activeIndex = 0;
   AUser? itemUser;
   String? roomID;
+  String? userGrade;
+  //List<Item>? userItemList;
   Future<String>? tempToken;
 
   @override
@@ -76,6 +79,8 @@ class _SubHomePageState extends State<SubHomePage> {
   Future<bool> transferUserInfo() async {
     debugPrint("transferInfo");
     itemUser = await widget.user;
+    userGrade = itemUser?.userGrade;
+    //userItemList = itemUser?.userItemList;
     widget.item.sellerSchoolNum = itemUser?.userStudentNumber;
     widget.item.sellerName = itemUser?.userName;
     widget.item.sellerImage = itemUser?.imagePath;
@@ -213,85 +218,94 @@ class _SubHomePageState extends State<SubHomePage> {
                     ],
                   ),
                   //판매자 카드
-                  Card(
-                    color: Colors.grey[200],
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 10),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 10, bottom: 10, left: 10, right: 5),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100.0),
-                            child:
-                                widget.item.sellerImage == null ? Image.asset(
-                                "assets/images/user.png",
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover)
-                                : Image.network(
-                                widget.item.sellerImage!, width: 100,
-                                height: 100,
-                                fit: BoxFit.cover),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => OppositePage(itemUser?.id, widget.item.sellerImage,
+                            widget.item.sellerName, userGrade))
+                      );
+                    },
+                    child: Card(
+                      color: Colors.grey[200],
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 10),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10, bottom: 10, left: 10, right: 5),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100.0),
+                              child:
+                                  widget.item.sellerImage == null ? Image.asset(
+                                  "assets/images/user.png",
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover)
+                                  : Image.network(
+                                  widget.item.sellerImage!, width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover),
+                            ),
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Center(
-                                    child: Container(
-                                      padding: EdgeInsets.all(1.0),
-                                      color: Color(0xffB70001),
-                                      height: 25,
-                                      width: 60,
-                                      child: Center(
-                                        child: Text(
-                                          "판매자",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: 'KBO-M'
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Center(
+                                      child: Container(
+                                        padding: EdgeInsets.all(1.0),
+                                        color: Color(0xffB70001),
+                                        height: 25,
+                                        width: 60,
+                                        child: Center(
+                                          child: Text(
+                                            "판매자",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'KBO-M'
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  width: 150,
-                                  margin: const EdgeInsets.only(left : 10),
-                                  child: Text(
-                                    widget.item.sellerName ?? "미상",
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+                                  Container(
+                                    width: 150,
+                                    margin: const EdgeInsets.only(left : 10),
+                                    child: Text(
+                                      widget.item.sellerName ?? "미상",
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow : TextOverflow.ellipsis,
                                     ),
-                                    overflow : TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 5),
-                           // const Text(
-                           //    "추가 상세 정보",
-                           //    style: TextStyle(
-                           //      fontFamily: 'KBO-L',
-                           //      fontSize: 18,
-                           //    ),
-                           //  ),
-                          ],
-                        ),
-                      ],
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                             // const Text(
+                             //    "추가 상세 정보",
+                             //    style: TextStyle(
+                             //      fontFamily: 'KBO-L',
+                             //      fontSize: 18,
+                             //    ),
+                             //  ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Column(
@@ -384,10 +398,10 @@ class _SubHomePageState extends State<SubHomePage> {
                                                 ? "자취방"
                                                 : widget.item.itemType ==
                                                         ItemType.MONITOR
-                                                    ? "가구"
+                                                    ? "이동수단"
                                                     : widget.item.itemType ==
                                                             ItemType.CLOTHES
-                                                        ? "이동수단"
+                                                        ? "가구"
                                                         : "책",
                                     style: const TextStyle(
                                         fontFamily: 'KBO-L',

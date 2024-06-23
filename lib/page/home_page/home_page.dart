@@ -44,11 +44,18 @@ class _HomePageState extends State<HomePage> {
     ItemStatus.TRADING,
     // ItemStatus.SUPOFASTSELL, <--- 업데이트 시 급처분 되돌리기
     ItemStatus.RESERVED,
-    // ItemStatus.SOLDOUT, // 판매 완료 제거
+    ItemStatus.SOLDOUT, // 판매 완료 제거
+  ];
+
+  final options3 = [
+    TradeType.ALL,
+    TradeType.SELL,
+    TradeType.BUY
   ];
 
   SortType selectedOption1 = SortType.DATEASCEND;
   ItemStatus selectedOption2 = ItemStatus.TRADING;
+  TradeType selectedOption3 = TradeType.ALL;
   bool isMoreRequesting = false;
 
   int page = 1;
@@ -96,7 +103,7 @@ class _HomePageState extends State<HomePage> {
 
   void _scrollListener() {
     if (scrollController!.offset + 500 >=
-            scrollController!.position.maxScrollExtent &&
+        scrollController!.position.maxScrollExtent &&
         !scrollController!.position.outOfRange &&
         !isListened &&
         !isEnded) {
@@ -140,33 +147,33 @@ class _HomePageState extends State<HomePage> {
                           value: selectedOption1,
                           items: options1
                               .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Align(
-                                      alignment: Alignment.center,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            e == SortType.PRICEASCEND
-                                                ? "가격 낮은 순"
-                                                : e == SortType.PRICEDESCEND
-                                                    ? "가격 높은 순"
-                                                    : e == SortType.DATEASCEND
-                                                        ? "      최신 순"
-                                                        : "    오래된 순",
-                                            textScaleFactor: 0.8,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          SizedBox(width: 3),
-                                          Icon(
-                                            Icons.arrow_drop_down_sharp,
+                              value: e,
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        e == SortType.PRICEASCEND
+                                            ? "가격 낮은 순"
+                                            : e == SortType.PRICEDESCEND
+                                            ? "가격 높은 순"
+                                            : e == SortType.DATEASCEND
+                                            ? "      최신 순"
+                                            : "    오래된 순",
+                                        textScaleFactor: 0.8,
+                                        style: TextStyle(
                                             color: Colors.white,
-                                          ),
-                                        ],
-                                      ))))
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(width: 3),
+                                      Icon(
+                                        Icons.arrow_drop_down_sharp,
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ))))
                               .toList(),
                           onChanged: (value) async {
                             setState(() {
@@ -199,38 +206,94 @@ class _HomePageState extends State<HomePage> {
                           value: selectedOption2,
                           items: options2
                               .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Align(
-                                      alignment: Alignment.center,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            e == ItemStatus.TRADING
-                                                ? "      거래 중"
-                                                // : e == ItemStatus.SUPOFASTSELL
-                                                //     ? "     급처분 중"
-                                                //     : e == ItemStatus.RESERVED
-                                                //         ? "       예약 중"
-                                                        : "       예약 중",
-                                              // : "    판매 완료",
-                                            textScaleFactor: 0.8,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          SizedBox(width: 3),
-                                          Icon(
-                                            Icons.arrow_drop_down_sharp,
+                              value: e,
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        e == ItemStatus.TRADING
+                                            ? "      거래 중"
+                                            : e == ItemStatus.SOLDOUT
+                                            ? "     판매 완료"
+                                            : e == ItemStatus.RESERVED
+                                            ? "       예약 중"
+                                            : "    급처분 중",
+                                        textScaleFactor: 0.8,
+                                        style: TextStyle(
                                             color: Colors.white,
-                                          ),
-                                        ],
-                                      ))))
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(width: 3),
+                                      Icon(
+                                        Icons.arrow_drop_down_sharp,
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ))))
                               .toList(),
                           onChanged: (value) {
                             setState(() {
                               selectedOption2 = value!;
+                              page = 1;
+                              isListened = false;
+                              isEnded = false;
+                            });
+                            updateList();
+                          },
+                          itemHeight: 50.0,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Container(
+                        //alignment: Alignment.center,
+                        height: 25,
+                        width: 110,
+                        decoration: BoxDecoration(
+                            color: Color(0xffB70001),
+                            border: Border.all(color: Color(0xffB70001)),
+                            borderRadius: BorderRadius.circular(20.0)),
+                        padding: const EdgeInsets.only(left: 10, bottom: 2),
+                        child: DropdownButton(
+                          dropdownColor: Color(0xffB70001),
+                          icon: const SizedBox.shrink(),
+                          underline: const SizedBox.shrink(),
+                          value: selectedOption3,
+                          items: options3
+                              .map((e) => DropdownMenuItem(
+                              value: e,
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        e == TradeType.ALL
+                                            ? "      전체"
+                                            : e == TradeType.SELL
+                                            ? "      팝니다"
+                                            : "      삽니다",
+                                        textScaleFactor: 0.8,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(width: 3),
+                                      Icon(
+                                        Icons.arrow_drop_down_sharp,
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ))))
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedOption3 = value!;
                               page = 1;
                               isListened = false;
                               isEnded = false;
@@ -272,21 +335,22 @@ class _HomePageState extends State<HomePage> {
                             if (list![position].itemStatus !=
                                 ItemStatus.USERFASTSELL) {
                               //급처분 아이템은 보여주지 않기
-                              return ItemCard(
+                              return ItemCard (
                                 itemID: list![position].itemID!,
                                 image: list![position].imageListB.isEmpty
                                     ? Image.asset("assets/images/main_logo.jpg",
-                                        width: 100,
-                                        height: 100,
-                                        fit: BoxFit.cover)
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover)
                                     : Image.network(
-                                        list![position].imageListB[0],
-                                        width: 100,
-                                        height: 100,
-                                        fit: BoxFit.cover),
+                                    list![position].imageListB[0],
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover),
                                 title: list![position].sellingTitle!,
                                 date: list![position].uploadDate ?? "",
                                 price: list![position].sellingPrice!,
+                                view: list![position].view!,
                                 onTap: () {
                                   debugPrint(list![position].sellerSchoolNum);
                                   debugPrint(list![position].sellerName);
@@ -295,10 +359,10 @@ class _HomePageState extends State<HomePage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => SubHomePage(
-                                                item: list![position],
-                                                user: getUserInfo(
-                                                    list![position]),
-                                              )));
+                                            item: list![position],
+                                            user: getUserInfo(
+                                                list![position]),
+                                          )));
                                 },
                               );
                             } else {
@@ -313,13 +377,13 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         isMoreRequesting
                             ? Container(
-                                height: 20.0,
-                                width: 20.0,
-                                color: Colors.transparent,
-                                child: const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              )
+                          height: 20.0,
+                          width: 20.0,
+                          color: Colors.transparent,
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
                             : const SizedBox(width: 0, height: 0),
                       ],
                     ),
@@ -350,7 +414,7 @@ class _HomePageState extends State<HomePage> {
 
   void updateList() async {
     debugPrint("update List 함수 호출");
-    await getItemMain(page, selectedOption1, selectedOption2);
+    await getItemMain(page, selectedOption1, selectedOption2, selectedOption3);
     isListened = false;
   }
 
@@ -364,14 +428,14 @@ class _HomePageState extends State<HomePage> {
 
   void onePageUpdateList() {
     setState(() {
-      homePageBuilder = getItem(1, selectedOption1, selectedOption2);
+      homePageBuilder = getItem(1, selectedOption1, selectedOption2, selectedOption3);
     });
   }
 
 
 
   //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
-  Future<bool> getItemMain(int page, SortType type, ItemStatus status) async {
+  Future<bool> getItemMain(int page, SortType type, ItemStatus status, TradeType sellBuy) async {
     ItemType? tempItemType;
     ItemStatus? tempItemStatus;
     ItemQuality? tempItemQuality;
@@ -383,7 +447,7 @@ class _HomePageState extends State<HomePage> {
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
     String url =
-        'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&status=${ConvertEnumToString(status)}&page=${page}&pageSize=${pageSize}';
+        'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&status=${ConvertEnumToString(status)}&buy=${ConvertEnumToString(sellBuy)}&page=${page}&pageSize=${pageSize}';
 
     if (page == 1) {
       itemList.clear();
@@ -407,6 +471,7 @@ class _HomePageState extends State<HomePage> {
           String title = data['title'] as String;
           String description = data['description'] as String;
           int price = data['price'] as int;
+          int view = data['view'] as int;
 
           String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
           tempItemStatus = convertStringToEnum(status);
@@ -435,8 +500,9 @@ class _HomePageState extends State<HomePage> {
               uploadDate: "10일 전",
               uploadDateForCompare: dateTime,
               itemDetail: description,
+              view: view,
               sellerImage:
-                  "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
+              "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
               isLiked: false,
               sellerSchoolNum: "20220000",
               imageListA: [],
@@ -487,7 +553,7 @@ void showNotification() async {
   notifications.show(1, '제목1', '내용1',
       NotificationDetails(android: androidDetails, iOS: iosDetails),
       payload: '부가정보' // 부가정보
-      );
+  );
 }
 
 

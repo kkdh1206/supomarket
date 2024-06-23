@@ -54,10 +54,12 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
     imageListB: [],
     itemStatus: ItemStatus.TRADING,
     itemID: 4,
+    sellBuy: true,
   );
 
   int firstNum = 0;
   int secondNum = 0;
+  int thirdNum = 0;
 
   final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter();
   final picker = ImagePicker();
@@ -153,12 +155,12 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 // print(doubleRequest.isCompleted);
                 popUp("업로드 중입니다");
                 return;
-              }else{
-                try{
+              } else {
+                try {
                   //print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                   if (newItem.sellingTitle!.length < 5) {
                     popUp("판매 제목은 5글자 이상이어야 합니다");
-                  } else if (newItem.imageListA.isEmpty) {
+                  } else if (newItem.imageListA.isEmpty && newItem.sellBuy == true && newItem.itemType != ItemType.HELP) {
                     popUp("최소 하나의 사진을 첨부 해야 합니다");
                   } else if (newItem.sellingPrice.isNegative ||
                       newItem.sellingPrice.isNaN) {
@@ -177,7 +179,6 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                       newItem.uploadDateForCompare = DateTime.now();
                     });
 
-
                     //--도형 코드---
                     print("전송전");
                     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
@@ -195,6 +196,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                       'category': ConvertEnumToString(newItem.itemType) ?? ItemType.ETC,
                       'status': ConvertEnumToString(newItem.itemStatus) ?? ItemStatus.TRADING,
                       'quality': ConvertEnumToString(newItem.itemQuality) ?? ItemQuality.MID,
+                      'buy': newItem.sellBuy ?? "",
                     });
                     for (int i = 0; i < newItem.imageListA.length; i++) {
                       formData.files.add(MapEntry(
@@ -367,6 +369,9 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                               case (5):
                                                 newItem.itemType = ItemType.ETC;
                                                 secondNum = 5;
+                                              case (6):
+                                                newItem.itemType = ItemType.HELP;
+                                                secondNum = 6;
                                             }
                                           });
                                         },
@@ -387,7 +392,8 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                       ? "이동수단"
                                                       : index == 4
                                                       ? "책"
-                                                      : "기타",
+                                                      : index == 5
+                                                  ? "기타": "구인",
                                                   style: const TextStyle(
                                                       fontSize: 15,
                                                       color: Colors.black,
@@ -411,7 +417,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
-                    width: 100,
+                    width: 80,
                     child: CupertinoButton(
                       minSize: 0,
                       padding:
@@ -446,10 +452,14 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                 newItem.itemQuality =
                                                     ItemQuality.LOW;
                                                 firstNum = 2;
+                                              case (3):
+                                                newItem.itemQuality =
+                                                    ItemQuality.NONE;
+                                                firstNum = 3;
                                             }
                                           });
                                         },
-                                        children: List<Widget>.generate(3, (Index) {
+                                        children: List<Widget>.generate(4, (Index) {
                                           return Center(
                                             child: TextButton(
                                                 onPressed: () {
@@ -459,8 +469,8 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                   Index == 0
                                                       ? "상"
                                                       : Index == 1
-                                                      ? "중"
-                                                      : "하",
+                                                      ? "중":Index ==2
+                                                      ? "하": "없음",
                                                   style: const TextStyle(
                                                       fontSize: 15,
                                                       color: Colors.black,
@@ -476,7 +486,73 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                             });
                       },
                       child: Text(
-                        "품질 : ${newItem.itemQuality == ItemQuality.HIGH ? "상" : newItem.itemQuality == ItemQuality.MID ? "중" : "하"}",
+                        "품질 : ${newItem.itemQuality == ItemQuality.HIGH ? "상" : newItem.itemQuality == ItemQuality.MID ? "중" : newItem.itemQuality == ItemQuality.LOW? "하":"없음"}",
+                        style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                  SizedBox(
+                    width: 60,
+                    child: CupertinoButton(
+                      minSize: 0,
+                      padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                      color: mainColor,
+                      onPressed: () {
+                        showCupertinoModalPopup(
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                height: 400,
+                                width: 400,
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: CupertinoPicker(
+                                        itemExtent: 50,
+                                        backgroundColor: Colors.white,
+                                        scrollController: FixedExtentScrollController(initialItem: thirdNum),
+                                        onSelectedItemChanged: (Index) {
+                                          setState(() {
+                                            switch (Index) {
+                                              case (0):
+                                                newItem.sellBuy =
+                                                    true;
+                                                thirdNum = 0;
+                                              case (1):
+                                                newItem.sellBuy =
+                                                    false;
+                                                thirdNum = 1;
+                                            }
+                                          });
+                                        },
+                                        children: List<Widget>.generate(3, (Index) {
+                                          return Center(
+                                            child: TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text(
+                                                  Index == 0
+                                                      ? "판매"
+                                                      : "구매",
+                                                  style: const TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.bold),
+                                                )),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                      },
+                      child: Text(
+                        "${newItem.sellBuy == true ? "판매" : "구매"}",
                         style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
                       ),
                     ),
@@ -862,7 +938,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
   void updateList() {
     debugPrint("update List");
     setState(() {
-      homePageBuilder = getItem(1, SortType.DATEASCEND, ItemStatus.TRADING);
+      homePageBuilder = getItem(1, SortType.DATEASCEND, ItemStatus.TRADING, TradeType.ALL);
     });
   }
 }

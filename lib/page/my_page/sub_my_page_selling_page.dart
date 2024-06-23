@@ -95,7 +95,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
   void _scrollListener() {
 
     if (scrollController!.offset + 500 >=
-            scrollController!.position.maxScrollExtent &&
+        scrollController!.position.maxScrollExtent &&
         !scrollController!.position.outOfRange &&
         !isListened &&
         !isEnded) {
@@ -168,38 +168,39 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => SubHomePage(
-                                                    item: list![position],
-                                                    user: getUserInfo(
-                                                        list![position]),
-                                                  )));
+                                                item: list![position],
+                                                user: getUserInfo(
+                                                    list![position]),
+                                              )));
                                     },
                                     child: Stack(
                                       children: [
                                         MyItemCard(
                                           image: list![position].imageListB.isEmpty
                                               ? Image.asset(
-                                                  "assets/images/main_logo.jpg",
-                                                  width: 100,
-                                                  height: 100,
-                                                  fit: BoxFit.cover)
+                                              "assets/images/main_logo.jpg",
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.cover)
                                               : Image.network(
-                                                  list![position].imageListB[0],
-                                                  width: 100,
-                                                  height: 100,
-                                                  fit: BoxFit.cover),
+                                              list![position].imageListB[0],
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.cover),
                                           title: list![position].sellingTitle!,
                                           date: list![position].uploadDate ?? "",
                                           price: list![position].sellingPrice!,
                                           stateText: list![position].itemStatus ==
-                                                  ItemStatus.TRADING
+                                              ItemStatus.TRADING
                                               ? "판매 중"
                                               : list![position].itemStatus ==
-                                                      ItemStatus.RESERVED
-                                                  ? "예약 중"
-                                                  : list![position].itemStatus ==
-                                                          ItemStatus.SOLDOUT
-                                                      ? "판매 완료"
-                                                      : "급처분 중",
+                                              ItemStatus.RESERVED
+                                              ? "예약 중"
+                                          // : list![position].itemStatus ==
+                                          //         ItemStatus.SOLDOUT
+                                          //     ? "판매 완료"
+                                              :"판매 완료",
+                                          //     : "급처분 중",
                                           isFastSell: list![position].itemStatus ==
                                               ItemStatus.USERFASTSELL,
                                           modify: () async {
@@ -222,7 +223,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
                                                   sellerSchoolNum: "20000000",
                                                   uploadDate: "",
                                                   uploadDateForCompare:
-                                                      DateTime.now(),
+                                                  DateTime.now(),
                                                   imageListA: newData.imageListA,
                                                   imageListB: newData.imageListB,
                                                   itemStatus: newData.itemStatus,
@@ -282,13 +283,13 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
                           children: [
                             isMoreRequesting
                                 ? Container(
-                                    height: 20.0,
-                                    width: 20.0,
-                                    color: Colors.transparent,
-                                    child: const Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  )
+                              height: 20.0,
+                              width: 20.0,
+                              color: Colors.transparent,
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
                                 : const SizedBox(width: 0, height: 0),
                           ],
                         ),
@@ -337,7 +338,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
     List<Room>? getNum;
     print("goodsId : $goodsId, userName : ${myUserInfo.userUid.toString()}");
     var res =
-        await client?.getReqRoomNum(myUserInfo.userUid.toString(), goodsId);
+    await client?.getReqRoomNum(myUserInfo.userUid.toString(), goodsId);
     setState(() {
       getNum = res;
     });
@@ -444,7 +445,7 @@ class _SubMyPageSellingPageState extends State<SubMyPageSellingPage> {
               uploadDateForCompare: dateTime,
               itemDetail: description,
               sellerImage:
-                  "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
+              "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
               isLiked: false,
               sellerSchoolNum: "20220000",
               imageListA: [],

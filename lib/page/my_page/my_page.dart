@@ -47,7 +47,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   @override
-  void didUpdateWidget(Widget oldWidget){
+  void didUpdateWidget(Widget oldWidget) {
     print("didChangeDependencies : ${myUserInfo.imagePath??""}");
     name = myUserInfo.userName??"익명";
     url = myUserInfo.imagePath??"";
@@ -66,7 +66,7 @@ class _MyPageState extends State<MyPage> {
         children: [
           const SizedBox(height: 10),
           Flexible(
-            child: Row(
+            child: Row (
               children: [
                 const SizedBox(width: 20),
                 Flexible(

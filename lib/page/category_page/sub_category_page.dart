@@ -41,7 +41,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
     ItemStatus.TRADING,
     // ItemStatus.SUPOFASTSELL, // <-- 업데이트 시 급처분 되돌리기
     ItemStatus.RESERVED,
-    // ItemStatus.SOLDOUT, // 판매 완료 제거
+    ItemStatus.SOLDOUT,
   ];
 
   SortType selectedOption1 = SortType.DATEASCEND;
@@ -87,7 +87,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
 
   void _scrollListener() {
     if (scrollController!.offset + 500 >=
-            scrollController!.position.maxScrollExtent &&
+        scrollController!.position.maxScrollExtent &&
         !scrollController!.position.outOfRange &&
         !isListened &&
         !isEnded) {
@@ -129,17 +129,17 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                         value: selectedOption1,
                         items: options1
                             .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(
-                                  e == SortType.PRICEASCEND
-                                      ? "가격 낮은 순"
-                                      : e == SortType.PRICEDESCEND
-                                          ? "가격 높은 순"
-                                          : e == SortType.DATEASCEND
-                                              ? "최신 순"
-                                              : "오래된 순",
-                                  textScaleFactor: 0.8,
-                                )))
+                            value: e,
+                            child: Text(
+                              e == SortType.PRICEASCEND
+                                  ? "가격 낮은 순"
+                                  : e == SortType.PRICEDESCEND
+                                  ? "가격 높은 순"
+                                  : e == SortType.DATEASCEND
+                                  ? "최신 순"
+                                  : "오래된 순",
+                              textScaleFactor: 0.8,
+                            )))
                             .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -158,18 +158,17 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                         value: selectedOption2,
                         items: options2
                             .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(
-                                  e == ItemStatus.TRADING
-                                      ? "거래 중"
-                                      // : e == ItemStatus.SUPOFASTSELL
-                                         // ? "급처분 중"
-                                          // : e == ItemStatus.RESERVED
-                                           //   ? "예약 중"
-                                      : "예약 중",
-                                           //    : "판매 완료",
-                                  textScaleFactor: 0.8,
-                                )))
+                            value: e,
+                            child: Text(
+                              e == ItemStatus.TRADING
+                                  ? "거래 중"
+                              // : e == ItemStatus.SUPOFASTSELL
+                              // ? "급처분 중"
+                                  : e == ItemStatus.RESERVED
+                                  ? "예약 중"
+                                  : "판매 완료",
+                              textScaleFactor: 0.8,
+                            )))
                             .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -234,17 +233,18 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                                 itemID: list![position].itemID!,
                                 image: list![position].imageListB.isEmpty
                                     ? Image.asset("assets/images/main_logo.jpg",
-                                        width: 100,
-                                        height: 100,
-                                        fit: BoxFit.cover)
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover)
                                     : Image.network(
-                                        list![position].imageListB[0],
-                                        width: 100,
-                                        height: 100,
-                                        fit: BoxFit.cover),
+                                    list![position].imageListB[0],
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover),
                                 title: list![position].sellingTitle!,
                                 date: list![position].uploadDate ?? "",
                                 price: list![position].sellingPrice!,
+                                view: list![position].view!,
                                 onTap: () {
                                   debugPrint(list![position].sellerSchoolNum);
                                   debugPrint(list![position].sellerName);
@@ -253,10 +253,10 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => SubHomePage(
-                                                item: list![position],
-                                                user: getUserInfo(
-                                                    list![position]),
-                                              )));
+                                            item: list![position],
+                                            user: getUserInfo(
+                                                list![position]),
+                                          )));
                                 },
                               );
                             } else {
@@ -271,13 +271,13 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                       children: [
                         isMoreRequesting
                             ? Container(
-                                height: 20.0,
-                                width: 20.0,
-                                color: Colors.transparent,
-                                child: const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              )
+                          height: 20.0,
+                          width: 20.0,
+                          color: Colors.transparent,
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
                             : const SizedBox(width: 0, height: 0),
                         Padding(
                           padding: EdgeInsets.only(left: 0, top: 10),
@@ -327,7 +327,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
 
   void setURL() {
     url =
-        'https://kdh.supomarket.com/items/category?sort=${ConvertEnumToString(selectedOption1)}&status=${ConvertEnumToString(selectedOption2)}&page=${page}&pageSize=${pageSize}';
+    'https://kdh.supomarket.com/items/category?sort=${ConvertEnumToString(selectedOption1)}&status=${ConvertEnumToString(selectedOption2)}&page=${page}&pageSize=${pageSize}';
     if (type == '전자기기') {
       data = {'category': 'REFRIGERATOR'};
     } else if (type == '가구') {
@@ -377,6 +377,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
           String title = data['title'] as String;
           String description = data['description'] as String;
           int price = data['price'] as int;
+          int view = data['view'] as int;
 
           String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
           tempItemStatus = convertStringToEnum(status);
@@ -404,8 +405,9 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
               uploadDate: "10일 전",
               uploadDateForCompare: dateTime,
               itemDetail: description,
+              view: view,
               sellerImage:
-                  "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
+              "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
               isLiked: false,
               sellerSchoolNum: "20220000",
               imageListA: [],

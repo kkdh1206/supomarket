@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_icons/lottiefiles.dart';
 import 'package:lottie/lottie.dart';
@@ -59,12 +60,18 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   //late AnimationController _bellController;
   List<Map<String, String>> requestList = [];
 
+
   @override
   void initState() {
     super.initState();
+
     debugPrint("control_initiate");
     controller = TabController(length: 5, vsync: this);
-    controller!.addListener(addListener);
+    controller!.addListener(() {
+      setState(() {
+        _selectedIndex = controller!.index;
+      });
+    });;
     otherUser = AUser(
         userName: "정태형",
         isUserLogin: true,
@@ -87,7 +94,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
       myUserInfo.userItemNum ??= 0; //널이면 0 초기화
     });
     requestList = myUserInfo.requestList??[];
-   // _bellController = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat();
+    // _bellController = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat();
   }
 
   @override
@@ -112,159 +119,190 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
     super.dispose();
   }
 
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    controller!.animateTo(index);
+  }
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          elevation: 0.0,
-          centerTitle: false,
-          toolbarHeight: 50,
-          title: Stack(
-            children: [
-              SupoTitle2(),
-              Positioned(
-                top: 0, right: 0,
-                child: Row(
-                  children: [
-                    ReallyBoughtPopUp(
-                      itemId: requestList.isNotEmpty
-                          ? requestList![0]['itemId']!
-                          : '-1',
-                      traderId: requestList.isNotEmpty
-                          ? requestList![0]['userId']!
-                          : '-1',
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 0),
-                      child: IconButton(
-                          icon: const Icon(Icons.search, size: 35),
-                          color: Colors.black,
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        SearchPage(list: itemList)));
-                          }),
-                    ),
-                  ],
-                ),
-              ),
-              //ReallyBoughtPopUp(itemId: '126', traderId: '9', itemName: '아이템제목', traderName: '거래자이름',),
-            ],
-          ),
-          backgroundColor: Colors.white),
-      floatingActionButton: FloatingActionButton(
-        elevation: 0,
-        backgroundColor: postechRed,
-
-        onPressed: () async {
-        // 여기 팝업창 띄움
-          // showDialog 함수로 팝업 창 띄우기
-          await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("유의 사항"),
-                content: Container(
-                height: 200,
-                child: SingleChildScrollView(
-              child: Column(
+      return Scaffold(
+        appBar: AppBar(
+            elevation: 0.0,
+            centerTitle: false,
+            toolbarHeight: 50,
+            title: Stack(
               children: [
-              Text("슈포마켓은 올바른 중고거래 문화 조성을 위해서 현행 법령을 위반하는 물품의 거래는 제한하고 있습니다.\n"
-                  "제한물품 거래시, 법에따른 처벌 및 계정이 제한될 수 있습니다. \n"
-                  "자세한 규정은 아래 링크를 참고바랍니다. \n"),
-              GestureDetector(
-                onTap: (){
-                  _launchURL('https://www.supomarket.com/rules/trade');
-                },
-                child: Text("물품규정 바로가기",
-                  style: TextStyle(color: Colors.cyan, decoration: TextDecoration.underline),),
-              )
-              // Add more items as needed
-              ],
-              ),
-              ),
-                ),
-                actions: [
-                  ElevatedButton(
-                    child: Text("확인"),
-                    onPressed: () {
-                      Navigator.of(context).pop(); // 팝업 닫기
-                      updateList(); // 리스트 업데이트
-                      debugPrint("add return");
-                    },
+                SupoTitle2(),
+                Positioned(
+                  top: 0, right: 0,
+                  child: Row(
+                    children: [
+                      ReallyBoughtPopUp(
+                        itemId: requestList.isNotEmpty
+                            ? requestList![0]['itemId']!
+                            : '-1',
+                        traderId: requestList.isNotEmpty
+                            ? requestList![0]['userId']!
+                            : '-1',
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 0),
+                        child: IconButton(
+                            icon: const Icon(Icons.search, size: 35),
+                            color: Colors.black,
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          SearchPage(list: itemList)));
+                            }),
+                      ),
+                    ],
                   ),
+                ),
+                //ReallyBoughtPopUp(itemId: '126', traderId: '9', itemName: '아이템제목', traderName: '거래자이름',),
+              ],
+            ),
+            backgroundColor: Colors.white),
+        floatingActionButton: FloatingActionButton(
+          elevation: 0,
+          backgroundColor: postechRed,
 
-                ],
-              );
-            },
-          );
+          onPressed: () async {
+            // 여기 팝업창 띄움
+            // showDialog 함수로 팝업 창 띄우기
+            await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("유의 사항"),
+                  content: Container(
+                    height: 200,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Text("슈포마켓은 올바른 중고거래 문화 조성을 위해서 현행 법령을 위반하는 물품의 거래는 제한하고 있습니다.\n"
+                              "제한물품 거래시, 법에따른 처벌 및 계정이 제한될 수 있습니다. \n"
+                              "자세한 규정은 아래 링크를 참고바랍니다. \n"),
+                          GestureDetector(
+                            onTap: (){
+                              _launchURL('https://www.supomarket.com/rules/trade');
+                            },
+                            child: Text("물품규정 바로가기",
+                              style: TextStyle(color: Colors.cyan, decoration: TextDecoration.underline),),
+                          )
+                          // Add more items as needed
+                        ],
+                      ),
+                    ),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      child: Text("확인"),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // 팝업 닫기
+                        updateList(); // 리스트 업데이트
+                        debugPrint("add return");
+                      },
+                    ),
+
+                  ],
+                );
+              },
+            );
 
 
 
-          final newData = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SubAddItemPage(list: itemList)));
-          setState(() {
-            if (newData.returnType == "add") {
-              debugPrint("add return");
-              updateList();
-            }
-          });
-        },
-        child: Container(
-          color : Colors.white,
-          child: Image.asset("assets/images/icons/plus_again.png",width: 100, height: 100, fit: BoxFit.cover),
+            final newData = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SubAddItemPage(list: itemList)));
+            setState(() {
+              if (newData.returnType == "add") {
+                debugPrint("add return");
+                updateList();
+              }
+            });
+          },
+          child: Container(
+            color : Colors.white,
+            child: Image.asset("assets/images/icons/plus_again.png",width: 100, height: 100, fit: BoxFit.cover),
+          ),
+          //child: const Icon(Icons.add),
         ),
-        //child: const Icon(Icons.add),
-      ),
-      body: TabBarView(
-        controller: controller,
-        children: <Widget>[
-          HomePage(list: itemList),
-          CategoryPage(list: itemList),
-          ChattingPage(list: chatRoomList),
-          FavoritePage(list: itemList),
-          MyPage(list: itemList)
-        ],
-      ),
-      bottomNavigationBar: SafeArea(
-
-        child: TabBar(
-          tabs: <Tab>[
-            Tab(
-                icon: Image.asset('assets/images/icons/homepage.png',
-                    width: 25, height: 25, color: Colors.grey[600]),
-                child: Text("홈")),
-            Tab(
-                icon: Image.asset('assets/images/icons/apps.png',
-                    width: 25, height: 25, color: Colors.grey[600]),
-                child: Text("분류")),
-            Tab(
-                icon: Image.asset('assets/images/icons/chat.png',
-                    width: 25, height: 25, color: Colors.grey[600]),
-                child: Text("채팅")),
-            Tab(
-                icon: Image.asset('assets/images/icons/heart.png',
-                    width: 25, height: 25, color: Colors.grey[600]),
-                child: Text("찜")),
-            Tab(
-                icon: Image.asset('assets/images/icons/profile.png',
-                    width: 25, height: 25, color: Colors.grey[600]),
-                child: Text("내 정보",style: TextStyle(fontSize: 13),), )
-          ],
+        body: TabBarView(
           controller: controller,
-          unselectedLabelColor: Colors.grey,
-          //선택 안된 라벨
-          labelColor: mainColor,
-          //선택된 라벨
-          indicatorColor: mainColor,
+          children: <Widget>[ // 탭바는 순서를 통해 구분이 된다고 한다
+            HomePage(list: itemList),
+            CategoryPage(list: itemList),
+            ChattingPage(list: chatRoomList),
+            FavoritePage(list: itemList),
+            MyPage(list: itemList)
+          ],
         ),
+        bottomNavigationBar: SafeArea(
+
+          child: CupertinoTabBar(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+
+        items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.home),
+        label: '홈',
       ),
-      backgroundColor: Colors.white,
-    );
+    BottomNavigationBarItem(
+    icon: Icon(CupertinoIcons.square_list),
+    label: '분류',
+    ),
+    BottomNavigationBarItem(
+    icon: Icon(CupertinoIcons.chat_bubble_2),
+    label: '채팅',
+    ),
+    BottomNavigationBarItem(
+    icon: Icon(CupertinoIcons.heart),
+    label: '찜',
+    ),
+    BottomNavigationBarItem(
+    icon: Icon(CupertinoIcons.person),
+    label: '내 정보',
+    ),
+    ],
+              backgroundColor: Colors.white
+    ),
+
+            // tabBuilder: (context, index) {
+            //   return CupertinoTabView(
+            //     builder: (context) {
+            //       final List<Widget> _pages = [ // 탭바는 순서를 통해 구분이 된다고 한다
+            //         HomePage(list: itemList),
+            //         CategoryPage(list: itemList),
+            //         ChattingPage(list: chatRoomList),
+            //         FavoritePage(list: itemList),
+            //         MyPage(list: itemList)
+            //       ];
+            //
+            //       return _pages[index];
+            //     },
+            //   );
+            // },
+
+
+    ),
+      );
+
+
   }
 
   void _launchURL(String url) async {
@@ -274,7 +312,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   void updateList() {
     debugPrint("update List");
     setState(() {
-      homePageBuilder = getItem(1, SortType.DATEASCEND, ItemStatus.TRADING);
+      homePageBuilder = getItem(1, SortType.DATEASCEND, ItemStatus.TRADING, TradeType.ALL);
     });
   }
 

@@ -75,7 +75,8 @@ Future<void> main() async {
           message.notification?.body,
           const NotificationDetails(
               android: AndroidNotificationDetails('channelId', 'channelName',
-                  icon: "ic_notification")),
+                  icon: "ic_notification"),
+          ),
         );
       }
     }

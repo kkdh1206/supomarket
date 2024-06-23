@@ -17,8 +17,9 @@ class ItemCard extends StatelessWidget {
   final int price;
   final int itemID;
   final Function() onTap;
+  final int view;
 
-  ItemCard({Key? key, required this.image, required this.title, required this.date,required this.itemID, required this.price, required this.onTap}) : super(key:key);
+  ItemCard({Key? key, required this.view ,required this.image, required this.title, required this.date,required this.itemID, required this.price, required this.onTap}) : super(key:key);
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +63,7 @@ class ItemCard extends StatelessWidget {
                                     title,
                                     style:
                                     TextStyle(
-                                        fontSize: 22, fontWeight: FontWeight.w700),
+                                        fontSize: 22, fontWeight: FontWeight.w400),
                                     overflow:
                                     TextOverflow
                                         .ellipsis),
@@ -87,9 +88,9 @@ class ItemCard extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           Row(
+
                             children: [
-                              Expanded(
-                                child: Text(
+                             Text(
                                     "가격: ${f.format(price).toString()}원",
                                     style:
                                     TextStyle(
@@ -98,7 +99,19 @@ class ItemCard extends StatelessWidget {
                                     overflow:
                                     TextOverflow
                                         .ellipsis),
+                              SizedBox(width: 10,),
+                              Expanded(
+                                child: Text(
+                                    "조회: ${f.format(view).toString()}회",
+                                    style:
+                                    TextStyle(
+                                        fontSize:
+                                        15),
+                                    overflow:
+                                    TextOverflow
+                                        .ellipsis),
                               ),
+
                             ],
                           ),
                         ],

@@ -70,7 +70,7 @@ class _SearchPageState extends State<SearchPage> {
     ItemStatus.TRADING,
     // ItemStatus.USERFASTSELL, // <-- 업데이트 시 주석제거
     ItemStatus.RESERVED,
-    // ItemStatus.SOLDOUT, // 판매 완료 제거
+    ItemStatus.SOLDOUT,
   ];
 
   SortType selectedOption1 = SortType.DATEASCEND;
@@ -137,39 +137,39 @@ class _SearchPageState extends State<SearchPage> {
           automaticallyImplyLeading: false,
           titleSpacing: 0,
           leading : Padding(padding: EdgeInsets.only(bottom : 50),
-          child: IconButton(icon : Icon(Icons.arrow_back_ios), color: Colors.black, onPressed: () { Navigator.pop(context);},)),
+              child: IconButton(icon : Icon(Icons.arrow_back_ios), color: Colors.black, onPressed: () { Navigator.pop(context);},)),
           flexibleSpace: Container(color: Colors.white),
           elevation: 0.0,
           toolbarHeight: 100.0,
           centerTitle: false,
           title: Padding(
-      padding: const EdgeInsets.only(left: 0, right: 10),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Flexible(
-                child: TextField(
-                  textInputAction: TextInputAction.go,
-                  onSubmitted: enterFunction,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 16,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(20),
+            padding: const EdgeInsets.only(left: 0, right: 10),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Flexible(
+                      child: TextField(
+                        textInputAction: TextInputAction.go,
+                        onSubmitted: enterFunction,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 16,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(20),
+                            ),
+                          ),
+                          hintText: '제목 검색',
+                        ),
                       ),
                     ),
-                    hintText: '제목 검색',
-                  ),
+                  ],
                 ),
-              ),
-            ],
-          ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -179,17 +179,17 @@ class _SearchPageState extends State<SearchPage> {
                         value: selectedOption1,
                         items: options1
                             .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(
-                                  e == SortType.PRICEASCEND
-                                      ? "가격 낮은 순"
-                                      : e == SortType.PRICEDESCEND
-                                          ? "가격 높은 순"
-                                          : e == SortType.DATEASCEND
-                                              ? "최신 순"
-                                              : "오래된 순",
-                                  textScaleFactor: 0.8,
-                                )))
+                            value: e,
+                            child: Text(
+                              e == SortType.PRICEASCEND
+                                  ? "가격 낮은 순"
+                                  : e == SortType.PRICEDESCEND
+                                  ? "가격 높은 순"
+                                  : e == SortType.DATEASCEND
+                                  ? "최신 순"
+                                  : "오래된 순",
+                              textScaleFactor: 0.8,
+                            )))
                             .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -208,21 +208,20 @@ class _SearchPageState extends State<SearchPage> {
                         value: selectedOption2,
                         items: options2
                             .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(
-                                  e == ItemStatus.TRADING
-                                      ? "거래 중"
+                            value: e,
+                            child: Text(
+                              e == ItemStatus.TRADING
+                                  ? "거래 중"
 
-                                  // 급처분 내용 주석 처리 해둠 <--- 급처분 업데이트 시 주석제거
+                              // 급처분 내용 주석 처리 해둠 <--- 급처분 업데이트 시 주석제거
 
-                                      // : e == ItemStatus.USERFASTSELL
-                                      //     ? "급처분 중"
-                                  //: e == ItemStatus.RESERVED
-                                             // ? "예약 중"
-                                  :"예약 중",
-                                            // : "판매 완료",
-                                  textScaleFactor: 0.8,
-                                )))
+                              // : e == ItemStatus.USERFASTSELL
+                              //     ? "급처분 중"
+                                  : e == ItemStatus.RESERVED
+                                  ? "예약 중"
+                                  : "판매 완료",
+                              textScaleFactor: 0.8,
+                            )))
                             .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -253,75 +252,75 @@ class _SearchPageState extends State<SearchPage> {
                     children: <Widget>[
                       Expanded(
                           child: Container(
-                        color: Colors.white,
-                        height: 150.0,
-                        // child: NotificationListener<ScrollNotification>(
-                        //   onNotification: (ScrollNotification notification) {
-                        //     scrollNotification(notification);
-                        //     return false;
-                        //   },
-                        child: RefreshIndicator(
-                          onRefresh: () async {
-                            refreshNum += 1;
-                            setState(() {});
-                          },
-                          child: ListView.builder(
-                            controller: scrollController,
-                            itemBuilder: (context, position) {
-                              //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
-                              searchList![position].uploadDate = formatDate(
-                                  searchList![position].uploadDateForCompare ??
-                                      DateTime.now());
-                              //uploadDate를 현재 시간 기준으로 계속 업데이트하기
+                            color: Colors.white,
+                            height: 150.0,
+                            // child: NotificationListener<ScrollNotification>(
+                            //   onNotification: (ScrollNotification notification) {
+                            //     scrollNotification(notification);
+                            //     return false;
+                            //   },
+                            child: RefreshIndicator(
+                              onRefresh: () async {
+                                refreshNum += 1;
+                                setState(() {});
+                              },
+                              child: ListView.builder(
+                                controller: scrollController,
+                                itemBuilder: (context, position) {
+                                  //context는 위젯 트리에서 위젯의 위치를 알림, position(int)는 아이템의 순번
+                                  searchList![position].uploadDate = formatDate(
+                                      searchList![position].uploadDateForCompare ??
+                                          DateTime.now());
+                                  //uploadDate를 현재 시간 기준으로 계속 업데이트하기
 
-                              if (searchList![position].itemStatus !=
-                                  ItemStatus.USERFASTSELL) {
-                                //급처분 아이템은 보여주지 않기
-                                return ItemCard(
-                                  itemID: searchList![position].itemID!,
-                                  image: searchList![position].imageListB.isEmpty
-                                      ? Image.asset("assets/images/main_logo.jpg",
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover)
-                                      : Image.network(
-                                      searchList![position].imageListB[0],
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover),
-                                  title: searchList![position].sellingTitle!,
-                                  date: searchList![position].uploadDate ?? "",
-                                  price: searchList![position].sellingPrice!,
-                                  onTap: () {
-
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SubHomePage(
-                                              item: searchList![position],
-                                              user: getUserInfo(
-                                                  searchList![position]),
-                                            )));
-                                  },
-                                );
-                              } else {
-                                return const SizedBox(height: 0, width: 0);
-                              }
-                            },
-                            itemCount: searchList.length, //아이템 개수만큼 스크롤 가능
-                          ),
-                        ),
-                      )),
+                                  if (searchList![position].itemStatus !=
+                                      ItemStatus.USERFASTSELL) {
+                                    //급처분 아이템은 보여주지 않기
+                                    return ItemCard(
+                                      itemID: searchList![position].itemID!,
+                                      image: searchList![position].imageListB.isEmpty
+                                          ? Image.asset("assets/images/main_logo.jpg",
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover)
+                                          : Image.network(
+                                          searchList![position].imageListB[0],
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover),
+                                      title: searchList![position].sellingTitle!,
+                                      date: searchList![position].uploadDate ?? "",
+                                      price: searchList![position].sellingPrice!,
+                                      view: searchList![position].view!,
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => SubHomePage(
+                                                  item: searchList![position],
+                                                  user: getUserInfo(
+                                                      searchList![position]),
+                                                )));
+                                      },
+                                    );
+                                  } else {
+                                    return const SizedBox(height: 0, width: 0);
+                                  }
+                                },
+                                itemCount: searchList.length, //아이템 개수만큼 스크롤 가능
+                              ),
+                            ),
+                          )),
                       //),
                       isMoreRequesting
                           ? Container(
-                              height: 20.0,
-                              width: 20.0,
-                              color: Colors.white,
-                              child: const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            )
+                        height: 20.0,
+                        width: 20.0,
+                        color: Colors.white,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
                           : const SizedBox(width: 0, height: 0),
                     ],
                   ),
@@ -413,6 +412,7 @@ class _SearchPageState extends State<SearchPage> {
           String title = data['title'] as String;
           String description = data['description'] as String;
           int price = data['price'] as int;
+          int view = data['view'] as int;
 
           String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
           tempItemStatus = convertStringToEnum(status);
@@ -440,8 +440,9 @@ class _SearchPageState extends State<SearchPage> {
               uploadDate: "10일 전",
               uploadDateForCompare: dateTime,
               itemDetail: description,
+              view: view,
               sellerImage:
-                  "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
+              "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96",
               isLiked: false,
               sellerSchoolNum: "20220000",
               imageListA: [],

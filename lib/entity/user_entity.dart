@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:supo_market/page/util_function.dart';
 
+import 'item_entity.dart';
+
 enum UserStatus {NORMAL, ADMIN, BANNED, DELETED}
 
 class AUser{

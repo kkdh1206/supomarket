@@ -244,9 +244,9 @@ class _SubChattingPageState extends State<SubChattingPage> {
         client?.updateResent(widget.roomID, resent);
 
         if (count == 2) {
-          checkRead = true.toString();
+          checkRead = "true";
           final check = Check(
-            checkRead: true.toString(),
+            checkRead: "true",
           );
           client?.updateCheck(message, check);
         } else if (count != 2) {

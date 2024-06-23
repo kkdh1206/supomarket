@@ -1,7 +1,7 @@
 import 'package:image_picker/image_picker.dart';
 
-enum ItemQuality {HIGH, MID, LOW}
-enum ItemType{BOOK, CLOTHES, REFRIGERATOR, MONITOR, ROOM, ETC}
+enum ItemQuality {HIGH, MID, LOW, NONE}
+enum ItemType{BOOK, CLOTHES, REFRIGERATOR, MONITOR, ROOM, ETC, HELP}
 enum ItemStatus {RESERVED, USERFASTSELL, SUPOFASTSELL, SOLDOUT, TRADING, DELETED}
 
 class Item{
@@ -23,6 +23,8 @@ class Item{
   ItemStatus itemStatus;
   String? buyingDate;
   DateTime? buyingDateForCompare;
+  int? view;
+  bool? sellBuy;
 
   Item( //생성자
       { required this.sellingTitle,
@@ -40,9 +42,12 @@ class Item{
         required this.imageListB,
         required this.itemStatus,
         required this.itemID,
+        this.view,
         this.sellerUid,
         this.buyingDate,
-        this.buyingDateForCompare}
+        this.buyingDateForCompare,
+        this.sellBuy,
+      }
       );
 
 }

@@ -190,10 +190,11 @@ class _SubMyPageManagementPageState extends State<SubMyPageManagementPage> {
                                       : list![position].itemStatus ==
                                       ItemStatus.RESERVED
                                       ? "예약 중"
-                                      : list![position].itemStatus ==
-                                      ItemStatus.SOLDOUT
-                                      ? "판매 완료"
-                                      : "급처분 중",
+                                  // : list![position].itemStatus ==
+                                  // ItemStatus.SOLDOUT
+                                  // ?
+                                      : "판매 완료",
+                                  // : "급처분 중", // 급처분 중 제거
                                   isFastSell: list![position].itemStatus ==
                                       ItemStatus.USERFASTSELL,
                                   modify: () async {
