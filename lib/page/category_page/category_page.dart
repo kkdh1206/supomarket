@@ -91,6 +91,17 @@ class _CategoryPageState extends State<CategoryPage> {
               ],
             ),
           ),
+          SizedBox(height: 10.0,),
+          Flexible(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                      child: Helps(list: widget.list, text: "구인",)
+                  ),
+                ],
+              )
+          ),
         ],
       ),
     );

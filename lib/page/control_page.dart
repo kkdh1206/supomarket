@@ -61,10 +61,11 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   List<Map<String, String>> requestList = [];
 
 
+  List<Item> itemList2 = [];
   @override
   void initState() {
     super.initState();
-
+updateList();
     debugPrint("control_initiate");
     controller = TabController(length: 5, vsync: this);
     controller!.addListener(() {

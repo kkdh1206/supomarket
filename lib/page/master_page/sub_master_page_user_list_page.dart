@@ -227,7 +227,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageUserListPage> {
           String Email = data['Email'] as String;
           String username = data['username'] as String;
           String userstatus = data['status'] as String;
-          bool online = data['online'] as bool;
+          // bool online = data['online'] as bool;
 
           list.add(AUser(
               email: Email,

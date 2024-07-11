@@ -160,7 +160,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                   //print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                   if (newItem.sellingTitle!.length < 5) {
                     popUp("판매 제목은 5글자 이상이어야 합니다");
-                  } else if (newItem.imageListA.isEmpty && newItem.sellBuy == true && newItem.itemType != ItemType.HELP) {
+                  } else if (newItem.imageListA.isEmpty && newItem.sellBuy == true) {
                     popUp("최소 하나의 사진을 첨부 해야 합니다");
                   } else if (newItem.sellingPrice.isNegative ||
                       newItem.sellingPrice.isNaN) {
@@ -313,7 +313,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
               //사진 추가 위젯
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(width: 20),
                   LoadImageButton(),
@@ -323,7 +323,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
               //Cupertino Button
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(width: 20),
                   SizedBox(
@@ -351,8 +351,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                           setState(() {
                                             switch (index) {
                                               case (0):
-                                                newItem.itemType =
-                                                    ItemType.REFRIGERATOR;
+                                                newItem.itemType = ItemType.REFRIGERATOR;
                                                 secondNum = 0;
                                               case (1):
                                                 newItem.itemType = ItemType.CLOTHES;
@@ -367,15 +366,15 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                 newItem.itemType = ItemType.BOOK;
                                                 secondNum = 4;
                                               case (5):
-                                                newItem.itemType = ItemType.ETC;
+                                                newItem.itemType = ItemType.HELP;
                                                 secondNum = 5;
                                               case (6):
-                                                newItem.itemType = ItemType.HELP;
+                                                newItem.itemType = ItemType.ETC;
                                                 secondNum = 6;
                                             }
                                           });
                                         },
-                                        children: List<Widget>.generate(6, (index) {
+                                        children: List<Widget>.generate(7, (index) {
                                           return Center(
                                             child: TextButton(
                                                 onPressed: () {
@@ -393,7 +392,8 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                       : index == 4
                                                       ? "책"
                                                       : index == 5
-                                                  ? "기타": "구인",
+                                                      ? "구인"
+                                                      : "기타",
                                                   style: const TextStyle(
                                                       fontSize: 15,
                                                       color: Colors.black,
@@ -409,7 +409,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                             });
                       },
                       child: Text(
-                        "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "전자기기" : newItem.itemType == ItemType.MONITOR ? "이동수단" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "가구" : "기타"}",
+                        "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "전자기기" : newItem.itemType == ItemType.MONITOR ? "이동수단" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "가구" : newItem.itemType == ItemType.HELP ? "구인" : "기타"}",
                         textScaleFactor: 1.0,
                         style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
                       ),
@@ -527,7 +527,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                             }
                                           });
                                         },
-                                        children: List<Widget>.generate(3, (Index) {
+                                        children: List<Widget>.generate(2, (Index) {
                                           return Center(
                                             child: TextButton(
                                                 onPressed: () {

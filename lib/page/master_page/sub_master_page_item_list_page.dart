@@ -80,6 +80,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
     refreshNum = 0; //새로고침 시
     selectedOption1 = options1[0];
     selectedOption2 = options2[0];
+    selectedOption3 = options3[0];
     scrollOffset = 0.0;
     scrollController!.addListener(_scrollListener); //스크롤뷰 위치 이용 함수
     isMoreRequesting = false; //요청 중이면 circle progress

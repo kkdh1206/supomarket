@@ -171,6 +171,25 @@ Future<bool> getMyInfo() async{
 
   return true;
 }
+
+Future<String> getPopUpState(String uid) async {
+  var token = await firebaseAuth.currentUser?.getIdToken();
+  Dio dio = Dio();
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  // dio.options.responseType = ResponseType.plain; // responseType 설정
+  String url = 'https://kdh.supomarket.com/auth/ad';
+  String state = "false";
+  try {
+    Response response = await dio.get(url);
+    dynamic jsonData = response.data;
+    state = jsonData as String;
+    print(state);
+    print("jungtae");
+  }catch(e) {
+    print("error: $e");
+  }
+  return state;
+}
 //
 // Future<bool> getMyInfoRequestList() async {
 //
@@ -550,6 +569,7 @@ Future<AUser> getUserInfo3(String itemId) async {
 Future<List<Item>>? getItemList(int sellerId) async {
   String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
   Dio dio = Dio();
+
   List<Item> sellerItemList = [];
   ItemType? tempItemType;
   ItemStatus? tempItemStatus;
@@ -613,14 +633,17 @@ Future<bool> getItem(int page, SortType type, ItemStatus status, TradeType sellB
   Dio dio = Dio();
   print('getData');
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&status=${ConvertEnumToString(status)}&buy=${sellBuy}&pageSize=${pageSize}';
+  String url = 'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&status=${ConvertEnumToString(status)}&buy=${ConvertEnumToString(sellBuy)}&pageSize=${pageSize}';
 
   if(page == 1) {
     itemList.clear();
   }
 
+  print("ssss");
   try {
+    print("sssssssss");
     Response response = await dio.get(url);
+    print(response.data);
     // Map<String, dynamic> JsonData = json.decode(response.data);
     dynamic jsonData = response.data;
 
@@ -654,6 +677,8 @@ Future<bool> getItem(int page, SortType type, ItemStatus status, TradeType sellB
       // 시간 어떻게 받아올지 고민하기!!!!!!
       // 그리고 userId 는 현재 null 상태 해결해야함!!!
       itemList.add(Item(sellingTitle: title, itemType:tempItemType, itemQuality: tempItemQuality!, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: tempItemStatus!, itemID: id, view: view));
+
+
     }
 
   } catch (e) {
@@ -757,8 +782,20 @@ dynamic ConvertEnumToString(dynamic ENUM){
   else if(ENUM == ItemType.BOOK){
     return "BOOK";
   }
+  else if(ENUM == ItemType.HELP) {
+    return "HELP";
+  }
   else if(ENUM == ItemType.ETC){
     return "ETC";
+  }
+  else if(ENUM == TradeType.ALL) {
+    return "ALL";
+  }
+  else if(ENUM == TradeType.SELL) {
+    return "SELL";
+  }
+  else if(ENUM == TradeType.BUY) {
+    return "BUY";
   }
   else if(ENUM == ItemStatus.TRADING){
     return "TRADING";

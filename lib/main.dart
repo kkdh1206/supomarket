@@ -62,7 +62,6 @@ Future<void> main() async {
   //알림 받기 설정
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-
     if (message != null) {
       if (message.notification != null) {
         print(message.notification!.title);

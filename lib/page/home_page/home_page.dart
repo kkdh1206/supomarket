@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supo_market/infra/my_info_data.dart';
 import 'package:supo_market/infra/users_info_data.dart';
@@ -57,6 +58,7 @@ class _HomePageState extends State<HomePage> {
   ItemStatus selectedOption2 = ItemStatus.TRADING;
   TradeType selectedOption3 = TradeType.ALL;
   bool isMoreRequesting = false;
+  bool _showPopup = true;
 
   int page = 1;
   int pageSize = 10;
@@ -65,6 +67,8 @@ class _HomePageState extends State<HomePage> {
   double scrollOffset = 0.0;
   bool isListened = false;
   bool isEnded = false;
+  String? userUid = myUserInfo.userUid;
+  String? popChecked;
 
   @override
   void initState() {
@@ -73,17 +77,20 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     //showNotification();
     onePageUpdateList();
+    // updateList();
     isEnded = false; //리스트 끝에 도달함
     page = 1; //늘어난 page 리스트 수
     list = widget.list;
     refreshNum = 0; //새로고침 시
     selectedOption1 = options1[0];
     selectedOption2 = options2[0];
+    selectedOption3 = options3[0];
     scrollOffset = 0.0;
     scrollController!.addListener(_scrollListener); //스크롤뷰 위치 이용 함수
     isMoreRequesting = false; //요청 중이면 circle progress
     isListened = false; //progress가 돌아가고 있으면 추가로 요청하지 않기 (한번만)
-
+    //getUserPopup();
+    checkPopUp();
     Request();
   }
 
@@ -93,7 +100,70 @@ class _HomePageState extends State<HomePage> {
     print(myUserInfo.requestList.toString());
   }
 
+  Future<String> getUserPopup() async {
+    // String res = await getPopUpState(userUid!);
+    // setState(() {
+    //   popChecked = res;
+    // });
+    // print("체크포인트");
+    // print(res);
+    return await getPopUpState(userUid!);
+  }
 
+  Future<void> checkPopUp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? doNotShowAgain = prefs.getBool('doNotShowAgain');
+    String? lastShownDate = prefs.getString('lastShownDate');
+    popChecked = await getUserPopup();
+    print(popChecked);
+    if(popChecked == "true") {
+      setState(() {
+        _showPopup = false;
+      });
+    }
+    // else if(lastShownDate != null) {
+    //   DateTime lastDate = DateTime.parse(lastShownDate);
+    //   DateTime today = DateTime.now();
+    //
+    //   if(DateFormat('yyyy-MM-dd').format(lastDate) == DateFormat('yyyy-MM-dd').format(today)) {
+    //     setState(() {
+    //       _showPopup = false;
+    //     });
+    //   }
+    // }
+    print("체크포인트2");
+    print(_showPopup);
+    if(_showPopup) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showPopUpDialog();
+      });
+    }
+  }
+
+  Future<void> setDoNotShowAgain() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //await prefs.setBool('doNotShowAgain', true);
+    var token = await firebaseAuth.currentUser?.getIdToken();
+    Dio dio = Dio();
+    FormData formData = FormData.fromMap({
+      'updateAd': 'true',
+    });
+    dio.options.headers['Authorization'] = 'Bearer $token';
+    String url = 'https://kdh.supomarket.com/auth/ad';
+    await dio.patch(url,data:{'updateAd' : 'true'});
+
+    setState(() {
+      _showPopup = false;
+    });
+  }
+
+  Future<void> setDoNotShowToday() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('lastShownDate', DateFormat('yyyy-MM-dd').format(DateTime.now()));
+    setState(() {
+      _showPopup = false;
+    });
+  }
 
   @override
   void dispose() {
@@ -134,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                       child: Container(
                         //alignment: Alignment.center,
                         height: 25,
-                        width: 110,
+                        width: 105,
                         decoration: BoxDecoration(
                             color: Color(0xffB70001),
                             border: Border.all(color: Color(0xffB70001)),
@@ -164,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                                         textScaleFactor: 0.8,
                                         style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 16,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold),
                                       ),
                                       SizedBox(width: 3),
@@ -193,7 +263,7 @@ class _HomePageState extends State<HomePage> {
                       child: Container(
                         //alignment: Alignment.center,
                         height: 25,
-                        width: 110,
+                        width: 105,
                         decoration: BoxDecoration(
                             color: Color(0xffB70001),
                             border: Border.all(color: Color(0xffB70001)),
@@ -223,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                                         textScaleFactor: 0.8,
                                         style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 16,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold),
                                       ),
                                       SizedBox(width: 3),
@@ -252,7 +322,7 @@ class _HomePageState extends State<HomePage> {
                       child: Container(
                         //alignment: Alignment.center,
                         height: 25,
-                        width: 110,
+                        width: 87,
                         decoration: BoxDecoration(
                             color: Color(0xffB70001),
                             border: Border.all(color: Color(0xffB70001)),
@@ -280,7 +350,7 @@ class _HomePageState extends State<HomePage> {
                                         textScaleFactor: 0.8,
                                         style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 16,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold),
                                       ),
                                       SizedBox(width: 3),
@@ -315,7 +385,9 @@ class _HomePageState extends State<HomePage> {
             if (snapshot.connectionState == ConnectionState.done) {
               return Center(
                 //위로 드래그하면 새로고침 -> 업데이트 되는 위젯 (Refresh Indicator)
-                child: Column(
+                child:
+
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
@@ -323,6 +395,7 @@ class _HomePageState extends State<HomePage> {
                         onRefresh: () async {
                           refreshNum += 1;
                           onePageUpdateList();
+                          updateList();
                         },
                         child: ListView.builder(
                           controller: scrollController,
@@ -432,7 +505,91 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-
+  void showPopUpDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '업데이트 및 공지',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: RichText(
+                          text: TextSpan(
+                            text: '채팅알림 수신 밑 발신을 위해 꼭 알림을 켜주세요! 알림을 키지 않으면 물건 구매 요청 유무를 알기 힘듭니다.\n\n',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black, // 기본 텍스트 색상을 설정해야 합니다.
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: '물건을 판매하는 탭만이 아니라 구매를 원하는 물건이 있을 때 요청하는 탭도 추가되었습니다. 더불어 배달음식 공동 구매, 짐 옮기기 등 서로의 도움이 필요할 때 서비스를 요청하는 "구인" 카테고리도 추가되었습니다.',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              setDoNotShowToday();
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('오늘 하루 보지 않기'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              setDoNotShowAgain();
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('다시 보지 않기'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  right: 0.0,
+                  top: 0.0,
+                  child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+    );
+  }
 
   //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
   Future<bool> getItemMain(int page, SortType type, ItemStatus status, TradeType sellBuy) async {

@@ -84,9 +84,13 @@ class _RegisterPageState extends State<RegisterPage> {
           email: id,
           password: password,
         );
+        print("이까진 사실 진짜 문제없다...");
         if (credential.user != null) {
+          print("user가 null이아님");
+          print(credential.user);
           allUserList.add(credential);
           credential.user?.updateDisplayName(newNickName);
+          checkForArrive = true;
           setState(() {
             isPressed = false;
           });
@@ -107,6 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
           });
         }
       } catch (e) {
+        print("이유모를 에러!!");
         print(e);
       }
 
@@ -281,9 +286,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                         'realname': newRealName,
                                         'studentNumber': newUserSchoolNum
                                       };
+                                      print("이까진 옴??");
+                                      print(data);
                                       Response response =
                                       await dio.post(url, data: data);
 
+                                      print(response);
                                       setState(() {
                                         isPressed = false;
 

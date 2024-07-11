@@ -98,6 +98,7 @@ class MyAppState extends State<MyApp> {
     //값 받아오기 전 초기값
     //initNotification();
 
+
     myUserInfo.imagePath =
         "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96";
     myUserInfo.password = "";
@@ -230,7 +231,6 @@ class MyAppState extends State<MyApp> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 데이터를 기다리는 동안 로딩 표시
-            print("ssibal");
             print(snapshot.data);
             return SizedBox(
               child: Row(
@@ -245,49 +245,53 @@ class MyAppState extends State<MyApp> {
                 ],
               ),
             );
-
             /// 이거 좀더 예쁜 화면으로 바꾸기!!!
           }
-          else if (snapshot.data) { /// --->>>>> 새로짠 페이지     ---> 여기에 showUpdateDialog 함수의 팝업 창을 녹여내기 --.> 디자인까지 슈포마켓 로고랑 막 만들기 ---. 이것도 좀 예쁘게 ㅗㅋ드 짤려면 차라리 페이지 를 새로파서 만드는게 깔끔함
-            return _UpdatePage();
+          /// --->>>>> 새로짠 페이지     ---> 여기에 showUpdateDialog 함수의 팝업 창을 녹여내기 --.> 디자인까지 슈포마켓 로고랑 막 만들기 ---. 이것도 좀 예쁘게 ㅗㅋ드 짤려면 차라리 페이지 를 새로파서 만드는게 깔끔함
+
+            else if(snapshot.data == true){
+              return _UpdatePage();
+            }
+            else{
+              return MultiProvider(
+                providers: [
+                  // ChangeNotifierProvider(create: (_)=> LoginModel()),
+                  ChangeNotifierProvider(create: (_) => SocketProvider()),
+                ],
+                child: MaterialApp(
+                  title: "슈포마켓",
+                  debugShowCheckedModeBanner: false,
+                  theme: ThemeData(
+                      colorScheme:
+                      ColorScheme.fromSeed(seedColor: Color(0xFFB70001)),
+                      fontFamily: 'KBO-M'),
+                  home:
+
+
+                  // // ((myUserInfo.isUserLogin == true) &&
+                  // //     (firebaseAuth.currentUser?.emailVerified == true) &&
+                  // (myUserInfo.userStatus == UserStatus.BANNED))
+                  // ? WelcomePage()
+                  // :
+
+                  ((myUserInfo.isUserLogin == true) &&
+                      (firebaseAuth.currentUser?.emailVerified == true))
+                      ? ControlPage()
+                      : WelcomePage(),
+                  initialRoute: '/',
+                  routes: {
+                    '/control': (context) => ControlPage(),
+                    //'/subHome': (context) => const SubHomePage()
+                  },
+                ),
+              );
+            }
+
+
+
           }
-
-            return MultiProvider(
-              providers: [
-                // ChangeNotifierProvider(create: (_)=> LoginModel()),
-                ChangeNotifierProvider(create: (_) => SocketProvider()),
-              ],
-              child: MaterialApp(
-                title: "슈포마켓",
-                debugShowCheckedModeBanner: false,
-                theme: ThemeData(
-                    colorScheme:
-                    ColorScheme.fromSeed(seedColor: Color(0xFFB70001)),
-                    fontFamily: 'KBO-M'),
-                home:
-
-
-                // // ((myUserInfo.isUserLogin == true) &&
-                // //     (firebaseAuth.currentUser?.emailVerified == true) &&
-                // (myUserInfo.userStatus == UserStatus.BANNED))
-                // ? WelcomePage()
-                // :
-                
-                ((myUserInfo.isUserLogin == true) &&
-                    (firebaseAuth.currentUser?.emailVerified == true))
-                    ? ControlPage()
-                    : WelcomePage(),
-                initialRoute: '/',
-                routes: {
-                  '/control': (context) => ControlPage(),
-                  //'/subHome': (context) => const SubHomePage()
-                },
-              ),
-            );
-
             // checkBanned() 함수의 결과에 따라 다른 위젯 반환
 
-        }
         ),
     );
   }
@@ -315,7 +319,8 @@ class UpdatePage extends State<_UpdatePage>{
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("새로운 버전이 출시되었어요!",style: TextStyle(color: Colors.white,fontSize: 30),), // Tenada 체로 바꾸기!!!
-            Text("슈포마켓이 새로운 버전이 나왔어요.\n더 좋은 서비스로 바뀐 슈포마켓을 업데이트 해!",style: TextStyle(color: Colors.white,fontSize: 15)),
+            Text("슈포마켓이 새로운 버전이 나왔어요.\n더 좋은 서비스로 바뀐 슈포마켓을 업데이트 해주세요!"
+                "\n새로운 기능이 추가된 관계로 꼭 업데이트를 부탁합니다",style: TextStyle(color: Colors.white,fontSize: 15)),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

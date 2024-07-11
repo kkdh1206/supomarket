@@ -44,8 +44,15 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
     ItemStatus.SOLDOUT,
   ];
 
+  final options3 = [
+    TradeType.ALL,
+    TradeType.SELL,
+    TradeType.BUY
+  ];
+
   SortType selectedOption1 = SortType.DATEASCEND;
   ItemStatus selectedOption2 = ItemStatus.TRADING;
+  TradeType selectedOption3 = TradeType.ALL;
   bool isMoreRequesting = false;
 
   int page = 1;
@@ -72,6 +79,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
     refreshNum = 0; //새로고침 시
     selectedOption1 = options1[0];
     selectedOption2 = options2[0];
+    selectedOption3 = options3[0];
     scrollOffset = 0.0;
     scrollController!.addListener(_scrollListener); //스크롤뷰 위치 이용 함수
     isMoreRequesting = false; //요청 중이면 circle progress
@@ -173,6 +181,33 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
                         onChanged: (value) {
                           setState(() {
                             selectedOption2 = value!;
+                          });
+                          page = 1;
+                          updateList();
+                        },
+                        itemHeight: 50.0,
+                        elevation: 0,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: DropdownButton(
+                        value: selectedOption3,
+                        items: options3
+                            .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(
+                              e == TradeType.ALL
+                                  ? "전체"
+                                  : e == TradeType.SELL
+                                  ? "팝니다"
+                                  : "삽니다",
+                              textScaleFactor: 0.8,
+                            )))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedOption3 = value!;
                           });
                           page = 1;
                           updateList();
@@ -327,7 +362,7 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
 
   void setURL() {
     url =
-    'https://kdh.supomarket.com/items/category?sort=${ConvertEnumToString(selectedOption1)}&status=${ConvertEnumToString(selectedOption2)}&page=${page}&pageSize=${pageSize}';
+    'https://kdh.supomarket.com/items/category?sort=${ConvertEnumToString(selectedOption1)}&status=${ConvertEnumToString(selectedOption2)}&buy=${ConvertEnumToString(selectedOption3)}&page=${page}&pageSize=${pageSize}';
     if (type == '전자기기') {
       data = {'category': 'REFRIGERATOR'};
     } else if (type == '가구') {
@@ -338,7 +373,9 @@ class _SubCategoryPageState extends State<SubCategoryPage> {
       data = {'category': 'MONITOR'};
     } else if (type == '책') {
       data = {'category': 'BOOK'};
-    } else {
+    } else if (type == '구인'){
+      data = {'category': 'HELP'};
+    } else{
       data = {'category': 'ETC'};
     }
   }
