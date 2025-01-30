@@ -186,13 +186,25 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
                                         isClicked: isClicked.contains("모니터"),
                                       delay: delay,),
                                     const SizedBox(width: 5),
-                                    KeywordAlarm(text: "기타",
-                                        displayText: "기타",
-                                        isClicked: isClicked.contains("기타"),
+                                    KeywordAlarm(text: "구인",
+                                        displayText: "구인",
+                                        isClicked: isClicked.contains("구인"),
                                       delay: delay,),
                                   ]),
                             ),
                           ),
+                          const SizedBox(height: 10,),
+                          SizedBox(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  KeywordAlarm(text: "기타", displayText: "기타", isClicked: isClicked.contains("기타"), delay: delay,),
+                                ],
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     )
@@ -287,7 +299,7 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
     return true;
   }
 
-  Future<bool> patchChatAlarmOnOff(bool onOff) async{
+  Future<bool> patchChatAlarmOnOff(bool onOff) async {
     print("알람 On/Off 변경");
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';

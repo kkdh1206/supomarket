@@ -76,9 +76,9 @@ class ChatBubblessState extends State<ChatBubbless> {
                   children: [
                     if (isUserMessage! && checkRead == 'false')
                       Icon(
-                        Icons.music_note,
+                        Icons.looks_one,
                         color: Colors.grey[400],
-                        size: 17,
+                        size: 15,
                       ),
                     //내 현재 시간
                     Container(
@@ -89,7 +89,7 @@ class ChatBubblessState extends State<ChatBubbless> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
-                            fontSize: 11),
+                            fontSize: 10),
                       ),
                     ),
                   ],
@@ -134,9 +134,9 @@ class ChatBubblessState extends State<ChatBubbless> {
                     //내 음표
                     if (isUserMessage! && checkRead == 'false')
                       Icon(
-                        Icons.music_note,
+                        Icons.looks_one,
                         color: Colors.grey[400],
-                        size: 17,
+                        size: 15,
                       ),
                     //내 시간
                     Container(
@@ -196,12 +196,12 @@ class ChatBubblessState extends State<ChatBubbless> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
-                            fontSize: 16),
+                            fontSize: 12),
                       ),
                       const SizedBox(height: 10),
                       Container(
-                        width: 60,
-                        height: 60,
+                        width: 45,
+                        height: 45,
                         child: CircleAvatar(
                           backgroundImage: NetworkImage(userImage ?? ""),
                         ),
@@ -273,12 +273,12 @@ class ChatBubblessState extends State<ChatBubbless> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
-                            fontSize: 16),
+                            fontSize: 12),
                       ),
                       const SizedBox(height: 10),
                       Container(
-                        width: 60,
-                        height: 60,
+                        width: 45,
+                        height: 45,
                         child: CircleAvatar(
                           backgroundImage: NetworkImage(userImage ?? ""),
                         ),
@@ -322,7 +322,7 @@ class ChatBubblessState extends State<ChatBubbless> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
+                              MaterialPageRoute (
                                   builder: (context) => ExpandImage(imageUrl!)),
                             );
                           },

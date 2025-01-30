@@ -47,7 +47,6 @@ class ChatBubbles extends StatelessWidget {
 }
 
 class ChatMessage extends StatelessWidget {
-  // 채팅을 말풍선으로 감싸는 클래스
   final String text;
   final bool isUserMessage;
   final String username;
@@ -55,16 +54,17 @@ class ChatMessage extends StatelessWidget {
 
   ChatMessage(
       {required this.text,
-      required this.isUserMessage,
-      required this.username,
-      required this.userImage});
+        required this.isUserMessage,
+        required this.username,
+        required this.userImage
+      });
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
       Row(
         mainAxisAlignment:
-            isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (isUserMessage)
             Padding(
@@ -176,7 +176,7 @@ class _SubChattingPageChatbotPageState
       "options": ["제작된 목적", "급처분 구조", "처음으로"]
     },
     "기타": {
-      "response": "자세한 문의는 메일 00000@postech.ac.kr 또는 010-xxxx-xxxx으로 연락바랍니다.",
+      "response": "자세한 문의는 supomarket@naver.com 또는 QnA 게시판으로 연락바랍니다.",
       "options": ["처음으로"]
     },
     "앱 기능설명": {
@@ -185,17 +185,17 @@ class _SubChattingPageChatbotPageState
     },
     "제작된 목적": {
       "response":
-          "포스텍에서 중고거래 플랫폼이 빈약하다 느껴서 학생들의 복지를 위해 제작 되었습니다. 또한 학교라는 특수성 때문에 방학 입학 졸업등의 이유로 중고 거래에서 수요와 공급이 변하기에 저희 앱은 급처분 기능으로 이 문제를 해결해 줍니다.",
+      "포스텍에서 중고거래 플랫폼이 빈약하다 느껴서 학생들의 복지를 위해 제작 되었습니다. 또한 학교라는 특수성 때문에 방학 입학 졸업등의 이유로 중고 거래에서 수요와 공급이 변하기에 저희 앱은 급처분 기능으로 이 문제를 해결해 줍니다.",
       "options": ["처음으로"] // 급처분이란? 뺐음
     },
     "제작된 이유": {
       "response":
-          "대학교는 입학과 졸업이 존재합니다. 그래서 주로 입학때는 물건을 구매하고 졸업을 할때는 물건을 판매합니다. 또, 한학기만 쓰고 버리는 책, 기숙사를 퇴사하면서 생긴 가전제품등 곤란한 상황이 생깁니다. 우리는 이를 해결하고자 급처분을 만들었습니다.",
+      "대학교는 입학과 졸업이 존재합니다. 그래서 주로 입학때는 물건을 구매하고 졸업을 할때는 물건을 판매합니다. 또, 한학기만 쓰고 버리는 책, 기숙사를 퇴사하면서 생긴 가전제품등 곤란한 상황이 생깁니다. 우리는 이를 해결하고자 급처분을 만들었습니다.",
       "options": [ "처음으로"] //급처분 구조? 뺐음
     },
     "급처분 구조": {
       "response":
-          "사용자들이 급하게 팔아야하는 물건을 저희 슈포마켓에서 구매를 합니다. 저희 슈포마켓은 이를 보관하고 있다가 추후 필요한 사람이 나타나면 물건을 제공합니다.",
+      "사용자들이 급하게 팔아야하는 물건을 저희 슈포마켓에서 구매를 합니다. 저희 슈포마켓은 이를 보관하고 있다가 추후 필요한 사람이 나타나면 물건을 제공합니다.",
       "options": ["제작된 목적", "처음으로"]
     }
   };
@@ -206,7 +206,7 @@ class _SubChattingPageChatbotPageState
     if (isUserMessage) {
       username = 'ME';
       userImage =
-          'https://i.ibb.co/w6bZk45/image.jpg'; // 여기에 서버에서 받아와서 주소 넣으면 됨   -- 사실상 자기 자신이라 꺼라 안해도 될듯 ㅋㅋ
+      'https://i.ibb.co/w6bZk45/image.jpg'; // 여기에 서버에서 받아와서 주소 넣으면 됨   -- 사실상 자기 자신이라 꺼라 안해도 될듯 ㅋㅋ
     } else {
       username = '슈피';
       userImage = 'https://i.ibb.co/Q6qtSKx/image.png';

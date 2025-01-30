@@ -160,7 +160,8 @@ class _LogInPageState extends State<LogInPage> {
                               color: Colors.white,
                               fontFamily: 'KBO-M',
                               fontWeight: FontWeight.w800,
-                              fontSize: 23),
+                              fontSize: 23
+                          ),
                         )
                       ],
                     )),

@@ -62,23 +62,24 @@ Future<void> main() async {
   //알림 받기 설정
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-
-    if (message != null) {
-      if (message.notification != null) {
-        print(message.notification!.title);
-        print(message.notification!.body);
-        print(message.data["screen"]);
-        print(message.data["param"]);
-        flutterLocalNotificationsPlugin.show(
-          message.notification.hashCode,
-          message.notification?.title,
-          message.notification?.body,
-          const NotificationDetails(
-              android: AndroidNotificationDetails('channelId', 'channelName',
-                  icon: "ic_notification")),
-        );
-      }
-    }
+    showNotification(message!);
+    // if (message != null) {
+    //   if (message.notification != null) {
+    //     print(message.notification!.title);
+    //     print(message.notification!.body);
+    //     // print(message.data["screen"]);
+    //     // print(message.data["param"]);
+    //     flutterLocalNotificationsPlugin.show(
+    //       message.notification.hashCode,
+    //       message.notification?.title,
+    //       message.notification?.body,
+    //       const NotificationDetails(
+    //           android: AndroidNotificationDetails('channelId', 'channelName',
+    //               icon: "ic_notification"),
+    //       ),
+    //     );
+    //   }
+    // }
   });
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) {
@@ -94,14 +95,35 @@ void _handleMessage(RemoteMessage message) {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  showNotification(message);
 
-  flutterLocalNotificationsPlugin.show(
-    message.notification.hashCode,
-    message.notification!.title,
-    message.notification!.body,
-    NotificationDetails(
-        android: AndroidNotificationDetails('channelId', 'channelName',
-            icon: "ic_notification")),
-  );
+  // flutterLocalNotificationsPlugin.show(
+  //   message.notification.hashCode,
+  //   message.notification!.title,
+  //   message.notification!.body,
+  //   NotificationDetails(
+  //       android: AndroidNotificationDetails('channelId', 'channelName',
+  //           icon: "ic_notification")),
+  // );
+}
+
+void showNotification(RemoteMessage message) {
+  if (message != null) {
+    if (message.notification != null) {
+      print(message.notification!.title);
+      print(message.notification!.body);
+      // print(message.data["screen"]);
+      // print(message.data["param"]);
+      flutterLocalNotificationsPlugin.show(
+        message.notification.hashCode,
+        message.notification?.title,
+        message.notification?.body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails('channelId', 'channelName',
+              icon: "ic_notification"),
+        ),
+      );
+    }
+  }
 }

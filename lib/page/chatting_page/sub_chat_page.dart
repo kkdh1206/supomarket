@@ -244,9 +244,9 @@ class _SubChattingPageState extends State<SubChattingPage> {
         client?.updateResent(widget.roomID, resent);
 
         if (count == 2) {
-          checkRead = true.toString();
+          checkRead = "true";
           final check = Check(
-            checkRead: true.toString(),
+            checkRead: "true",
           );
           client?.updateCheck(message, check);
         } else if (count != 2) {
@@ -393,15 +393,6 @@ class _SubChattingPageState extends State<SubChattingPage> {
                             controller: _scrollController,
                             itemCount: localMsg.length,
                             itemBuilder: (context, index) {
-                              // if(index == localMsg.length){
-                              //   print("scroll To bottom");
-                              //   WidgetsBinding.instance?.addPostFrameCallback((_) {
-                              //     //scrollToBottom();
-                              //   });
-                              //   return const SizedBox();
-                              // }
-
-                              //sendName = pastMsg[index].senderName;
                               DateTime parseTime = DateTime.parse(localMsg[index].createdAt!);
                               String showTime =
                               DateFormat('HH:mm').format(parseTime);
@@ -414,7 +405,7 @@ class _SubChattingPageState extends State<SubChattingPage> {
                               if (localMsg[index].senderID !=
                                   myUserInfo.userUid &&
                                   localMsg[index].checkRead == 'false') {
-                                localMsg[index].checkRead = true.toString();
+                                localMsg[index].checkRead = 'true';
                                 final check = Check(
                                   checkRead: 'true',
                                 );

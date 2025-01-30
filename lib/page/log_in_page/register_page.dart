@@ -60,17 +60,23 @@ class _RegisterPageState extends State<RegisterPage> {
     if(newUserSchoolNum == "" || id == "" || password == "" || userName == ""){
       print("입력 하나를 안함");
       _checkAllthing();
-      isPressed = false;
+      setState(() {
+        isPressed = false;
+      });
     }
     else if(isChecked==false){
       print("닉네임 중복 확인안함");
       _checkNickNamePopUp();
-      isPressed = false;
+      setState(() {
+        isPressed = false;
+      });
     }
     else if(isAgree == false) {
       print("사용약관 동의안함");
       _checkAgree();
-      isPressed = false;
+      setState(() {
+        isPressed = false;
+      });
     }
     else {
       try {
@@ -78,23 +84,34 @@ class _RegisterPageState extends State<RegisterPage> {
           email: id,
           password: password,
         );
+        print("이까진 사실 진짜 문제없다...");
         if (credential.user != null) {
+          print("user가 null이아님");
+          print(credential.user);
           allUserList.add(credential);
           credential.user?.updateDisplayName(newNickName);
           checkForArrive = true;
+          setState(() {
+            isPressed = false;
+          });
           return;
         }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           _weakPasswordPopUp();
           print('비밀번호는 8자리 이상이어야 합니다.');
-          isPressed = false;
+          setState(() {
+            isPressed = false;
+          });
         } else if (e.code == 'email-already-in-use') {
           _alreadyExistPopUp();
           print('이미 존재하는 이메일 입니다.');
-          isPressed = false;
+          setState(() {
+            isPressed = false;
+          });
         }
       } catch (e) {
+        print("이유모를 에러!!");
         print(e);
       }
 
@@ -206,18 +223,18 @@ class _RegisterPageState extends State<RegisterPage> {
                             }
                         ),
                         TextButton(
-                            onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => AgreementPage()),
-                              );
-                            },
-                            child: Text(
-                              '사용약관 확인 및 동의',
-                              style: TextStyle(
-                                decoration: TextDecoration.underline,
-                                color: Colors.red,
-                              ),
+                          onPressed: () {
+                            Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => AgreementPage()),
+                            );
+                          },
+                          child: Text(
+                            '사용약관 확인 및 동의',
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              color: Colors.red,
                             ),
+                          ),
                         ),
                       ],
                     ),
@@ -269,9 +286,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                         'realname': newRealName,
                                         'studentNumber': newUserSchoolNum
                                       };
+                                      print("이까진 옴??");
+                                      print(data);
                                       Response response =
                                       await dio.post(url, data: data);
 
+                                      print(response);
                                       setState(() {
                                         isPressed = false;
 
@@ -334,7 +354,7 @@ class _RegisterPageState extends State<RegisterPage> {
             alignment: Alignment.center,
             child: CircularProgressIndicator(),
           )
-              : const SizedBox(width: 0, height: 0),
+              : const SizedBox(width: 0, height: 0), // 아무것도 없으면 크기없는 상자둔듯
         ],
       ),
     );
@@ -417,7 +437,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'https://kdh.supomarket.com/auth/username';
 
     //빈칸이면 오류나서 이렇게 보낼게
-    username = username==""?'ㅈㅓㅇㅇㅠㅈㅣㄴ':username;
+    username = username==""?'슈피':username;
 
     print(username);
     try {

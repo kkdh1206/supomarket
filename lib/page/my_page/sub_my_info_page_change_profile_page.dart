@@ -150,6 +150,7 @@ class _SubMyInfoPageChangeProfilePageState
                                 hintText: '이름을 입력하세요'),
                             onChanged: (text) {
                               setState(() {
+                                isChecked = false; // 바뀌면 다시 초기화됨
                                 isNameChanged = true;
                                 name = text;
 
@@ -169,7 +170,7 @@ class _SubMyInfoPageChangeProfilePageState
                                     checkDuplication(name!);
                                   }
                                   else{
-                                    name = 'ㅈㅓㅇㅇㅠㅈㅣㄴ'; // 오류 내기 위해 일부러 넣음
+                                    name = '슈피'; // 오류 내기 위해 일부러 넣음
                                     checkDuplication(name!);
                                   }
                                 },
@@ -355,7 +356,7 @@ class _SubMyInfoPageChangeProfilePageState
         'https://kdh.supomarket.com/auth/username';
 
     //빈칸이면 오류나서 이렇게 보낼게
-    username = username==""?'ㅈㅓㅇㅇㅠㅈㅣㄴ':username;
+    username = username==""?'슈피':username;
 
     print(username);
     try {
@@ -425,4 +426,3 @@ class _SubMyInfoPageChangeProfilePageState
   }
 
 }
-

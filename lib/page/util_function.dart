@@ -56,6 +56,9 @@ String setCategoryName(String category) {
   else if(category == "ItemType.MONITOR") {
     return "이동수단";
   }
+  else if(category == "ItemType.HELP") {
+    return "구인";
+  }
   else {
     return "기타";
   }
@@ -168,6 +171,25 @@ Future<bool> getMyInfo() async{
 
   return true;
 }
+
+Future<String> getPopUpState(String uid) async {
+  var token = await firebaseAuth.currentUser?.getIdToken();
+  Dio dio = Dio();
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  // dio.options.responseType = ResponseType.plain; // responseType 설정
+  String url = 'https://kdh.supomarket.com/auth/ad';
+  String state = "false";
+  try {
+    Response response = await dio.get(url);
+    dynamic jsonData = response.data;
+    state = jsonData as String;
+    print(state);
+    print("jungtae");
+  }catch(e) {
+    print("error: $e");
+  }
+  return state;
+}
 //
 // Future<bool> getMyInfoRequestList() async {
 //
@@ -255,7 +277,7 @@ Future<List<dynamic>> getItemNameById(List<String> id) async{
   return nameList;
 }
 
-Future<List<dynamic>> getItemImageById(List<String> id) async{
+Future<List<dynamic>> getItemImageById(List<String> id) async {
 
   print("getItemImageById : $id");
 
@@ -464,8 +486,10 @@ Future<AUser> getUserInfo(Item item) async {
     List<dynamic> interestedId = jsonData['interestedId'] as List<dynamic>;
     String studentNumber = jsonData['studentNumber'] as String;
     String uid = jsonData['uid'] as String;
+    String userGrade = jsonData['userGrade'] as String;
+    //List<Item> itemList = jsonData['items'] as List<Item>;
 
-    return AUser(id: id, email: Email, userName: username, imagePath: imageUrl, isUserLogin: true, userStatus: convertStringToEnum(userstatus), userStudentNumber: studentNumber, userInterestedId: interestedId, userUid : uid);
+    return AUser(id: id, email: Email, userName: username, imagePath: imageUrl, isUserLogin: true, userStatus: convertStringToEnum(userstatus), userStudentNumber: studentNumber, userInterestedId: interestedId, userUid : uid, userGrade: userGrade);
 
   } catch (e) {
 
@@ -542,7 +566,61 @@ Future<AUser> getUserInfo3(String itemId) async {
   }
 }
 
-Future<bool> getItem(int page, SortType type, ItemStatus status) async{
+Future<List<Item>>? getItemList(int sellerId) async {
+  String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+  Dio dio = Dio();
+
+  List<Item> sellerItemList = [];
+  ItemType? tempItemType;
+  ItemStatus? tempItemStatus;
+  ItemQuality? tempItemQuality;
+  print(sellerId);
+  dio.options.headers['Authorization'] = 'Bearer $token';
+  String url = 'https://kdh.supomarket.com/items/record/${sellerId}';
+
+  try {
+    Response response = await dio.get(url);
+    print('Response:');
+    print(response);
+    // Map<String, dynamic> JsonData = json.decode(response.data);
+    dynamic jsonData = response.data;
+    for(var data in jsonData) {
+      int id = data['id'] as int;
+      String title = data['title'] as String;
+      String description = data['description'] as String;
+      int price = data['price'] as int;
+
+      String status = data['status'] as String; //--> 이 부분은 수정 코드 주면 그때 실행하기
+      tempItemStatus = convertStringToEnum(status);
+
+      String quality = data['quality'] as String;
+      tempItemQuality = convertStringToEnum(quality);
+
+      String category = data['category'] as String;
+      tempItemType = convertStringToEnum(category);
+
+      int view = data['view'] as int;
+
+      String updatedAt = data['updatedAt'] as String;
+      List<String> imageUrl = List<String>.from(data['ImageUrls']);
+
+      // 사진도 받아야하는데
+      DateTime dateTime = DateTime.parse(updatedAt);
+      
+      sellerItemList.add(Item(sellingTitle: title, itemType:tempItemType, itemQuality: tempItemQuality!, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: tempItemStatus!, itemID: id, view: view));
+    }
+    print("sellerItemList: ");
+    print(sellerItemList);
+    return sellerItemList;
+
+  } catch (e) {
+    print('Error sending GET request : $e');
+    return sellerItemList;
+
+  }
+}
+
+Future<bool> getItem(int page, SortType type, ItemStatus status, TradeType sellBuy) async{
 
   ItemType? tempItemType;
   ItemStatus? tempItemStatus;
@@ -555,14 +633,17 @@ Future<bool> getItem(int page, SortType type, ItemStatus status) async{
   Dio dio = Dio();
   print('getData');
   dio.options.headers['Authorization'] = 'Bearer $token';
-  String url = 'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&status=${ConvertEnumToString(status)}&pageSize=${pageSize}';
+  String url = 'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(type)}&page=${page}&status=${ConvertEnumToString(status)}&buy=${ConvertEnumToString(sellBuy)}&pageSize=${pageSize}';
 
-  if(page == 1){
+  if(page == 1) {
     itemList.clear();
   }
 
+  print("ssss");
   try {
+    print("sssssssss");
     Response response = await dio.get(url);
+    print(response.data);
     // Map<String, dynamic> JsonData = json.decode(response.data);
     dynamic jsonData = response.data;
 
@@ -585,6 +666,8 @@ Future<bool> getItem(int page, SortType type, ItemStatus status) async{
       String category = data['category'] as String;
       tempItemType = convertStringToEnum(category);
 
+      int view = data['view'] as int;
+
       String updatedAt = data['updatedAt'] as String;
       List<String> imageUrl = List<String>.from(data['ImageUrls']);
 
@@ -593,7 +676,9 @@ Future<bool> getItem(int page, SortType type, ItemStatus status) async{
 
       // 시간 어떻게 받아올지 고민하기!!!!!!
       // 그리고 userId 는 현재 null 상태 해결해야함!!!
-      itemList.add(Item(sellingTitle: title, itemType:tempItemType, itemQuality: tempItemQuality!, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: tempItemStatus!, itemID: id));
+      itemList.add(Item(sellingTitle: title, itemType:tempItemType, itemQuality: tempItemQuality!, sellerName: "정태형", sellingPrice: price, uploadDate: "10일 전", uploadDateForCompare: dateTime, itemDetail:description,sellerImage: "https://firebasestorage.googleapis.com/v0/b/supomarket-b55d0.appspot.com/o/assets%2Fimages%2Fuser.png?alt=media&token=3b060089-e652-4e59-9900-54d59349af96", isLiked : false, sellerSchoolNum: "20220000", imageListA: [], imageListB: imageUrl, itemStatus: tempItemStatus!, itemID: id, view: view));
+
+
     }
 
   } catch (e) {
@@ -620,6 +705,9 @@ dynamic convertStringToEnum(String string){
   }
   else if(string == "ETC"){
     return ItemType.ETC;
+  }
+  else if(string == "HELP"){
+    return ItemType.HELP;
   }
   else if(string == "TRADING"){
     return ItemStatus.TRADING;
@@ -694,8 +782,20 @@ dynamic ConvertEnumToString(dynamic ENUM){
   else if(ENUM == ItemType.BOOK){
     return "BOOK";
   }
+  else if(ENUM == ItemType.HELP) {
+    return "HELP";
+  }
   else if(ENUM == ItemType.ETC){
     return "ETC";
+  }
+  else if(ENUM == TradeType.ALL) {
+    return "ALL";
+  }
+  else if(ENUM == TradeType.SELL) {
+    return "SELL";
+  }
+  else if(ENUM == TradeType.BUY) {
+    return "BUY";
   }
   else if(ENUM == ItemStatus.TRADING){
     return "TRADING";

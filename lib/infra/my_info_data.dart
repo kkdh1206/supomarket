@@ -10,6 +10,7 @@ var mySetting = Setting(
     "자취방" : false,
     "모니터" : false,
     "책" : false,
+    "구인" : false,
     "기타" : false},
   selectedCategoryAlarm: "없음",
 );

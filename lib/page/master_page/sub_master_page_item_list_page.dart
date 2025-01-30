@@ -49,8 +49,15 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
     // ItemStatus.SOLDOUT, // 판매 완료 제거
   ];
 
+  final options3 = [
+    TradeType.ALL,
+    TradeType.SELL,
+    TradeType.BUY
+  ];
+
   SortType selectedOption1 = SortType.DATEASCEND;
   ItemStatus selectedOption2 = ItemStatus.TRADING;
+  TradeType selectedOption3 = TradeType.ALL;
   bool isMoreRequesting = false;
 
   int page = 1;
@@ -73,6 +80,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
     refreshNum = 0; //새로고침 시
     selectedOption1 = options1[0];
     selectedOption2 = options2[0];
+    selectedOption3 = options3[0];
     scrollOffset = 0.0;
     scrollController!.addListener(_scrollListener); //스크롤뷰 위치 이용 함수
     isMoreRequesting = false; //요청 중이면 circle progress
@@ -176,7 +184,36 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                         itemHeight: 50.0,
                         elevation: 0,
                       ),
-                    )
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: DropdownButton(
+                        value: selectedOption3,
+                        items: options3
+                            .map((e) =>
+                            DropdownMenuItem(
+                                value: e,
+                                child: Text(
+                                  e == TradeType.ALL
+                                      ? "전체"
+                                      : e == TradeType.SELL
+                                      ? "팝니다"
+                                      : "삽니다",
+                                  textScaleFactor: 0.8,
+                                )))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedOption3 = value!;
+                            page = 1;
+                            isEnded = false;
+                          });
+                          updateList();
+                        },
+                        itemHeight: 50.0,
+                        elevation: 0,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -342,7 +379,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                                                       sellingPageBuilder =
                                                           getItemMaster(
                                                               1, selectedOption1,
-                                                              selectedOption2);
+                                                              selectedOption2, selectedOption3);
                                                     },
                                                   ),
                                                 ),
@@ -402,7 +439,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
                                                         sellingPageBuilder =
                                                             getItemMaster(
                                                                 1, selectedOption1,
-                                                                selectedOption2);
+                                                                selectedOption2, selectedOption3);
                                                       }
                                                     },
                                                     child: const Text("수정하기",
@@ -554,7 +591,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
 
   void updateList() async {
     debugPrint("update List 함수 호출");
-    await getItemMaster(page, selectedOption1, selectedOption2);
+    await getItemMaster(page, selectedOption1, selectedOption2, selectedOption3);
     isListened = false;
   }
 
@@ -568,12 +605,12 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
 
   void onePageUpdateList() {
     setState(() {
-      homePageBuilder = getItem(1, selectedOption1, selectedOption2);
+      homePageBuilder = getItem(1, selectedOption1, selectedOption2, selectedOption3);
     });
   }
 
   //homePage에서의 get (나머지는 page 1 로딩을 위한 getData in Control/Add)
-  Future<bool> getItemMaster(int page, SortType type, ItemStatus status) async {
+  Future<bool> getItemMaster(int page, SortType type, ItemStatus status, TradeType sellBuy) async {
 
     debugPrint("요청");
 
@@ -590,7 +627,7 @@ class _SubMasterPageUserListPageState extends State<SubMasterPageItemListPage> {
     String url =
         'https://kdh.supomarket.com/items?sort=${ConvertEnumToString(
         type)}&status=${ConvertEnumToString(
-        status)}&page=${page}&pageSize=${pageSize}';
+        status)}&buy=${ConvertEnumToString(sellBuy)}&page=${page}&pageSize=${pageSize}';
 
     if (page == 1) {
       itemList.clear();

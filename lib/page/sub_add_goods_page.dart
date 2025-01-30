@@ -54,10 +54,12 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
     imageListB: [],
     itemStatus: ItemStatus.TRADING,
     itemID: 4,
+    sellBuy: true,
   );
 
   int firstNum = 0;
   int secondNum = 0;
+  int thirdNum = 0;
 
   final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter();
   final picker = ImagePicker();
@@ -119,6 +121,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
   bool completed = true; // --> 이런식으로 외부에 선언해야 초기화 안되고 막음
   bool isLoading = false;
+  //bool showPhoneNumberField = false;
 
   @override
   Widget build(BuildContext context) {
@@ -145,119 +148,134 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 icon: const Icon(Icons.clear, color: Colors.black),
                 iconSize: 30)),
         actions: <Widget>[
-          TextButton(
-            onPressed: () async {
-              List<dynamic>? tokenList;
-              if(!completed) {
-                print("업로드 중입니다!!!!");
-                // print(doubleRequest.isCompleted);
-                popUp("업로드 중입니다");
-                return;
-              }else{
-                try{
-                  //print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                  if (newItem.sellingTitle!.length < 5) {
-                    popUp("판매 제목은 5글자 이상이어야 합니다");
-                  } else if (newItem.imageListA.isEmpty) {
-                    popUp("최소 하나의 사진을 첨부 해야 합니다");
-                  } else if (newItem.sellingPrice.isNegative ||
-                      newItem.sellingPrice.isNaN) {
-                    popUp("가격을 제시해 주세요");
-                  } else if (newItem.itemDetail == null ||
-                      newItem.itemDetail!.length < 10) {
-                    popUp("세부 내용을 10글자 이상 작성해 주세요");
+          Row(
+            children: [
+              // CupertinoSwitch(
+              //     value: showPhoneNumberField,
+              //     activeColor: mainColor,
+              //     onChanged: (bool value) {
+              //       print("켜짐");
+              //       print(value);
+              //       setState(() {
+              //         showPhoneNumberField = value;
+              //       });
+              //     },
+              // ),
+              SizedBox(width: 10),
+              TextButton(
+                onPressed: () async {
+                  List<dynamic>? tokenList;
+                  if(!completed) {
+                    print("업로드 중입니다!!!!");
+                    // print(doubleRequest.isCompleted);
+                    popUp("업로드 중입니다");
+                    return;
                   } else {
-                    setState(() {
-                      isLoading = true;
-                      completed = false;
-                    });
-
-                    setState(() {
-                      newItem.uploadDate = "방금 전";
-                      newItem.uploadDateForCompare = DateTime.now();
-                    });
-
-
-                    //--도형 코드---
-                    print("전송전");
-                    String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-
-                    Dio dio = Dio();
-                    print('add Item To Server');
-                    dio.options.headers['Authorization'] = 'Bearer $token';
-                    String url = 'https://kdh.supomarket.com/items';
-
-                    print("itemQauilty : ${newItem.itemQuality}");
-                    FormData formData = FormData.fromMap({
-                      'title': newItem.sellingTitle ?? "무제",
-                      'description': newItem.itemDetail ?? "",
-                      'price': newItem.sellingPrice ?? -1,
-                      'category': ConvertEnumToString(newItem.itemType) ?? ItemType.ETC,
-                      'status': ConvertEnumToString(newItem.itemStatus) ?? ItemStatus.TRADING,
-                      'quality': ConvertEnumToString(newItem.itemQuality) ?? ItemQuality.MID,
-                    });
-                    for (int i = 0; i < newItem.imageListA.length; i++) {
-                      formData.files.add(MapEntry(
-                          'image',
-                          await MultipartFile.fromFile(newItem.imageListA[i].path,
-                              filename: 'image.jpg')));
-                    }
-
-                    print(formData);
                     try {
-                      String? categoryText;
-                      Response response = await dio.post(url, data: formData);
-                      //print(newItem.itemType.toString());
-                      tokenList = await getTokenByCategory(newItem.itemType.toString());
-                      categoryText = setCategoryName(newItem.itemType.toString());
-                      //print("상품을 등록할 때 전달된 토큰: !!!!!!!!");
-                      //print(tokenList);
-                      if(tokenList[0] != "해당유저없음") {
-                        client = RestClient(dio);
-                        print("카테고리 알람 준비 완료");
-                        final canotificate = Categorynotificate(
-                            tokens: tokenList,
-                            title: categoryText,
-                            sentence: "관심있는 상품이 등록되었습니다."
-                        );
-                        await client?.postCategoryNotification(canotificate);
-                        print(canotificate.title);
-                        print("카테고리 알람 전송 완료");
+                      //print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                      if (newItem.sellingTitle!.length < 5) {
+                        popUp("판매 제목은 5글자 이상이어야 합니다");
+                      } else if (newItem.imageListA.isEmpty && newItem.sellBuy == true) {
+                        popUp("최소 하나의 사진을 첨부 해야 합니다");
+                      } else if (newItem.sellingPrice.isNegative ||
+                          newItem.sellingPrice.isNaN) {
+                        popUp("가격을 제시해 주세요");
+                      } else if (newItem.itemDetail == null ||
+                          newItem.itemDetail!.length < 10) {
+                        popUp("세부 내용을 10글자 이상 작성해 주세요");
+                      } else {
+                        setState(() {
+                          isLoading = true;
+                          completed = false;
+                        });
+
+                        setState(() {
+                          newItem.uploadDate = "방금 전";
+                          newItem.uploadDateForCompare = DateTime.now();
+                        });
+
+                        //--도형 코드---
+                        print("전송전");
+                        String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+                        Dio dio = Dio();
+                        print('add Item To Server');
+                        dio.options.headers['Authorization'] = 'Bearer $token';
+                        String url = 'https://kdh.supomarket.com/items';
+
+                        print("itemQauilty : ${newItem.itemQuality}");
+                        FormData formData = FormData.fromMap({
+                          'title': newItem.sellingTitle ?? "무제",
+                          'description': newItem.itemDetail ?? "",
+                          'price': newItem.sellingPrice ?? -1,
+                          'category': ConvertEnumToString(newItem.itemType) ?? ItemType.ETC,
+                          'status': ConvertEnumToString(newItem.itemStatus) ?? ItemStatus.TRADING,
+                          'quality': ConvertEnumToString(newItem.itemQuality) ?? ItemQuality.MID,
+                          'buy': newItem.sellBuy ?? "",
+                        });
+                        for (int i = 0; i < newItem.imageListA.length; i++) {
+                          formData.files.add(MapEntry(
+                              'image',
+                              await MultipartFile.fromFile(newItem.imageListA[i].path,
+                                  filename: 'image.jpg')));
+                        }
+
+                        print(formData);
+                        try {
+                          String? categoryText;
+                          Response response = await dio.post(url, data: formData);
+                          //print(newItem.itemType.toString());
+                          tokenList = await getTokenByCategory(newItem.itemType.toString());
+                          categoryText = setCategoryName(newItem.itemType.toString());
+                          //print("상품을 등록할 때 전달된 토큰: !!!!!!!!");
+                          //print(tokenList);
+                          if(tokenList[0] != "해당유저없음") {
+                            client = RestClient(dio);
+                            print("카테고리 알람 준비 완료");
+                            final canotificate = Categorynotificate(
+                                tokens: tokenList,
+                                title: categoryText,
+                                sentence: "관심있는 상품이 등록되었습니다."
+                            );
+                            await client?.postCategoryNotification(canotificate);
+                            print(canotificate.title);
+                            print("카테고리 알람 전송 완료");
+                          }
+                          print(response);
+                          print("전송완료");
+                          //doubleRequest.complete(true);
+
+                        } catch (e) {
+                          print('Error sending POST request : $e');
+                        }
+                        //--도형 코드---
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Navigator.pop(
+                            context, ReturnData(item: newItem, returnType: "add"));
                       }
-                      print(response);
-                      print("전송완료");
-                      //doubleRequest.complete(true);
-
-                    } catch (e) {
-                      print('Error sending POST request : $e');
+                    }finally {
+                      completed = true;
                     }
-                    //--도형 코드---
-                    setState(() {
-                      isLoading = false;
-                    });
-                    Navigator.pop(
-                        context, ReturnData(item: newItem, returnType: "add"));
-
                   }
-                }finally {
-                  completed = true;
-                }
-              }
-              
-            },
-            style: OutlinedButton.styleFrom(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-            ),
-            child: const Text(
-              "등록하기",
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.black45,
-                fontFamily: 'KBO-M',
+
+                },
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                ),
+                child: const Text(
+                  "등록하기",
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black45,
+                    fontFamily: 'KBO-M',
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
           const SizedBox(width: 10),
         ],
@@ -311,7 +329,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
               //사진 추가 위젯
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(width: 20),
                   LoadImageButton(),
@@ -321,7 +339,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
               //Cupertino Button
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(width: 20),
                   SizedBox(
@@ -349,8 +367,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                           setState(() {
                                             switch (index) {
                                               case (0):
-                                                newItem.itemType =
-                                                    ItemType.REFRIGERATOR;
+                                                newItem.itemType = ItemType.REFRIGERATOR;
                                                 secondNum = 0;
                                               case (1):
                                                 newItem.itemType = ItemType.CLOTHES;
@@ -365,12 +382,15 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                 newItem.itemType = ItemType.BOOK;
                                                 secondNum = 4;
                                               case (5):
-                                                newItem.itemType = ItemType.ETC;
+                                                newItem.itemType = ItemType.HELP;
                                                 secondNum = 5;
+                                              case (6):
+                                                newItem.itemType = ItemType.ETC;
+                                                secondNum = 6;
                                             }
                                           });
                                         },
-                                        children: List<Widget>.generate(6, (index) {
+                                        children: List<Widget>.generate(7, (index) {
                                           return Center(
                                             child: TextButton(
                                                 onPressed: () {
@@ -387,6 +407,8 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                       ? "이동수단"
                                                       : index == 4
                                                       ? "책"
+                                                      : index == 5
+                                                      ? "구인"
                                                       : "기타",
                                                   style: const TextStyle(
                                                       fontSize: 15,
@@ -403,7 +425,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                             });
                       },
                       child: Text(
-                        "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "전자기기" : newItem.itemType == ItemType.MONITOR ? "이동수단" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "가구" : "기타"}",
+                        "상품 종류 : ${newItem.itemType == ItemType.REFRIGERATOR ? "전자기기" : newItem.itemType == ItemType.MONITOR ? "이동수단" : newItem.itemType == ItemType.BOOK ? "책" : newItem.itemType == ItemType.ROOM ? "자취방" : newItem.itemType == ItemType.CLOTHES ? "가구" : newItem.itemType == ItemType.HELP ? "구인" : "기타"}",
                         textScaleFactor: 1.0,
                         style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
                       ),
@@ -411,7 +433,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
-                    width: 100,
+                    width: 80,
                     child: CupertinoButton(
                       minSize: 0,
                       padding:
@@ -446,10 +468,14 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                 newItem.itemQuality =
                                                     ItemQuality.LOW;
                                                 firstNum = 2;
+                                              case (3):
+                                                newItem.itemQuality =
+                                                    ItemQuality.NONE;
+                                                firstNum = 3;
                                             }
                                           });
                                         },
-                                        children: List<Widget>.generate(3, (Index) {
+                                        children: List<Widget>.generate(4, (Index) {
                                           return Center(
                                             child: TextButton(
                                                 onPressed: () {
@@ -459,8 +485,8 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                   Index == 0
                                                       ? "상"
                                                       : Index == 1
-                                                      ? "중"
-                                                      : "하",
+                                                      ? "중":Index == 2
+                                                      ? "하": "없음",
                                                   style: const TextStyle(
                                                       fontSize: 15,
                                                       color: Colors.black,
@@ -476,7 +502,73 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                             });
                       },
                       child: Text(
-                        "품질 : ${newItem.itemQuality == ItemQuality.HIGH ? "상" : newItem.itemQuality == ItemQuality.MID ? "중" : "하"}",
+                        "품질 : ${newItem.itemQuality == ItemQuality.HIGH ? "상" : newItem.itemQuality == ItemQuality.MID ? "중" : newItem.itemQuality == ItemQuality.LOW? "하":"없음"}",
+                        style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                  SizedBox(
+                    width: 60,
+                    child: CupertinoButton(
+                      minSize: 0,
+                      padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                      color: mainColor,
+                      onPressed: () {
+                        showCupertinoModalPopup(
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                height: 400,
+                                width: 400,
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: CupertinoPicker(
+                                        itemExtent: 50,
+                                        backgroundColor: Colors.white,
+                                        scrollController: FixedExtentScrollController(initialItem: thirdNum),
+                                        onSelectedItemChanged: (Index) {
+                                          setState(() {
+                                            switch (Index) {
+                                              case (0):
+                                                newItem.sellBuy =
+                                                    true;
+                                                thirdNum = 0;
+                                              case (1):
+                                                newItem.sellBuy =
+                                                    false;
+                                                thirdNum = 1;
+                                            }
+                                          });
+                                        },
+                                        children: List<Widget>.generate(2, (Index) {
+                                          return Center(
+                                            child: TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text(
+                                                  Index == 0
+                                                      ? "판매"
+                                                      : "구매",
+                                                  style: const TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.bold),
+                                                )),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                      },
+                      child: Text(
+                        "${newItem.sellBuy == true ? "판매" : "구매"}",
                         style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
                       ),
                     ),
@@ -601,14 +693,65 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                     color: Color(0xFFB70001),
-                                    width: 5), // 포커스 상태일 때 밑줄 색상
+                                    width: 5
+                                ), // 포커스 상태일 때 밑줄 색상
                               ),
                             ),
                           )
                         ],
-                      ))
-                ]),
+                      ),
+                  ),
+                ],
+                ),
               ),
+              // const SizedBox(height: 10),
+              // if(showPhoneNumberField)
+              //   Flexible(
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         children: [
+              //           Container(
+              //             alignment: Alignment.center,
+              //             width: 350.0,
+              //             height: 80.0,
+              //             padding: EdgeInsets.all(5),
+              //             child: Stack(
+              //               children: [
+              //                 TextField(
+              //                   onChanged: (text) {
+              //                     setState(() {
+              //
+              //                     });
+              //                   },
+              //                   keyboardType: TextInputType.phone,
+              //                   maxLines: 1,
+              //                   decoration: InputDecoration(
+              //                     hintText: '전화번호를 입력하세요',
+              //                     hintStyle: TextStyle(
+              //                       color: Colors.grey[600],
+              //                       fontSize: 18.0,
+              //                       fontFamily: 'KBO-L',
+              //                     ),
+              //                     enabledBorder: UnderlineInputBorder (
+              //                       borderSide: BorderSide(
+              //                         color: Color(0xFFB70001),
+              //                         width: 5,
+              //                       ),
+              //                     ),
+              //                     focusedBorder: UnderlineInputBorder (
+              //                       borderSide: BorderSide(
+              //                         color: Color(0xFFB70001),
+              //                         width: 5,
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //   ),
             ],
           ),
           isLoading ? Container(
@@ -862,7 +1005,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
   void updateList() {
     debugPrint("update List");
     setState(() {
-      homePageBuilder = getItem(1, SortType.DATEASCEND, ItemStatus.TRADING);
+      homePageBuilder = getItem(1, SortType.DATEASCEND, ItemStatus.TRADING, TradeType.ALL);
     });
   }
 }
