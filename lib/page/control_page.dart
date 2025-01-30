@@ -65,7 +65,7 @@ class _ControlPageState extends State<ControlPage> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-updateList();
+// updateList(); //8/16
     debugPrint("control_initiate");
     controller = TabController(length: 5, vsync: this);
     controller!.addListener(() {
@@ -307,7 +307,7 @@ updateList();
   }
 
   void _launchURL(String url) async {
-    await launchUrl(Uri.parse('http://www.supomarket.com/rules/trade'));
+    await launchUrl(Uri.parse('https://www.supomarket.com/rules/trade'));
   }
 
   void updateList() {

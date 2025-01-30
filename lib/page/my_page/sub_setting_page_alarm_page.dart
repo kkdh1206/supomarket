@@ -299,7 +299,7 @@ class _SubSettingPageAlarmPageState extends State<SubSettingPageAlarmPage> {
     return true;
   }
 
-  Future<bool> patchChatAlarmOnOff(bool onOff) async{
+  Future<bool> patchChatAlarmOnOff(bool onOff) async {
     print("알람 On/Off 변경");
 
     String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';

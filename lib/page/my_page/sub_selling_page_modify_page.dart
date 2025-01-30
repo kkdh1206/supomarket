@@ -272,11 +272,14 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                                                 ItemType.BOOK;
                                           case (5):
                                             modifiedItem.itemType =
+                                                ItemType.HELP;
+                                          case (6):
+                                            modifiedItem.itemType =
                                                 ItemType.ETC;
                                         }
                                       });
                                     },
-                                    children: List<Widget>.generate(6, (index) {
+                                    children: List<Widget>.generate(7, (index) {
                                       return Center(
                                         child: TextButton(
                                             onPressed: () {
@@ -293,7 +296,9 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                                                               ? "이동수단"
                                                               : index == 4
                                                                   ? "책"
-                                                                  : "기타",
+                                                                  : index == 5
+                                                                    ? "구인"
+                                                                    : "기타",
                                               style: const TextStyle(
                                                   fontSize: 15,
                                                   color: Colors.black,
@@ -309,7 +314,7 @@ class _SubSellingPageModifyPageState extends State<SubSellingPageModifyPage> {
                         });
                   },
                   child: Text(
-                    "상품 종류 : ${modifiedItem.itemType == ItemType.REFRIGERATOR ? "전자기기" : modifiedItem.itemType == ItemType.MONITOR ? "가구" : modifiedItem.itemType == ItemType.BOOK ? "책" : modifiedItem.itemType == ItemType.ROOM ? "자취방" : modifiedItem.itemType == ItemType.CLOTHES ? "이동수단" : "기타"}",
+                    "상품 종류 : ${modifiedItem.itemType == ItemType.REFRIGERATOR ? "전자기기" : modifiedItem.itemType == ItemType.MONITOR ? "이동수단" : modifiedItem.itemType == ItemType.BOOK ? "책" : modifiedItem.itemType == ItemType.ROOM ? "자취방" : modifiedItem.itemType == ItemType.CLOTHES ? "가구" : modifiedItem.itemType == ItemType.HELP ? "구인":"기타"}",
                     textScaleFactor: 1.0,
                     style: const TextStyle(fontFamily: 'KBO-B', fontSize: 15),
                   ),

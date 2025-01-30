@@ -99,7 +99,7 @@ class EtcState extends State<Etc> {
   Widget build(BuildContext context) {
     return Container(
       width: 170,
-      height: 170,
+      height: 200,
       padding: EdgeInsets.only(top: 10, right: 5, bottom: 0, left: 10),
       color: Colors.grey[400],
       child: InkWell(
@@ -176,7 +176,7 @@ class BookState extends State<Book> {
   Widget build(BuildContext context) {
     return Container(
       width: 170,
-      height: 170,
+      height: 200,
       padding: EdgeInsets.only(top: 10, right: 5, bottom: 0, left: 10),
       color: Colors.grey[400],
       child: InkWell(
@@ -253,7 +253,7 @@ class MonitorState extends State<Monitor> {
   Widget build(BuildContext context) {
     return Container(
       width: 170,
-      height: 170,
+      height: 200,
       padding: EdgeInsets.only(top: 10, right: 5, bottom: 0, left: 10),
       color: Colors.grey[400],
       child: InkWell(
@@ -331,7 +331,7 @@ class ClothesState extends State<Clothes> {
   Widget build(BuildContext context) {
     return Container(
       width: 170,
-      height: 170,
+      height: 200,
       padding: EdgeInsets.only(top: 10, right: 5, bottom: 0, left: 10),
       color: Colors.grey[400],
       child: InkWell(
@@ -408,7 +408,7 @@ class RefrigeratorState extends State<Refrigerator>{
   Widget build(BuildContext context) {
     return Container(
       width: 170,
-      height: 170,
+      height: 200,
       padding: EdgeInsets.only(top: 10, right: 5, bottom: 0, left: 10),
       color: Colors.grey[400],
       child: InkWell(
@@ -485,7 +485,7 @@ class RoomsState extends State<Rooms> {
   Widget build(BuildContext context) {
     return Container(
       width: 170,
-      height: 170,
+      height: 200,
       padding: EdgeInsets.only(top: 10, right: 10, bottom: 0, left: 10),
       color: Colors.grey[400],
       child: InkWell(

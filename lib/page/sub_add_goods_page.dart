@@ -121,6 +121,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
 
   bool completed = true; // --> 이런식으로 외부에 선언해야 초기화 안되고 막음
   bool isLoading = false;
+  //bool showPhoneNumberField = false;
 
   @override
   Widget build(BuildContext context) {
@@ -147,119 +148,134 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                 icon: const Icon(Icons.clear, color: Colors.black),
                 iconSize: 30)),
         actions: <Widget>[
-          TextButton(
-            onPressed: () async {
-              List<dynamic>? tokenList;
-              if(!completed) {
-                print("업로드 중입니다!!!!");
-                // print(doubleRequest.isCompleted);
-                popUp("업로드 중입니다");
-                return;
-              } else {
-                try {
-                  //print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                  if (newItem.sellingTitle!.length < 5) {
-                    popUp("판매 제목은 5글자 이상이어야 합니다");
-                  } else if (newItem.imageListA.isEmpty && newItem.sellBuy == true) {
-                    popUp("최소 하나의 사진을 첨부 해야 합니다");
-                  } else if (newItem.sellingPrice.isNegative ||
-                      newItem.sellingPrice.isNaN) {
-                    popUp("가격을 제시해 주세요");
-                  } else if (newItem.itemDetail == null ||
-                      newItem.itemDetail!.length < 10) {
-                    popUp("세부 내용을 10글자 이상 작성해 주세요");
+          Row(
+            children: [
+              // CupertinoSwitch(
+              //     value: showPhoneNumberField,
+              //     activeColor: mainColor,
+              //     onChanged: (bool value) {
+              //       print("켜짐");
+              //       print(value);
+              //       setState(() {
+              //         showPhoneNumberField = value;
+              //       });
+              //     },
+              // ),
+              SizedBox(width: 10),
+              TextButton(
+                onPressed: () async {
+                  List<dynamic>? tokenList;
+                  if(!completed) {
+                    print("업로드 중입니다!!!!");
+                    // print(doubleRequest.isCompleted);
+                    popUp("업로드 중입니다");
+                    return;
                   } else {
-                    setState(() {
-                      isLoading = true;
-                      completed = false;
-                    });
-
-                    setState(() {
-                      newItem.uploadDate = "방금 전";
-                      newItem.uploadDateForCompare = DateTime.now();
-                    });
-
-                    //--도형 코드---
-                    print("전송전");
-                    String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
-
-                    Dio dio = Dio();
-                    print('add Item To Server');
-                    dio.options.headers['Authorization'] = 'Bearer $token';
-                    String url = 'https://kdh.supomarket.com/items';
-
-                    print("itemQauilty : ${newItem.itemQuality}");
-                    FormData formData = FormData.fromMap({
-                      'title': newItem.sellingTitle ?? "무제",
-                      'description': newItem.itemDetail ?? "",
-                      'price': newItem.sellingPrice ?? -1,
-                      'category': ConvertEnumToString(newItem.itemType) ?? ItemType.ETC,
-                      'status': ConvertEnumToString(newItem.itemStatus) ?? ItemStatus.TRADING,
-                      'quality': ConvertEnumToString(newItem.itemQuality) ?? ItemQuality.MID,
-                      'buy': newItem.sellBuy ?? "",
-                    });
-                    for (int i = 0; i < newItem.imageListA.length; i++) {
-                      formData.files.add(MapEntry(
-                          'image',
-                          await MultipartFile.fromFile(newItem.imageListA[i].path,
-                              filename: 'image.jpg')));
-                    }
-
-                    print(formData);
                     try {
-                      String? categoryText;
-                      Response response = await dio.post(url, data: formData);
-                      //print(newItem.itemType.toString());
-                      tokenList = await getTokenByCategory(newItem.itemType.toString());
-                      categoryText = setCategoryName(newItem.itemType.toString());
-                      //print("상품을 등록할 때 전달된 토큰: !!!!!!!!");
-                      //print(tokenList);
-                      if(tokenList[0] != "해당유저없음") {
-                        client = RestClient(dio);
-                        print("카테고리 알람 준비 완료");
-                        final canotificate = Categorynotificate(
-                            tokens: tokenList,
-                            title: categoryText,
-                            sentence: "관심있는 상품이 등록되었습니다."
-                        );
-                        await client?.postCategoryNotification(canotificate);
-                        print(canotificate.title);
-                        print("카테고리 알람 전송 완료");
+                      //print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                      if (newItem.sellingTitle!.length < 5) {
+                        popUp("판매 제목은 5글자 이상이어야 합니다");
+                      } else if (newItem.imageListA.isEmpty && newItem.sellBuy == true) {
+                        popUp("최소 하나의 사진을 첨부 해야 합니다");
+                      } else if (newItem.sellingPrice.isNegative ||
+                          newItem.sellingPrice.isNaN) {
+                        popUp("가격을 제시해 주세요");
+                      } else if (newItem.itemDetail == null ||
+                          newItem.itemDetail!.length < 10) {
+                        popUp("세부 내용을 10글자 이상 작성해 주세요");
+                      } else {
+                        setState(() {
+                          isLoading = true;
+                          completed = false;
+                        });
+
+                        setState(() {
+                          newItem.uploadDate = "방금 전";
+                          newItem.uploadDateForCompare = DateTime.now();
+                        });
+
+                        //--도형 코드---
+                        print("전송전");
+                        String token = await FirebaseAuth.instance.currentUser?.getIdToken() ?? '';
+
+                        Dio dio = Dio();
+                        print('add Item To Server');
+                        dio.options.headers['Authorization'] = 'Bearer $token';
+                        String url = 'https://kdh.supomarket.com/items';
+
+                        print("itemQauilty : ${newItem.itemQuality}");
+                        FormData formData = FormData.fromMap({
+                          'title': newItem.sellingTitle ?? "무제",
+                          'description': newItem.itemDetail ?? "",
+                          'price': newItem.sellingPrice ?? -1,
+                          'category': ConvertEnumToString(newItem.itemType) ?? ItemType.ETC,
+                          'status': ConvertEnumToString(newItem.itemStatus) ?? ItemStatus.TRADING,
+                          'quality': ConvertEnumToString(newItem.itemQuality) ?? ItemQuality.MID,
+                          'buy': newItem.sellBuy ?? "",
+                        });
+                        for (int i = 0; i < newItem.imageListA.length; i++) {
+                          formData.files.add(MapEntry(
+                              'image',
+                              await MultipartFile.fromFile(newItem.imageListA[i].path,
+                                  filename: 'image.jpg')));
+                        }
+
+                        print(formData);
+                        try {
+                          String? categoryText;
+                          Response response = await dio.post(url, data: formData);
+                          //print(newItem.itemType.toString());
+                          tokenList = await getTokenByCategory(newItem.itemType.toString());
+                          categoryText = setCategoryName(newItem.itemType.toString());
+                          //print("상품을 등록할 때 전달된 토큰: !!!!!!!!");
+                          //print(tokenList);
+                          if(tokenList[0] != "해당유저없음") {
+                            client = RestClient(dio);
+                            print("카테고리 알람 준비 완료");
+                            final canotificate = Categorynotificate(
+                                tokens: tokenList,
+                                title: categoryText,
+                                sentence: "관심있는 상품이 등록되었습니다."
+                            );
+                            await client?.postCategoryNotification(canotificate);
+                            print(canotificate.title);
+                            print("카테고리 알람 전송 완료");
+                          }
+                          print(response);
+                          print("전송완료");
+                          //doubleRequest.complete(true);
+
+                        } catch (e) {
+                          print('Error sending POST request : $e');
+                        }
+                        //--도형 코드---
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Navigator.pop(
+                            context, ReturnData(item: newItem, returnType: "add"));
                       }
-                      print(response);
-                      print("전송완료");
-                      //doubleRequest.complete(true);
-
-                    } catch (e) {
-                      print('Error sending POST request : $e');
+                    }finally {
+                      completed = true;
                     }
-                    //--도형 코드---
-                    setState(() {
-                      isLoading = false;
-                    });
-                    Navigator.pop(
-                        context, ReturnData(item: newItem, returnType: "add"));
-
                   }
-                }finally {
-                  completed = true;
-                }
-              }
-              
-            },
-            style: OutlinedButton.styleFrom(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-            ),
-            child: const Text(
-              "등록하기",
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.black45,
-                fontFamily: 'KBO-M',
+
+                },
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                ),
+                child: const Text(
+                  "등록하기",
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black45,
+                    fontFamily: 'KBO-M',
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
           const SizedBox(width: 10),
         ],
@@ -469,7 +485,7 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                                                   Index == 0
                                                       ? "상"
                                                       : Index == 1
-                                                      ? "중":Index ==2
+                                                      ? "중":Index == 2
                                                       ? "하": "없음",
                                                   style: const TextStyle(
                                                       fontSize: 15,
@@ -677,14 +693,65 @@ class _SubAddItemPageState extends State<SubAddItemPage> {
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                     color: Color(0xFFB70001),
-                                    width: 5), // 포커스 상태일 때 밑줄 색상
+                                    width: 5
+                                ), // 포커스 상태일 때 밑줄 색상
                               ),
                             ),
                           )
                         ],
-                      ))
-                ]),
+                      ),
+                  ),
+                ],
+                ),
               ),
+              // const SizedBox(height: 10),
+              // if(showPhoneNumberField)
+              //   Flexible(
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         children: [
+              //           Container(
+              //             alignment: Alignment.center,
+              //             width: 350.0,
+              //             height: 80.0,
+              //             padding: EdgeInsets.all(5),
+              //             child: Stack(
+              //               children: [
+              //                 TextField(
+              //                   onChanged: (text) {
+              //                     setState(() {
+              //
+              //                     });
+              //                   },
+              //                   keyboardType: TextInputType.phone,
+              //                   maxLines: 1,
+              //                   decoration: InputDecoration(
+              //                     hintText: '전화번호를 입력하세요',
+              //                     hintStyle: TextStyle(
+              //                       color: Colors.grey[600],
+              //                       fontSize: 18.0,
+              //                       fontFamily: 'KBO-L',
+              //                     ),
+              //                     enabledBorder: UnderlineInputBorder (
+              //                       borderSide: BorderSide(
+              //                         color: Color(0xFFB70001),
+              //                         width: 5,
+              //                       ),
+              //                     ),
+              //                     focusedBorder: UnderlineInputBorder (
+              //                       borderSide: BorderSide(
+              //                         color: Color(0xFFB70001),
+              //                         width: 5,
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //   ),
             ],
           ),
           isLoading ? Container(

@@ -294,7 +294,8 @@ class _HomePageState extends State<HomePage> {
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 14,
-                                            fontWeight: FontWeight.bold),
+                                            fontWeight: FontWeight.bold
+                                        ),
                                       ),
                                       SizedBox(width: 3),
                                       Icon(
@@ -302,8 +303,10 @@ class _HomePageState extends State<HomePage> {
                                         color: Colors.white,
                                       ),
                                     ],
-                                  ))))
-                              .toList(),
+                                  )
+                              )
+                          )
+                          ).toList(),
                           onChanged: (value) {
                             setState(() {
                               selectedOption2 = value!;

@@ -25,6 +25,7 @@ class Item{
   DateTime? buyingDateForCompare;
   int? view;
   bool? sellBuy;
+  String? phoneNum;
 
   Item( //생성자
       { required this.sellingTitle,
@@ -47,6 +48,7 @@ class Item{
         this.buyingDate,
         this.buyingDateForCompare,
         this.sellBuy,
+        this.phoneNum
       }
       );
 
