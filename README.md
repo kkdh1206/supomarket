@@ -1,16 +1,43 @@
-# supo_market
+# Supomarket Application
 
-A new Flutter project.
+## 📌 Description
 
-## Getting Started
+A mobile marketplace app designed for on-campus second-hand trading at POSTECH.  
+Built during UGRP (Undergraduate Research Program) 2023.
+It is backend work of the application
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠️ Tech Stack
+- **Frontend**: Flutter
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## ✨ Features
+- User sign up / login
+- Product listing & image upload
+- Chat-based messaging between users - it wasn't my work so my fellow developer has it.
+- User history (buying list, like history, selling list, score etc..)
+
+---
+
+## 📸 Screenshots 
+<img src="screenshots/splash.png" width="300"/>
+<img src="screenshots/home.png" width="300"/>  
+<img src="screenshots/category.png" width="300"/>
+For other detail screenshots, you can see to click the Store link below
+---
+
+## Notice  
+But the surver fee issue I stopped the server from 2025.04.01
+I already made the snapshot of the website server so if you want to see contact me for my Email
+
+---
+
+ 
+## Downloawd Link 
+Android PlayStore - https://play.google.com/store/apps/details?id=com.supomarket.supo_market
+
+iOS AppStore - https://apps.apple.com/kr/app/supomarket/id6477733742?platform=iphone
+
+---
